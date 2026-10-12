@@ -1,11 +1,10 @@
 /**
- * Vista de un tablero. La Persona 1 se encarga de la cabecera (nombre, rol,
- * compartir). El lienzo lo pone la Persona 2 dentro de <BoardCanvasSlot>:
- * recibe el tablero y `canEdit` para desactivar las herramientas a los viewers.
+ * Vista del tablero: cabecera, herramientas de dibujo y lienzo.
  */
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+import { useAuth } from "../auth/authStore";
 import { BoardNameDialog } from "../components/BoardNameDialog";
 import { RoleBadge } from "../components/RoleBadge";
 import { ShareDialog } from "../components/ShareDialog";
@@ -14,30 +13,14 @@ import { toast } from "../components/toastStore";
 import { ApiError } from "../lib/api";
 import { boardsApi } from "../lib/boardsApi";
 import type { Board } from "../lib/types";
+import { CanvasBoard } from "../presentation/components/canvas/CanvasBoard";
+import { Toolbar } from "../presentation/components/toolbar/Toolbar";
 import { useBoards } from "../stores/boardsStore";
-
-export interface BoardCanvasProps {
-  board: Board;
-  canEdit: boolean;
-}
-
-/** Lugar reservado para el canvas (Persona 2) y el tiempo real (Persona 3). */
-function BoardCanvasSlot({ board, canEdit }: BoardCanvasProps) {
-  return (
-    <div className="canvas-slot" data-board-id={board.id}>
-      <p className="hand-title hand-small">El lienzo va aquí</p>
-      <p className="muted">
-        {canEdit
-          ? "Tienes permiso para dibujar en este tablero."
-          : "Estás en modo solo lectura: puedes mirar, pero no dibujar."}
-      </p>
-    </div>
-  );
-}
 
 export function BoardPage() {
   const { boardId = "" } = useParams();
   const renameInStore = useBoards((s) => s.rename);
+  const authorId = useAuth((s) => s.user?.id ?? "local-user");
   const [board, setBoard] = useState<Board | null>(null);
   const [error, setError] = useState<{ status: number; message: string } | null>(null);
   const [dialog, setDialog] = useState<"share" | "rename" | null>(null);
@@ -113,7 +96,8 @@ export function BoardPage() {
         </div>
       </TopBar>
 
-      <BoardCanvasSlot board={board} canEdit={board.my_role !== "viewer"} />
+      <CanvasBoard authorId={authorId} />
+      <Toolbar />
 
       {dialog === "share" && (
         <ShareDialog
