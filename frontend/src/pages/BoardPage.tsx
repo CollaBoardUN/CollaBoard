@@ -6,6 +6,8 @@ import { Link, useParams } from "react-router-dom";
 
 import { useAuth } from "../auth/authStore";
 import { BoardNameDialog } from "../components/BoardNameDialog";
+import { PresenceBar } from "../components/PresenceBar";
+import { RemoteCursors } from "../components/RemoteCursors";
 import { RoleBadge } from "../components/RoleBadge";
 import { ShareDialog } from "../components/ShareDialog";
 import { TopBar } from "../components/TopBar";
@@ -15,6 +17,7 @@ import { boardsApi } from "../lib/boardsApi";
 import type { Board } from "../lib/types";
 import { CanvasBoard } from "../presentation/components/canvas/CanvasBoard";
 import { Toolbar } from "../presentation/components/toolbar/Toolbar";
+import { useBoardRealtime } from "../realtime/useBoardRealtime";
 import { useBoards } from "../stores/boardsStore";
 
 export function BoardPage() {
@@ -35,6 +38,9 @@ export function BoardPage() {
       alive = false;
     };
   }, [boardId]);
+
+  // Tiempo real: solo se conecta cuando ya sabemos que el tablero existe y tenemos acceso.
+  useBoardRealtime(board ? boardId : "");
 
   if (error) {
     return (
@@ -90,6 +96,7 @@ export function BoardPage() {
             <span className="board-name">{board.name}</span>
           )}
           <RoleBadge role={board.my_role} />
+          <PresenceBar />
           <button type="button" className="btn btn-small btn-primary" onClick={() => setDialog("share")}>
             {isOwner ? "Compartir" : `Miembros (${board.member_count})`}
           </button>
@@ -97,6 +104,7 @@ export function BoardPage() {
       </TopBar>
 
       <CanvasBoard authorId={authorId} />
+      <RemoteCursors />
       <Toolbar />
 
       {dialog === "share" && (

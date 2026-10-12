@@ -26,6 +26,7 @@ import {
   type CanvasElementType,
 } from "../../../domain/models/canvas";
 import { useBoardStore } from "../../../store/useBoardStore";
+import { useRealtime } from "../../../realtime/realtimeStore";
 import { FloatingContextToolbar } from "./FloatingContextToolbar";
 
 interface CanvasBoardProps {
@@ -215,7 +216,9 @@ export function CanvasBoard({ authorId = "local-user" }: CanvasBoardProps) {
   const setActiveTextColor = useBoardStore((state) => state.setActiveTextColor);
   const setActiveFontFamily = useBoardStore((state) => state.setActiveFontFamily);
   const setSelectedElementId = useBoardStore((state) => state.setSelectedElementId);
-
+  // Tiempo real: trazos en curso de los demás, y publicación del mío.
+  const remoteDrafts = useRealtime((state) => state.drafts);
+  const setLocalDraft = useRealtime((state) => state.setLocalDraft);
   const [size, setSize] = useState<CanvasSize>(initialSize);
   const [draft, setDraft] = useState<CanvasElement | null>(null);
   const [editingElementId, setEditingElementId] = useState<string | null>(null);
@@ -234,6 +237,10 @@ export function CanvasBoard({ authorId = "local-user" }: CanvasBoardProps) {
   // The Transformer only exists in cursor mode and never competes with the text editor.
   const transformTarget = isCursorMode && !editingElement ? selectedElement : undefined;
   const transformTargetId = transformTarget?.id ?? null;
+
+  useEffect(() => {
+    setLocalDraft(draft);
+  }, [draft, setLocalDraft]);
 
   useEffect(() => {
     const resize = () => setSize({ width: window.innerWidth, height: window.innerHeight });
@@ -605,6 +612,9 @@ export function CanvasBoard({ authorId = "local-user" }: CanvasBoardProps) {
         <Layer ref={layerRef}>
           {elements.map((element) => renderElement(element))}
           {draft && renderElement(draft, false)}
+          {Object.entries(remoteDrafts).map(([conn, remoteDraft]) => (
+            <Fragment key={conn}>{renderElement(remoteDraft, false)}</Fragment>
+          ))}
           <Transformer
             ref={transformerRef}
             rotateEnabled={false}

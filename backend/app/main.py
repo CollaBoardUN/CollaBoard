@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import AUTH_DEV_MODE, FRONTEND_URL
-from .routers import boards, dev_auth, invites
+from .routers import boards, dev_auth, invites, ws
 
 # Las tablas se crean con migraciones:  alembic upgrade head
 
@@ -28,6 +28,7 @@ app.add_middleware(
 
 app.include_router(boards.router)
 app.include_router(invites.router)
+app.include_router(ws.router)
 
 if AUTH_DEV_MODE:
     app.include_router(dev_auth.router)
