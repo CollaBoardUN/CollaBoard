@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #F8FAFC;
+    color: #111827;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E5E7EB;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+/* Pixel art crisp rendering */
+.pixelated {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Subtle checkered background for canvas transparency */
+.canvas-bg-pattern {
+  background-color: #ffffff;
+  background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
+                    linear-gradient(-45deg, #f1f5f9 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #f1f5f9 75%),
+                    linear-gradient(-45deg, transparent 75%, #f1f5f9 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}

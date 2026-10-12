@@ -1,9 +1,19 @@
-# Levanta todo el proyecto:  docker compose up --build
-#   Frontend  http://localhost:5173
-#   API       http://localhost:8000/docs
+# ==============================================================================
+# Docker Compose Global - CollaBoard
+# Despliega todos los módulos de la plataforma simultáneamente:
+#   1. Módulo Pizarra:       Frontend http://localhost:5173 | Backend http://localhost:8000
+#   2. Módulo Colaboración:  API Backend http://localhost:8002
+#   3. Módulo Pixels:        Frontend http://localhost:3000 | Backend http://localhost:8080
+# ==============================================================================
+
 services:
-  db:
+  # ----------------------------------------------------------------------------
+  # 1. Base de Datos Relacional (PostgreSQL) para Pizarra y Colaboración
+  # ----------------------------------------------------------------------------
+  pizarra-db:
     image: postgres:16-alpine
+    container_name: collaboard-pizarra-db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -17,11 +27,20 @@ services:
       interval: 3s
       timeout: 3s
       retries: 20
+    networks:
+      - collaboard-network
 
-  backend:
-    build: ./backend
+  # ----------------------------------------------------------------------------
+  # 2. Módulo Pizarra - Backend (FastAPI + WebSockets salas de dibujo)
+  # ----------------------------------------------------------------------------
+  pizarra-backend:
+    build:
+      context: ./pizarra-module/pizarra-backend
+      dockerfile: Dockerfile
+    container_name: collaboard-pizarra-backend
+    restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/pizarra
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
       JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
       JWT_ALGORITHM: HS256
       FRONTEND_URL: http://localhost:5173
@@ -29,19 +48,125 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      db:
+      pizarra-db:
         condition: service_healthy
+    networks:
+      - collaboard-network
 
-  frontend:
+  # ----------------------------------------------------------------------------
+  # 3. Módulo Pizarra - Frontend (React 19 SPA)
+  # ----------------------------------------------------------------------------
+  pizarra-frontend:
     build:
-      context: ./frontend
+      context: ./pizarra-module/pizarra-frontend
+      dockerfile: Dockerfile
       args:
         VITE_API_URL: http://localhost:8000
         VITE_DEV_LOGIN: ${AUTH_DEV_MODE:-true}
+    container_name: collaboard-pizarra-frontend
+    restart: unless-stopped
     ports:
       - "5173:80"
     depends_on:
-      - backend
+      - pizarra-backend
+    networks:
+      - collaboard-network
+
+  # ----------------------------------------------------------------------------
+  # 4. Módulo Colaboración - Backend Lógico (Tableros, Miembros, Roles y Permisos)
+  # ----------------------------------------------------------------------------
+  colaboracion-backend:
+    build:
+      context: ./colaboracion-module
+      dockerfile: Dockerfile
+    container_name: collaboard-colaboracion-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
+      JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
+      JWT_ALGORITHM: HS256
+      FRONTEND_URL: http://localhost:5173
+      AUTH_DEV_MODE: ${AUTH_DEV_MODE:-true}
+    ports:
+      - "8002:8000"
+    depends_on:
+      pizarra-db:
+        condition: service_healthy
+    networks:
+      - collaboard-network
+
+  # ----------------------------------------------------------------------------
+  # 5. Base de Datos NoSQL (MongoDB 7) para Pixels Wplace
+  # ----------------------------------------------------------------------------
+  pixels-nosql-db:
+    image: mongo:7
+    container_name: collaboard-pixels-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: collaboard_pixels
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    networks:
+      - collaboard-network
+
+  # ----------------------------------------------------------------------------
+  # 6. Módulo Pixels - Backend (FastAPI + WebSockets lienzo 200x200)
+  # ----------------------------------------------------------------------------
+  pixels-backend:
+    build:
+      context: ./pixels-module/pixel-backend
+      dockerfile: Dockerfile
+    container_name: collaboard-pixels-backend
+    restart: unless-stopped
+    environment:
+      - MONGODB_URL=mongodb://pixels-nosql-db:27017
+      - DATABASE_NAME=collaboard_pixels
+      - CANVAS_WIDTH=200
+      - CANVAS_HEIGHT=200
+      - COOLDOWN_SECONDS=5.0
+      - HOST=0.0.0.0
+      - PORT=8000
+    ports:
+      - "8080:8000"
+    depends_on:
+      pixels-nosql-db:
+        condition: service_healthy
+    networks:
+      - collaboard-network
+
+  # ----------------------------------------------------------------------------
+  # 7. Módulo Pixels - Frontend (React 18 SPA)
+  # ----------------------------------------------------------------------------
+  pixels-frontend:
+    build:
+      context: ./pixels-module/pixel-frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_BACKEND_HTTP_URL: http://localhost:8080
+        VITE_BACKEND_WS_URL: ws://localhost:8080/ws/pixels
+    container_name: collaboard-pixels-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - pixels-backend
+    networks:
+      - collaboard-network
 
 volumes:
   pgdata:
+    driver: local
+  mongo_data:
+    driver: local
+
+networks:
+  collaboard-network:
+    driver: bridge

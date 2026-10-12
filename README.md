@@ -1,110 +1,93 @@
-# Pizarra colaborativa
+# CollaBoard — Pizarra Colaborativa y Suite de Creación
 
-Pizarra online donde varias personas dibujan juntas en tiempo real.
+Plataforma colaborativa modular en tiempo real donde varias personas crean, dibujan y colaboran juntas.
 
-Este repositorio contiene el **módulo de tableros y colaboradores** (Persona 1), completo y probado. También deja preparados los puntos de conexión para el resto del equipo.
+---
 
-| Módulo | Responsable | Estado |
-| --- | --- | --- |
-| Autenticación (registro, login, JWT) | Compañero de auth | Pendiente. Hay un adaptador y un login de desarrollo |
-| **Tableros y colaboradores** | **Persona 1** | **Listo** |
-| Herramientas de dibujo (canvas) | Persona 2 | Pendiente. Ver [integración](docs/INTEGRACION.md#persona-2-canvas) |
-| Tiempo real (WebSocket) | Persona 3 | **Listo** |
-| Persistencia, historial, exportación | Persona 4 | Pendiente. Ver [integración](docs/INTEGRACION.md#persona-4-persistencia) |
+## 📁 Arquitectura Modular del Repositorio
 
-## Qué hace el módulo de tableros
+El proyecto está organizado en **módulos independientes y desacoplados**, cada uno con su propio contenedor y ciclo de desarrollo:
 
-- Crear, listar, renombrar y borrar tableros.
-- Roles por tablero: **dueño** (`owner`), **editor** (`editor`) y **solo ver** (`viewer`).
-- Compartir por link con un rol y una fecha de vencimiento. Se pueden ver los links activos y desactivarlos.
-- Unirse por link. Si ya eras viewer y abres un link de editor, subes de permiso; nunca bajas por abrir un link.
-- Gestión de miembros: cambiar el rol, quitar a alguien o salirse del tablero.
-- `require_role(...)`: la verificación de permisos que reutilizan los demás módulos.
+```
+CollaBoard/
+├── colaboracion-module/     # Módulo Lógico de Colaboración (Persona 1)
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── README.md
+│   ├── app/                # Lógica de tableros, roles, permisos e invitaciones
+│   ├── migrations/         # Migraciones Alembic (PostgreSQL)
+│   └── tests/
+│
+├── pizarra-module/         # Módulo de Pizarra Colaborativa en Tiempo Real
+│   ├── docker-compose.yml
+│   ├── README.md
+│   ├── pizarra-frontend/   # React 19 + Vite + Canvas + Presencia en vivo
+│   └── pizarra-backend/    # FastAPI + WebSockets sincronización de trazos
+│
+├── pixels-module/          # Módulo Wplace Pixels (Lienzo colectivo de arte)
+│   ├── docker-compose.yml
+│   ├── README.md
+│   ├── EXPLICACION_MODULO.md
+│   ├── pixel-frontend/     # SPA React 18 + HTML5 Canvas con doble buffer
+│   └── pixel-backend/      # FastAPI + Motor asíncrono + MongoDB NoSQL
+│
+├── docs/                   # Documentación de integración y protocolos
+└── e2e/                    # Pruebas de punta a punta con Playwright
+```
 
-**Entregable cumplido**: un usuario autenticado crea un tablero, lo comparte, y otro entra con el rol correcto. Lo verifica el test de punta a punta en un navegador real (`e2e/`).
+---
 
-## Stack
+## 🚀 Resumen de los Módulos
 
-| | |
-| --- | --- |
-| Backend | Python 3.12, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 16, PyJWT |
-| Frontend | React 19, TypeScript, Vite, React Router, Zustand |
-| Calidad | pytest, Vitest + Testing Library, Playwright, Ruff, ESLint, GitHub Actions |
+| Módulo | Tipo | Tecnologías Clave | Puerto / URL |
+|---|---|---|---|
+| **`pizarra-module`** | Frontend + Backend | React 19, FastAPI, PostgreSQL, WebSockets | Web: `http://localhost:5173`<br>API: `http://localhost:8000/docs` |
+| **`colaboracion-module`** | Lógica de Negocio (Backend) | FastAPI, SQLAlchemy, PostgreSQL, Alembic | API: `http://localhost:8000/docs` |
+| **`pixels-module`** | Frontend + Backend | React 18, FastAPI, MongoDB (NoSQL), WebSockets | Web: `http://localhost:3000`<br>API: `http://localhost:8000/docs` |
 
-## Cómo correrlo
+---
 
-### Opción A: Docker (lo más fácil)
+## 🛠️ Cómo Ejecutar Cada Módulo
 
+### 1. Módulo de Pizarra (`pizarra-module`)
 ```bash
+cd pizarra-module
 docker compose up --build
 ```
+- **Lienzo de Pizarra:** [http://localhost:5173](http://localhost:5173)
+- **API y Swagger:** [http://localhost:8000/docs](http://localhost:8000/docs)
 
-- Frontend: http://localhost:5173
-- API y documentación interactiva: http://localhost:8000/docs
-
-Entra con cualquier nombre. Para probar cómo se comparte, abre una ventana privada y entra con otro nombre.
-
-### Opción B: sin Docker
-
-Necesitas Python 3.11 o superior, Node 20 o superior, y PostgreSQL.
-
+### 2. Módulo de Colaboración (`colaboracion-module`)
 ```bash
-# 1. Base de datos
-createdb pizarra
-
-# 2. Backend
-cd backend
-python -m venv .venv && source .venv/bin/activate   # En Windows: .venv\Scripts\activate
-pip install -r requirements-dev.txt
-cp .env.example .env            # revisa DATABASE_URL
-alembic upgrade head            # crea las tablas
-uvicorn app.main:app --reload   # http://localhost:8000/docs
-
-# 3. Frontend (en otra terminal)
-cd frontend
-npm install
-cp .env.example .env
-npm run dev                     # http://localhost:5173
+cd colaboracion-module
+docker compose up --build
 ```
+- **API de Colaboración:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Health Check:** [http://localhost:8000/health](http://localhost:8000/health)
 
-## Tests
-
+### 3. Módulo de Pixels Wplace (`pixels-module`)
 ```bash
-cd backend && pytest                    # 50 tests de la API (usa SQLite; no necesita PostgreSQL)
-cd frontend && npm test                 # 25 tests de la interfaz
-pip install -r e2e/requirements.txt && playwright install chromium
-pytest e2e                              # flujo completo en un navegador (con backend y frontend corriendo)
+cd pixels-module
+docker compose up --build
 ```
+- **Lienzo Pixels Wplace:** [http://localhost:3000](http://localhost:3000)
+- **API Pixels:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Guía Completa:** Ver [EXPLICACION_MODULO.md](pixels-module/EXPLICACION_MODULO.md)
 
-La CI de GitHub corre todo en cada push: lint, tests del backend contra SQLite **y** PostgreSQL, migraciones (suben, coinciden con los modelos y bajan), tests del frontend, build, el flujo de punta a punta en Chromium y `docker compose`.
+---
 
-## Estructura
+## 🧪 Pruebas Automatizadas
 
-```
-backend/
-  app/
-    auth.py          ← adaptador de auth: lee el JWT (punto de contacto con el login)
-    permissions.py   ← require_role / get_role: lo reutilizan Personas 2, 3 y 4
-    models.py        ← tablas boards, board_members, board_invites
-    schemas.py       ← qué JSON entra y sale
-    routers/         ← endpoints (boards, invites, dev_auth)
-  migrations/        ← Alembic
-  tests/
-frontend/
-  src/
-    auth/            ← sesión (Zustand) y rutas protegidas
-    lib/             ← cliente HTTP, funciones de la API, tipos
-    stores/          ← estado de "mis tableros"
-    components/      ← tarjetas, diálogo de compartir, modales
-    pages/           ← dashboard, tablero, unirse por link, login de desarrollo
-e2e/                 ← prueba de punta a punta con Playwright
-docs/
-  API.md             ← contrato de la API
-  INTEGRACION.md     ← cómo se conectan los demás módulos
-```
-
-## Documentación
-
-- [Contrato de la API](docs/API.md)
-- [Guía de integración para el equipo](docs/INTEGRACION.md)
-- [Cómo contribuir](CONTRIBUTING.md)
+- **Pruebas de Colaboración:**
+  ```bash
+  cd colaboracion-module && pytest
+  ```
+- **Pruebas de Pizarra:**
+  ```bash
+  cd pizarra-module/pizarra-backend && pytest
+  cd pizarra-module/pizarra-frontend && npm test
+  ```
+- **Pruebas E2E:**
+  ```bash
+  pytest e2e
+  ```

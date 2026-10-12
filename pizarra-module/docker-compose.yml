@@ -1,0 +1,65 @@
+# Docker Compose para el Módulo de Pizarra (Frontend + Backend + PostgreSQL)
+services:
+  pizarra-db:
+    image: postgres:16-alpine
+    container_name: pizarra-postgres-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pizarra
+    ports:
+      - "5432:5432"
+    volumes:
+      - pizarra_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pizarra"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks:
+      - pizarra-network
+
+  pizarra-backend:
+    build:
+      context: ./pizarra-backend
+      dockerfile: Dockerfile
+    container_name: pizarra-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
+      JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
+      JWT_ALGORITHM: HS256
+      FRONTEND_URL: http://localhost:5173
+      AUTH_DEV_MODE: ${AUTH_DEV_MODE:-true}
+    ports:
+      - "8000:8000"
+    depends_on:
+      pizarra-db:
+        condition: service_healthy
+    networks:
+      - pizarra-network
+
+  pizarra-frontend:
+    build:
+      context: ./pizarra-frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8000
+        VITE_DEV_LOGIN: ${AUTH_DEV_MODE:-true}
+    container_name: pizarra-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - pizarra-backend
+    networks:
+      - pizarra-network
+
+volumes:
+  pizarra_pgdata:
+    driver: local
+
+networks:
+  pizarra-network:
+    driver: bridge
