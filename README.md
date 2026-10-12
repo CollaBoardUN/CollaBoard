@@ -9,7 +9,7 @@ Este repositorio contiene el **módulo de tableros y colaboradores** (Persona 1)
 | Autenticación (registro, login, JWT) | Compañero de auth | Pendiente. Hay un adaptador y un login de desarrollo |
 | **Tableros y colaboradores** | **Persona 1** | **Listo** |
 | Herramientas de dibujo (canvas) | Persona 2 | Pendiente. Ver [integración](docs/INTEGRACION.md#persona-2-canvas) |
-| Tiempo real (WebSocket) | Persona 3 | Pendiente. Ver [integración](docs/INTEGRACION.md#persona-3-tiempo-real) |
+| Tiempo real (WebSocket) | Persona 3 | **Listo** |
 | Persistencia, historial, exportación | Persona 4 | Pendiente. Ver [integración](docs/INTEGRACION.md#persona-4-persistencia) |
 
 ## Qué hace el módulo de tableros
