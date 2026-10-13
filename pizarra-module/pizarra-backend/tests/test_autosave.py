@@ -8,7 +8,7 @@ import pytest
 
 from app.database import SessionLocal
 from app.persistence.autosave import Autosaver, save_in_thread
-from app.persistence.store import load_state
+from app.persistence.store import list_versions, load_state
 from app.realtime.rooms import Room, manager
 
 from .test_persistence import clean_rooms, rect, ws_url  # noqa: F401
@@ -155,6 +155,27 @@ def test_sin_cambios_no_guarda_de_nuevo(board):
 
     asyncio.run(scenario())
     assert len(calls) == 1
+
+
+def test_el_guardado_final_termina_aunque_cancelen_a_quien_lo_espera(board):
+    """El manejador del WebSocket puede ser cancelado al desconectarse el cliente (el
+    `TestClient` de Starlette lo hace): ni el estado ni la versión deben perderse."""
+    room, _ = make_room(board["id"], "a")
+    saver, _ = make_saver(room, debounce=30, max_wait=60)
+
+    async def scenario():
+        await saver.on_ops(board["id"], 1, [])
+        waiter = asyncio.create_task(saver.flush_final(room))
+        await asyncio.sleep(0)  # deja que arranque el guardado
+        waiter.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await waiter
+        await saver.flush_all()  # espera a que el guardado en segundo plano termine
+
+    asyncio.run(scenario())
+    assert stored(board["id"]) == ["a"]
+    with SessionLocal() as db:
+        assert [v.kind for v in list_versions(db, board["id"])] == ["auto"]
 
 
 # ------------------------------------------------------------------ integración
