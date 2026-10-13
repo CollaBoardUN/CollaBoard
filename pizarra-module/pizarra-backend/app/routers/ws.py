@@ -18,11 +18,16 @@ Servidor -> cliente
   {"type": "draft", "conn", "element"}
   {"type": "error", "code", "message"}
   {"type": "pong"}
+  {"type": "saved", "seq", "saved_at"}       el autosave guardó el tablero hasta ese `seq`
+  {"type": "save_error", "message"}          no se pudo guardar; el servidor reintenta solo
+  {"type": "restored", "version", "by"}      alguien restauró una versión; justo después
+                                             llega un `sync` con el tablero completo
 
 Códigos de cierre: 4401 token inválido, 4403 sin acceso al tablero.
 """
 
 import json
+import logging
 import time
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
@@ -32,13 +37,16 @@ from ..auth import decode_token
 from ..database import SessionLocal
 from ..models import Role
 from ..permissions import can, get_role
+from ..persistence.autosave import autosaver
 from ..realtime.rooms import Connection, manager
 from ..realtime.validation import clean_cursor
 
 router = APIRouter()
+log = logging.getLogger(__name__)
 
 CLOSE_UNAUTHORIZED = 4401
 CLOSE_FORBIDDEN = 4403
+CLOSE_SERVER_ERROR = 1011
 MAX_MESSAGE_BYTES = 2_000_000
 # Cada cuánto se vuelve a comprobar el rol en mensajes que no son de dibujo.
 ROLE_RECHECK_SECONDS = 5.0
@@ -72,6 +80,15 @@ async def board_ws(websocket: WebSocket, board_id: str, token: str = "") -> None
         return
 
     room = manager.get(board_id)
+    try:
+        # Persistencia: la primera conexión carga lo guardado en la base de datos.
+        await manager.ensure_loaded(room)
+    except Exception:
+        log.exception("No se pudo cargar el estado del tablero %s", board_id)
+        manager.release(room)
+        await websocket.close(code=CLOSE_SERVER_ERROR, reason="No se pudo cargar el tablero")
+        return
+
     conn = Connection(ws=websocket, user_id=user.id, name=user.display_name or user.id, role=role)
     await room.join(conn)
 
@@ -128,5 +145,11 @@ async def board_ws(websocket: WebSocket, board_id: str, token: str = "") -> None
     except WebSocketDisconnect:
         pass
     finally:
-        await room.leave(conn)
-        manager.release(room)
+        try:
+            await room.leave(conn)
+            if not room.connections:
+                # Última persona fuera: guardado final (con versión), sin esperar al
+                # debounce. Es a prueba de cancelación: ver `Autosaver.flush_final`.
+                await autosaver.flush_final(room)
+        finally:
+            manager.release(room)

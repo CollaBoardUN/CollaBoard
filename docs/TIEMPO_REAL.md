@@ -170,8 +170,7 @@ npm run lint
 
 ## Limitaciones conocidas
 
-- **Persistencia.** El estado de cada tablero vive en memoria del servidor. Si este se reinicia, se pierde el dibujo. Las salas vacías se conservan en memoria (hasta 100), así que recargar la página no lo pierde.
-  - Quien haga la persistencia puede enchufarse en `manager.on_ops` (`backend/app/realtime/rooms.py`): recibe `(board_id, seq, ops)` por cada lote aplicado. Para precargar, basta llenar `room.elements` al crear la sala.
+- **Persistencia.** Mientras alguien dibuja, el estado vive en memoria y el autosave lo copia a PostgreSQL (ver [PERSISTENCIA.md](PERSISTENCIA.md)). Al reiniciar el servidor, la primera persona que entra recibe lo guardado. Lo que ocurrió en los últimos segundos antes de una caída brusca puede perderse.
 - **Un solo proceso.** Con varios workers de uvicorn cada uno tendría sus propias salas. Habría que añadir un bus (por ejemplo, Redis pub/sub).
 - **Mover en vivo.** Mover o redimensionar un elemento se ve en los demás al soltarlo, no mientras se arrastra. Los trazos nuevos sí se ven mientras se dibujan.
 - **Conflictos.** Si dos personas editan el mismo campo del mismo elemento a la vez, gana el último lote que procesó el servidor (último en escribir gana).
@@ -181,5 +180,5 @@ npm run lint
 ## Para el resto del equipo
 
 - **Canvas (Persona 2):** cualquier cambio que se haga en `useBoardStore.elements` se sincroniza solo. Si se añaden campos nuevos a `CanvasElement`, hay que agregarlos a las listas de `backend/app/realtime/validation.py` y de `frontend/src/realtime/elementOps.ts`; si no, no viajarán por la red.
-- **Persistencia (Persona 4):** usar `manager.on_ops` como se explica arriba.
+- **Persistencia (Persona 4):** ya está conectada con `manager.loader` y `manager.on_ops`. Ver [PERSISTENCIA.md](PERSISTENCIA.md).
 - **Auth:** el WebSocket usa `decode_token` de `backend/app/auth.py`, igual que el resto de la API.

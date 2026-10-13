@@ -151,3 +151,17 @@ Solo existe si `AUTH_DEV_MODE=true`. Emite un JWT para probar sin el módulo de 
 ```json
 { "user_id": "ana", "name": "Ana" }
 ```
+
+## Persistencia e historial de versiones
+
+Detalle, mensajes del WebSocket y ajustes en [PERSISTENCIA.md](PERSISTENCIA.md).
+
+| Método y ruta | Rol | Qué hace |
+| --- | --- | --- |
+| `GET /boards/{board_id}/state` | viewer | Estado actual y fecha del último guardado |
+| `GET /boards/{board_id}/versions` | viewer | Historial sin los elementos |
+| `GET /boards/{board_id}/versions/{version_id}` | viewer | Una versión con sus elementos |
+| `POST /boards/{board_id}/versions` | editor | Guarda una versión manual (`{"name": "..."}` opcional). `409` si llegó al máximo |
+| `PATCH /boards/{board_id}/versions/{version_id}` | editor | Renombra una versión |
+| `POST /boards/{board_id}/versions/{version_id}/restore` | editor | Restaura una versión (guarda antes una copia del estado actual) |
+| `DELETE /boards/{board_id}/versions/{version_id}` | owner | Borra una versión |

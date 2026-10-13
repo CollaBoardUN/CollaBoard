@@ -27,3 +27,11 @@ AUTH_DEV_MODE = os.getenv("AUTH_DEV_MODE", "false").lower() == "true"
 
 # URL del frontend: se usa para armar los links de invitación y para CORS.
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+# Autosave (Persona 4): segundos tras el último cambio antes de guardar, y tope
+# de espera si se sigue dibujando sin parar.
+AUTOSAVE_DEBOUNCE_SECONDS = float(os.getenv("AUTOSAVE_DEBOUNCE_SECONDS", "2"))
+AUTOSAVE_MAX_WAIT_SECONDS = float(os.getenv("AUTOSAVE_MAX_WAIT_SECONDS", "10"))
+
+# Cada cuántos segundos (como mucho) se crea una versión automática mientras se edita.
+AUTOSAVE_SNAPSHOT_EVERY_SECONDS = float(os.getenv("AUTOSAVE_SNAPSHOT_EVERY_SECONDS", "300"))
