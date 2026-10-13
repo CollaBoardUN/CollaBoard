@@ -195,12 +195,10 @@ def create_version(
     # El número es por tablero (v1, v2…). Si dos guardados chocan, el índice único
     # lo detecta y se reintenta con el siguiente número.
     for _ in range(3):
-        number = (
-            db.scalar(
-                select(func.max(BoardVersion.number)).where(BoardVersion.board_id == board_id)
-            )
-            or 0
-        ) + 1
+        highest = db.scalar(
+            select(func.max(BoardVersion.number)).where(BoardVersion.board_id == board_id)
+        )
+        number = (highest or 0) + 1
         version = BoardVersion(
             board_id=board_id,
             number=number,

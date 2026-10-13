@@ -111,7 +111,9 @@ def _backup(
             user_name=user.display_name,
             name=f"Antes de restaurar v{target_number}",
             dedupe=True,
-        ) or latest_version(db, board_id)
+        )
+        if version is None:  # el estado ya era idéntico a la última versión
+            version = latest_version(db, board_id)
         return VersionOut.model_validate(version) if version else None
 
 
@@ -167,6 +169,4 @@ async def _announce(room: Room, version: VersionOut, user: CurrentUser, seq: int
     )
     for conn in list(room.connections.values()):
         await conn.send(room.sync_message(conn))
-    await room.broadcast(
-        {"type": "saved", "seq": seq, "saved_at": datetime.now(UTC).isoformat()}
-    )
+    await room.broadcast({"type": "saved", "seq": seq, "saved_at": datetime.now(UTC).isoformat()})
