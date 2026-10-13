@@ -64,6 +64,13 @@ class Board(Base):
     invites: Mapped[list["Invite"]] = relationship(
         back_populates="board", cascade="all, delete-orphan"
     )
+    # Persistencia (Persona 4): estado actual e historial. Se borran con el tablero.
+    state: Mapped["BoardState | None"] = relationship(
+        back_populates="board", cascade="all, delete-orphan", uselist=False
+    )
+    versions: Mapped[list["BoardVersion"]] = relationship(
+        back_populates="board", cascade="all, delete-orphan"
+    )
 
 
 class BoardMember(Base):
@@ -95,3 +102,7 @@ class Invite(Base):
     uses: Mapped[int] = mapped_column(Integer, default=0)
 
     board: Mapped[Board] = relationship(back_populates="invites")
+
+
+# Registra las tablas de persistencia (Persona 4) para Alembic y create_all.
+from .persistence.models import BoardState, BoardVersion  # noqa: E402,F401

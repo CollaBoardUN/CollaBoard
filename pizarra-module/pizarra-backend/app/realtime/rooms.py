@@ -86,6 +86,9 @@ class Connection:
 # Gancho para persistencia: recibe (board_id, seq, ops ya validadas).
 OpsListener = Callable[[str, int, list[dict]], Awaitable[None]]
 
+# Gancho de carga: dado un board_id devuelve (elementos guardados, seq guardado).
+StateLoader = Callable[[str], Awaitable[tuple[list[dict], int]]]
+
 
 class Room:
     def __init__(self, board_id: str, on_ops: OpsListener | None = None) -> None:
@@ -95,6 +98,8 @@ class Room:
         self.connections: dict[str, Connection] = {}
         self.lock = asyncio.Lock()
         self.on_ops = on_ops
+        # False hasta que se cargue el estado guardado (ver RoomManager.ensure_loaded).
+        self.loaded = False
 
     # ------------------------------------------------------------ presencia
 
@@ -221,6 +226,24 @@ class RoomManager:
         self._idle: OrderedDict[str, None] = OrderedDict()
         # Gancho de persistencia para las salas nuevas: `manager.on_ops = mi_funcion`.
         self.on_ops: OpsListener | None = None
+        # Gancho de carga para las salas nuevas: `manager.loader = mi_funcion`.
+        self.loader: StateLoader | None = None
+
+    async def ensure_loaded(self, room: Room) -> None:
+        """Llena la sala con el estado guardado, una sola vez.
+
+        Si el loader falla, la excepción sube y la sala NO queda marcada como
+        cargada: así nunca se deja que alguien edite sobre un tablero "vacío"
+        que en realidad tiene contenido guardado (y que el autosave lo pisaría).
+        """
+        async with room.lock:
+            if room.loaded:
+                return
+            if self.loader is not None:
+                elements, seq = await self.loader(room.board_id)
+                room.elements = {e["id"]: e for e in elements}
+                room.seq = seq
+            room.loaded = True
 
     def get(self, board_id: str) -> Room:
         self._idle.pop(board_id, None)
