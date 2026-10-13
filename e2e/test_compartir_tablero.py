@@ -28,7 +28,7 @@ def register(page: Page, name: str) -> None:
     page.get_by_role("link", name="Regístrate").click()
     page.get_by_label("Nombre", exact=True).fill(name)
     page.get_by_label("Correo electrónico").fill(f"{os.urandom(8).hex()}@example.com")
-    page.get_by_label("Contraseña", exact=True).fill("Password-demo-segura-123!")
+    page.locator("#register-password").fill("Password-demo-segura-123!")
     page.get_by_label("Confirmar contraseña").fill("Password-demo-segura-123!")
     page.get_by_role("button", name="Crear cuenta").click()
 
