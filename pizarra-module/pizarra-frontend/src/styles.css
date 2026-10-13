@@ -860,3 +860,42 @@ input[aria-invalid="true"] {
     flex-wrap: wrap;
   }
 }
+
+/* --- auth/login-go: estilos específicos del módulo de autenticación --- */
+.auth-page { min-height: 100vh; }
+.auth-panel { max-width: 440px; }
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  text-decoration: none;
+  color: var(--ink);
+  width: max-content;
+}
+.auth-brand-text { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; }
+.auth-heading { display: grid; gap: .35rem; }
+.auth-heading h1 { font-size: 1.6rem; }
+.auth-form { width: 100%; }
+.auth-password-wrap { position: relative; display: block; }
+.auth-password-wrap input { width: 100%; padding-right: 3rem; }
+.auth-visibility {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  right: 0;
+  top: 0;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+}
+.auth-visibility:hover { color: var(--ink); }
+.auth-switch { text-align: center; font-size: .92rem; }
+.auth-switch a { font-weight: 600; }
+.auth-hint { font-size: .78rem; font-weight: 400; }
+@media (max-width: 480px) {
+  .auth-panel { padding: 1.4rem; }
+}
+/* --- fin auth/login-go --- */

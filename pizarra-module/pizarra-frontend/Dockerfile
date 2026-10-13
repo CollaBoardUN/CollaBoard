@@ -6,8 +6,9 @@ RUN npm ci
 COPY . .
 # Las variables VITE_* se fijan al compilar.
 ARG VITE_API_URL=http://localhost:8000
-ARG VITE_DEV_LOGIN=true
-ENV VITE_API_URL=$VITE_API_URL VITE_DEV_LOGIN=$VITE_DEV_LOGIN
+ARG VITE_DEV_LOGIN=false
+ARG VITE_AUTH_URL=http://localhost:8001
+ENV VITE_API_URL=$VITE_API_URL VITE_DEV_LOGIN=$VITE_DEV_LOGIN VITE_AUTH_URL=$VITE_AUTH_URL
 RUN npm run build
 
 # --- Etapa 2: servir archivos estáticos ---

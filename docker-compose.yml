@@ -44,12 +44,18 @@ services:
       JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
       JWT_ALGORITHM: HS256
       FRONTEND_URL: http://localhost:5173
-      AUTH_DEV_MODE: ${AUTH_DEV_MODE:-true}
+      AUTH_DEV_MODE: "false"
     ports:
       - "8000:8000"
     depends_on:
       pizarra-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
     networks:
       - collaboard-network
 
@@ -62,13 +68,15 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: http://localhost:8000
-        VITE_DEV_LOGIN: ${AUTH_DEV_MODE:-true}
+        VITE_DEV_LOGIN: "false"
+        VITE_AUTH_URL: http://localhost:8001
     container_name: collaboard-pizarra-frontend
     restart: unless-stopped
     ports:
       - "5173:80"
     depends_on:
       - pizarra-backend
+      - authentication-backend
     networks:
       - collaboard-network
 
@@ -86,11 +94,13 @@ services:
       JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
       JWT_ALGORITHM: HS256
       FRONTEND_URL: http://localhost:5173
-      AUTH_DEV_MODE: ${AUTH_DEV_MODE:-true}
+      AUTH_DEV_MODE: "false"
     ports:
       - "8002:8000"
     depends_on:
       pizarra-db:
+        condition: service_healthy
+      pizarra-backend:
         condition: service_healthy
     networks:
       - collaboard-network
@@ -158,6 +168,28 @@ services:
       - "3000:80"
     depends_on:
       - pixels-backend
+    networks:
+      - collaboard-network
+
+  # ----------------------------------------------------------------------------
+  # 8. Autenticación - Go + Chi, JWT HS256 y Argon2id (puerto 8001)
+  # ----------------------------------------------------------------------------
+  authentication-backend:
+    build:
+      context: ./authentication-module
+      dockerfile: Dockerfile
+    container_name: collaboard-authentication-backend
+    restart: unless-stopped
+    environment:
+      AUTH_DATABASE_URL: postgres://postgres:postgres@pizarra-db:5432/pizarra?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
+      AUTH_PORT: 8001
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - "8001:8001"
+    depends_on:
+      pizarra-db:
+        condition: service_healthy
     networks:
       - collaboard-network
 
