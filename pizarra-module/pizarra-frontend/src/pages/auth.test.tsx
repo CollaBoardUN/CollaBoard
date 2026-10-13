@@ -39,7 +39,7 @@ describe("autenticación", () => {
     const user=userEvent.setup();
     await user.type(screen.getByLabelText("Nombre"),"Ana");
     await user.type(screen.getByLabelText("Correo electrónico"),"ana@example.com");
-    await user.type(screen.getByLabelText("Contraseña",{exact:true}),"password-123456");
+    await user.type(screen.getByLabelText(/^Contraseña/),"password-123456");
     await user.type(screen.getByLabelText("Confirmar contraseña"),"password-123456");
     await user.click(screen.getByRole("button",{name:"Crear cuenta"}));
     expect(await screen.findByText("Inicio")).toBeInTheDocument();
@@ -49,7 +49,7 @@ describe("autenticación", () => {
     const { calls }=mockApi({});renderAuth("/register");const user=userEvent.setup();
     await user.type(screen.getByLabelText("Nombre"),"Ana");
     await user.type(screen.getByLabelText("Correo electrónico"),"ana@example.com");
-    await user.type(screen.getByLabelText("Contraseña",{exact:true}),"password-123456");
+    await user.type(screen.getByLabelText(/^Contraseña/),"password-123456");
     await user.type(screen.getByLabelText("Confirmar contraseña"),"password-654321");
     await user.click(screen.getByRole("button",{name:"Crear cuenta"}));
     expect(await screen.findByRole("alert")).toHaveTextContent(/no coinciden/i);
