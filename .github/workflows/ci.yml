@@ -135,7 +135,7 @@ jobs:
         working-directory: pizarra-module/pizarra-backend
         run: |
           alembic upgrade head
-          nohup uvicorn app.main:app --port 8000 > ../api.log 2>&1 &
+          nohup uvicorn app.main:app --port 8000 > ../../api.log 2>&1 &
       - name: Levantar Auth Go
         working-directory: authentication-module
         env:
@@ -147,7 +147,7 @@ jobs:
         working-directory: pizarra-module/pizarra-frontend
         run: |
           npm run build
-          nohup npx vite preview --port 5173 --strictPort > ../web.log 2>&1 &
+          nohup npx vite preview --port 5173 --strictPort > ../../web.log 2>&1 &
       - name: Esperar servicios
         run: |
           for i in $(seq 1 90); do

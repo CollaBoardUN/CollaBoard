@@ -39,17 +39,7 @@ export function TopBar({ children }: { children?: ReactNode }) {
         <a
           href={pixelsUrl}
           id="nav-to-pixels-btn"
-          className="btn btn-small"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.35rem",
-            backgroundColor: "#EEF2FF",
-            color: "#4F46E5",
-            borderColor: "#C7D2FE",
-            fontWeight: 600,
-            textDecoration: "none",
-          }}
+          className="btn btn-small nav-pixels-btn"
           title="Ir al lienzo colaborativo de Pixels (Wplace)"
         >
           <span>🎨</span>

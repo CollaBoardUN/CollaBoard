@@ -31,6 +31,7 @@ def register(page: Page, name: str) -> None:
     page.locator("#register-password").fill("Password-demo-segura-123!")
     page.get_by_label("Confirmar contraseña").fill("Password-demo-segura-123!")
     page.get_by_role("button", name="Crear cuenta").click()
+    expect(page.get_by_role("button", name="Crear cuenta")).to_have_count(0)
 
 
 def new_page(browser: Browser, errors: list, width: int = 1280, **kw) -> Page:

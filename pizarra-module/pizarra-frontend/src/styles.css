@@ -856,9 +856,30 @@ input[aria-invalid="true"] {
     display: none;
   }
 
+  .nav-pixels-btn,
+  #nav-to-pixels-btn {
+    display: none !important;
+  }
+
   .row {
     flex-wrap: wrap;
   }
+}
+
+.nav-pixels-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border-color: #c7d2fe;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.board-layout .nav-pixels-btn,
+.board-layout #nav-to-pixels-btn {
+  display: none !important;
 }
 
 /* --- auth/login-go: estilos específicos del módulo de autenticación --- */
