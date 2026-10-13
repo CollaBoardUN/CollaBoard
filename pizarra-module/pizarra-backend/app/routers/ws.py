@@ -36,8 +36,8 @@ from starlette.concurrency import run_in_threadpool
 from ..auth import decode_token
 from ..database import SessionLocal
 from ..models import Role
-from ..persistence.autosave import autosaver
 from ..permissions import can, get_role
+from ..persistence.autosave import autosaver
 from ..realtime.rooms import Connection, manager
 from ..realtime.validation import clean_cursor
 
