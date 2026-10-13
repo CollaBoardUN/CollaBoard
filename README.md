@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/collaboard-logo.png" alt="CollaBoard Logo" width="130" />
-</p>
-
 # CollaBoard — Pizarra Colaborativa y Suite de Creación
 
 Plataforma colaborativa modular en tiempo real donde varias personas crean, dibujan y colaboran juntas.
