@@ -11,7 +11,7 @@ from app.persistence.autosave import Autosaver, save_in_thread
 from app.persistence.store import load_state
 from app.realtime.rooms import Room, manager
 
-from .test_persistence import clean_rooms, rect, ws_url  # noqa: F401  (fixture autouse)
+from .test_persistence import clean_rooms, rect, ws_url  # noqa: F401
 
 
 class FakeConn:
@@ -129,7 +129,7 @@ def test_tablero_borrado_no_se_reintenta(board):
 
 
 def test_flush_all_guarda_lo_pendiente_al_apagar(board):
-    room, conn = make_room(board["id"], "a", "b", "c")
+    room, _ = make_room(board["id"], "a", "b", "c")
     saver, calls = make_saver(room, debounce=30, max_wait=60)  # no vencería nunca
 
     async def scenario():

@@ -10,7 +10,7 @@ from app.persistence.store import create_version, list_versions, load_state
 from app.realtime.rooms import manager
 
 from .conftest import auth, invite, join
-from .test_persistence import clean_rooms, rect, save, ws_url  # noqa: F401  (fixture autouse)
+from .test_persistence import clean_rooms, rect, save, ws_url  # noqa: F401
 
 
 def until(ws, kind: str) -> dict:
@@ -237,10 +237,8 @@ def test_restaurar_reemplaza_el_tablero_en_vivo_y_avisa_a_todos(client, ana, bet
         # La copia de seguridad conserva lo que se iba a perder.
         backup = client.get(versions_url(team, body["backup"]["id"]), headers=ana).json()
         assert ids(backup["elements"]) == ["a", "b", "c"]
-        assert [v["kind"] for v in client.get(versions_url(team), headers=ana).json()] == [
-            "restore",
-            "manual",
-        ]
+        listed = client.get(versions_url(team), headers=ana).json()
+        assert [v["kind"] for v in listed] == ["restore", "manual"]
 
     # Y queda guardado en la base de datos, no solo en la sala.
     assert wait_for(lambda: stored_ids(team) == ["a", "b"])
