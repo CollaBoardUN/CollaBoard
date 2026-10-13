@@ -13,8 +13,9 @@ Cómo funciona
       {"type": "save_error", "message": "..."}            falló; se reintenta solo
 - Hay un guardado a la vez por tablero (candado propio), para que una copia
   vieja nunca pise a una nueva.
-- Se fuerza un `flush` cuando sale la última persona de la sala (routers/ws.py)
-  y al apagar el servidor (`flush_all`, en el `lifespan` de main.py).
+- Se fuerza un guardado final (`flush_final`) cuando sale la última persona de la
+  sala (routers/ws.py) y se guarda todo lo pendiente al apagar el servidor
+  (`flush_all`, en el `lifespan` de main.py).
 - HISTORIAL: tras guardar se crea una versión "auto" si pasaron `snapshot_every`
   segundos desde la anterior, y siempre al salir la última persona (`final=True`).
   No se crea si el contenido es idéntico al de la última versión.
@@ -88,6 +89,7 @@ class Autosaver:
         self._last_auto: dict[str, float] = {}  # última versión automática por tablero
         self._pending: dict[str, _Pending] = {}
         self._tasks: dict[str, asyncio.Task] = {}
+        self._background: set[asyncio.Task] = set()  # guardados finales en curso
         self._locks: dict[str, asyncio.Lock] = {}
         self._closing = False
 
@@ -185,6 +187,25 @@ class Autosaver:
                 {"type": "saved", "seq": seq, "saved_at": datetime.now(UTC).isoformat()}
             )
 
+    async def flush_final(self, room: Room) -> None:
+        """Guardado final de una sala que se quedó vacía (incluye la versión automática).
+
+        Corre en su propia tarea y se espera con `shield`: si quien llama es cancelado,
+        el guardado y la versión terminan igual en segundo plano. Hace falta porque el
+        manejador del WebSocket SÍ se cancela al desconectarse el cliente en algunos
+        servidores y en el `TestClient` de Starlette, y una cancelación a mitad de
+        camino dejaba el estado guardado pero sin la versión.
+        """
+        task = asyncio.create_task(self.flush(room, final=True))
+        self._background.add(task)
+        task.add_done_callback(self._background_done)
+        await asyncio.shield(task)
+
+    def _background_done(self, task: asyncio.Task) -> None:
+        self._background.discard(task)
+        if not task.cancelled():
+            task.exception()  # lo marca como leído: `flush` ya registra sus propios errores
+
     async def _maybe_snapshot(
         self, board_id: str, elements: list[dict], seq: int, final: bool
     ) -> None:
@@ -209,6 +230,7 @@ class Autosaver:
             for task in tasks:
                 task.cancel()
             await asyncio.gather(*tasks, return_exceptions=True)
+            await asyncio.gather(*self._background, return_exceptions=True)
             for pending in list(self._pending.values()):
                 await self.flush(pending.room)
         finally:
