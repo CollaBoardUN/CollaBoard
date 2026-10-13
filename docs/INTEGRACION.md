@@ -4,6 +4,8 @@ Este módulo es la puerta de entrada: decide quién puede ver o editar cada tabl
 
 ## Autenticación
 
+> **Integrado en la rama `auth/login`:** el servicio Go implementa registro, login y emisión de JWT. Consulta [AUTENTICACION.md](AUTENTICACION.md). Las instrucciones siguientes documentan el contrato conservado por FastAPI.
+
 El módulo de auth emite el JWT; este módulo solo lo **lee**. Hay que acordar tres cosas:
 
 1. **La misma clave y algoritmo.** Ambos módulos usan `JWT_SECRET` y `JWT_ALGORITHM` del `.env`.

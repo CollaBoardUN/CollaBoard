@@ -6,7 +6,7 @@ Este repositorio contiene el **módulo de tableros y colaboradores** (Persona 1)
 
 | Módulo | Responsable | Estado |
 | --- | --- | --- |
-| Autenticación (registro, login, JWT) | Compañero de auth | Pendiente. Hay un adaptador y un login de desarrollo |
+| **Autenticación (registro, login, JWT)** | **Servicio Go** | **Integrado en `auth/login`** |
 | **Tableros y colaboradores** | **Persona 1** | **Listo** |
 | Herramientas de dibujo (canvas) | Persona 2 | Pendiente. Ver [integración](docs/INTEGRACION.md#persona-2-canvas) |
 | Tiempo real (WebSocket) | Persona 3 | **Listo** |
@@ -29,6 +29,7 @@ Este repositorio contiene el **módulo de tableros y colaboradores** (Persona 1)
 | --- | --- |
 | Backend | Python 3.12, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 16, PyJWT |
 | Frontend | React 19, TypeScript, Vite, React Router, Zustand |
+| Autenticación | Go 1.23, Chi, PostgreSQL, Argon2id, JWT |
 | Calidad | pytest, Vitest + Testing Library, Playwright, Ruff, ESLint, GitHub Actions |
 
 ## Cómo correrlo
@@ -41,8 +42,9 @@ docker compose up --build
 
 - Frontend: http://localhost:5173
 - API y documentación interactiva: http://localhost:8000/docs
+- API de autenticación Go: http://localhost:8001/health
 
-Entra con cualquier nombre. Para probar cómo se comparte, abre una ventana privada y entra con otro nombre.
+Registra una cuenta con nombre, correo y contraseña. Para probar cómo se comparte, abre una ventana privada y registra otra cuenta.
 
 ### Opción B: sin Docker
 
@@ -107,4 +109,5 @@ docs/
 
 - [Contrato de la API](docs/API.md)
 - [Guía de integración para el equipo](docs/INTEGRACION.md)
+- [Módulo de autenticación Go](docs/AUTENTICACION.md)
 - [Cómo contribuir](CONTRIBUTING.md)

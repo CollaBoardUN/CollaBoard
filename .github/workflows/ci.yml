@@ -57,6 +57,22 @@ jobs:
           alembic downgrade base
           alembic upgrade head
 
+  auth:
+    name: Auth Go (unit tests y build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: auth-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: auth-service/go.mod
+          cache: false
+      - run: go mod tidy
+      - run: go test ./...
+      - run: go build ./cmd/server
+
   frontend:
     name: Frontend (lint, tipos, tests, build)
     runs-on: ubuntu-latest
@@ -79,7 +95,7 @@ jobs:
   e2e:
     name: Punta a punta (navegador real)
     runs-on: ubuntu-latest
-    needs: [backend, frontend]
+    needs: [backend, frontend, auth]
     services:
       postgres:
         image: postgres:16-alpine
@@ -93,7 +109,7 @@ jobs:
     env:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/pizarra
       JWT_SECRET: clave-solo-para-la-ci-con-longitud-suficiente
-      AUTH_DEV_MODE: "true"
+      AUTH_DEV_MODE: "false"
       FRONTEND_URL: http://localhost:5173
     steps:
       - uses: actions/checkout@v4
@@ -106,6 +122,10 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: auth-service/go.mod
+          cache: false
       - name: Instalar
         run: |
           pip install -r backend/requirements.txt -r e2e/requirements.txt
@@ -116,6 +136,13 @@ jobs:
         run: |
           alembic upgrade head
           nohup uvicorn app.main:app --port 8000 > ../api.log 2>&1 &
+      - name: Levantar auth Go
+        working-directory: auth-service
+        env:
+          AUTH_DATABASE_URL: postgres://postgres:postgres@localhost:5432/pizarra?sslmode=disable
+        run: |
+          go mod tidy
+          nohup go run ./cmd/server > ../auth.log 2>&1 &
       - name: Levantar frontend
         working-directory: frontend
         run: |
@@ -123,32 +150,32 @@ jobs:
           nohup npx vite preview --port 5173 --strictPort > ../web.log 2>&1 &
       - name: Esperar servicios
         run: |
-          for i in $(seq 1 30); do
-            curl -sf localhost:8000/health && curl -sf -o /dev/null localhost:5173 && exit 0
+          for i in $(seq 1 90); do
+            curl -sf localhost:8000/health && curl -sf localhost:8001/health && curl -sf -o /dev/null localhost:5173 && exit 0
             sleep 1
           done
-          cat api.log web.log; exit 1
+          cat api.log auth.log web.log; exit 1
       - run: pytest e2e -v
       - if: failure()
-        run: cat api.log web.log
+        run: cat api.log auth.log web.log
 
   docker:
     name: Docker Compose
     runs-on: ubuntu-latest
-    needs: [backend, frontend]
+    needs: [backend, frontend, auth]
     steps:
       - uses: actions/checkout@v4
       - run: docker compose up --build -d
       - name: Verificar que responde
         run: |
           for i in $(seq 1 60); do
-            curl -sf localhost:8000/health && curl -sf -o /dev/null localhost:5173/join/x && exit 0
+            curl -sf localhost:8000/health && curl -sf localhost:8001/health && curl -sf -o /dev/null localhost:5173/join/x && exit 0
             sleep 2
           done
           docker compose logs; exit 1
       - name: Crear un tablero contra la API en Docker
         run: |
-          TOKEN=$(curl -sf -X POST localhost:8000/dev/token -H 'Content-Type: application/json' -d '{"user_id":"ci"}' | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
+          TOKEN=$(curl -sf -X POST localhost:8001/auth/register -H 'Content-Type: application/json' -d '{"name":"CI","email":"ci@ejemplo.com","password":"CI-Password-123456","confirm_password":"CI-Password-123456"}' | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
           curl -sf -X POST localhost:8000/boards -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{"name":"Desde la CI"}'
       - if: always()
         run: docker compose down -v

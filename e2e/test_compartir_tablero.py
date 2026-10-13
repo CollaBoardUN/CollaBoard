@@ -2,7 +2,7 @@
 
 "Un usuario autenticado crea un tablero, lo comparte y otro entra con el rol correcto."
 
-Requiere el backend (AUTH_DEV_MODE=true) y el frontend corriendo:
+Requiere Go auth, backend (AUTH_DEV_MODE=false) y frontend corriendo:
     WEB_URL=http://localhost:5173 pytest e2e
 """
 
@@ -24,9 +24,13 @@ def browser():
         b.close()
 
 
-def login(page: Page, name: str) -> None:
-    page.get_by_label("Tu nombre").fill(name)
-    page.get_by_role("button", name="Entrar").click()
+def register(page: Page, name: str) -> None:
+    page.get_by_role("link", name="Regístrate").click()
+    page.get_by_label("Nombre", exact=True).fill(name)
+    page.get_by_label("Correo electrónico").fill(f"{os.urandom(8).hex()}@example.com")
+    page.get_by_label("Contraseña", exact=True).fill("Password-demo-segura-123!")
+    page.get_by_label("Confirmar contraseña").fill("Password-demo-segura-123!")
+    page.get_by_role("button", name="Crear cuenta").click()
 
 
 def new_page(browser: Browser, errors: list, width: int = 1280, **kw) -> Page:
@@ -46,7 +50,7 @@ def test_flujo_completo(browser: Browser):
     # Ana entra y crea dos tableros
     ana = new_page(browser, errors, permissions=["clipboard-read", "clipboard-write"])
     ana.goto(WEB)
-    login(ana, ana_nombre)
+    register(ana, ana_nombre)
     for nombre in (otro, tablero):
         ana.goto(WEB)
         ana.get_by_role("button", name="Nuevo tablero").click()
@@ -73,7 +77,7 @@ def test_flujo_completo(browser: Browser):
     # Beto abre el link sin sesión: login y vuelve a la invitación
     beto = new_page(browser, errors)
     beto.goto(link_viewer)
-    login(beto, beto_nombre)
+    register(beto, beto_nombre)
     expect(beto.get_by_text(tablero)).to_be_visible()
     beto.get_by_role("button", name="Unirme al tablero").click()
     expect(beto.get_by_text("Estás en modo solo lectura")).to_be_visible()
@@ -124,7 +128,7 @@ def test_movil_sin_scroll_horizontal(browser: Browser):
     errors: list[str] = []
     page = new_page(browser, errors, width=390)
     page.goto(WEB)
-    login(page, f"Móvil {os.urandom(2).hex()}")
+    register(page, f"Móvil {os.urandom(2).hex()}")
     page.get_by_role("button", name="Crear mi primer tablero").click()
     page.get_by_label("Nombre").fill("Tablero desde el celular")
     page.get_by_role("button", name="Crear tablero").click()

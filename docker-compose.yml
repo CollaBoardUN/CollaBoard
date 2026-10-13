@@ -25,9 +25,22 @@ services:
       JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
       JWT_ALGORITHM: HS256
       FRONTEND_URL: http://localhost:5173
-      AUTH_DEV_MODE: ${AUTH_DEV_MODE:-true}
+      AUTH_DEV_MODE: ${AUTH_DEV_MODE:-false}
     ports:
       - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  auth:
+    build: ./auth-service
+    environment:
+      AUTH_DATABASE_URL: postgres://postgres:postgres@db:5432/pizarra?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
+      AUTH_PORT: 8001
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - "8001:8001"
     depends_on:
       db:
         condition: service_healthy
@@ -37,11 +50,13 @@ services:
       context: ./frontend
       args:
         VITE_API_URL: http://localhost:8000
-        VITE_DEV_LOGIN: ${AUTH_DEV_MODE:-true}
+        VITE_DEV_LOGIN: ${AUTH_DEV_MODE:-false}
+        VITE_AUTH_URL: http://localhost:8001
     ports:
       - "5173:80"
     depends_on:
       - backend
+      - auth
 
 volumes:
   pgdata:
