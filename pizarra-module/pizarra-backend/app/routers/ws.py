@@ -145,8 +145,11 @@ async def board_ws(websocket: WebSocket, board_id: str, token: str = "") -> None
     except WebSocketDisconnect:
         pass
     finally:
-        await room.leave(conn)
-        if not room.connections:
-            # Última persona fuera: guardamos ya, sin esperar al debounce.
-            await autosaver.flush(room, final=True)
-        manager.release(room)
+        try:
+            await room.leave(conn)
+            if not room.connections:
+                # Última persona fuera: guardado final (con versión), sin esperar al
+                # debounce. Es a prueba de cancelación: ver `Autosaver.flush_final`.
+                await autosaver.flush_final(room)
+        finally:
+            manager.release(room)
