@@ -6,6 +6,7 @@ import { BoardPage } from "./pages/BoardPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { JoinPage } from "./pages/JoinPage";
 import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
 
 function NotFound() {
   return (
@@ -25,6 +26,7 @@ export function App() {
     <>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/" element={<RequireAuth><DashboardPage /></RequireAuth>} />
         <Route path="/boards/:boardId" element={<RequireAuth><BoardPage /></RequireAuth>} />
         <Route path="/join/:token" element={<RequireAuth><JoinPage /></RequireAuth>} />

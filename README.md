@@ -91,3 +91,14 @@ docker compose up --build
   ```bash
   pytest e2e
   ```
+
+---
+
+## 🔐 Autenticación Go (`authentication-module`)
+
+- **API:** `http://localhost:8001/health` · Registro: `POST /auth/register` · Login: `POST /auth/login`.
+- **Frontend:** formularios en la aplicación de Pizarra `http://localhost:5173/login` y `/register`.
+- **Credenciales:** hash Argon2id; JWT HS256 con `sub` UUID. `JWT_SECRET` compartida con Pizarra y Colaboración.
+- **Persistencia:** PostgreSQL 16, tabla `auth.users` en el esquema `auth` de `pizarra-db`.
+- **Inicio conjunto:** desde la raíz, `docker compose up --build -d`. Los puertos de Pixels (3000/8080), Pizarra (5173/8000), Colaboración (8002) y Auth (8001) no colisionan.
+- **Instrucciones y pruebas:** [docs/AUTENTICACION.md](docs/AUTENTICACION.md).
