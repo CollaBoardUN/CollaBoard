@@ -1,0 +1,49 @@
+# Docker Compose para el Módulo Lógico de Colaboración (Tableros, Miembros, Roles y Permisos)
+services:
+  colaboracion-db:
+    image: postgres:16-alpine
+    container_name: colaboracion-postgres-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pizarra
+    ports:
+      - "5432:5432"
+    volumes:
+      - colaboracion_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pizarra"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks:
+      - colaboracion-network
+
+  colaboracion-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: colaboracion-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@colaboracion-db:5432/pizarra
+      JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
+      JWT_ALGORITHM: HS256
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      AUTH_DEV_MODE: ${AUTH_DEV_MODE:-true}
+    ports:
+      - "8000:8000"
+    depends_on:
+      colaboracion-db:
+        condition: service_healthy
+    networks:
+      - colaboracion-network
+
+volumes:
+  colaboracion_pgdata:
+    driver: local
+
+networks:
+  colaboracion-network:
+    driver: bridge

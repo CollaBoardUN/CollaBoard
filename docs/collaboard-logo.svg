@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="128" height="128" fill="none">
+  <defs>
+    <linearGradient id="cbGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="12" y1="10" x2="36" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E0E7FF"/>
+    </linearGradient>
+    <linearGradient id="facetGrad" x1="20" y1="10" x2="36" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="48" height="48" rx="12" fill="url(#cbGrad)"/>
+  
+  <path
+    fill-rule="evenodd"
+    clip-rule="evenodd"
+    d="M13 10H27L34 17V20.5L29.5 24.5L35 29.5V32.5L29.5 38H13V10ZM18.5 15V21H24.5L28 18L24.5 15H18.5ZM18.5 27V33H25L29 30L25 27H18.5Z"
+    fill="url(#accentGrad)"
+  />
+  
+  <path
+    d="M27 10L34 17H28L24.5 15H27Z"
+    fill="url(#facetGrad)"
+    opacity="0.9"
+  />
+  <path
+    d="M29.5 24.5L35 29.5H29L25 27H29.5Z"
+    fill="url(#facetGrad)"
+    opacity="0.9"
+  />
+</svg>

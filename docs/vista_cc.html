@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CollaBoard — Vista de Componentes y Conectores (C&C)</title>
+  <meta name="description" content="Vista formal de Componentes y Conectores (C&C) de CollaBoard: cajas en blanco y negro, flujo vertical y conectores simplificados." />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #FFFFFF;
+      color: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.4;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    header {
+      border-bottom: 2px solid #000000;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-bw {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    p.subtitle {
+      font-size: 13px;
+      color: #444444;
+      margin-top: 2px;
+    }
+
+    .btn-print {
+      background: #000000;
+      color: #FFFFFF;
+      border: 1px solid #000000;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .btn-print:hover {
+      background: #333333;
+    }
+
+    /* DIAGRAM BOX */
+    .diagram-frame {
+      border: 2px solid #000000;
+      background: #FFFFFF;
+      padding: 16px;
+      margin-bottom: 28px;
+    }
+
+    svg.cc-diagram {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* SVG STYLING (B&W) */
+    .comp-box {
+      fill: #FFFFFF;
+      stroke: #000000;
+      stroke-width: 2;
+    }
+
+    .comp-header {
+      fill: #F3F4F6;
+      stroke: #000000;
+      stroke-width: 1.5;
+    }
+
+    .comp-title {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      fill: #000000;
+    }
+
+    .comp-port {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      fill: #000000;
+      text-anchor: end;
+    }
+
+    .comp-desc {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 10.5px;
+      fill: #222222;
+    }
+
+    .conn-line {
+      stroke: #000000;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    /* COMPACT CONNECTION LABELS */
+    .label-box {
+      fill: #FFFFFF;
+      stroke: #000000;
+      stroke-width: 1.5;
+    }
+
+    .lbl-title {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 10px;
+      font-weight: 800;
+      fill: #000000;
+      text-anchor: middle;
+    }
+
+    .lbl-sub {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 9px;
+      font-weight: 700;
+      fill: #444444;
+      text-anchor: middle;
+    }
+
+    .lane-label {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      fill: #666666;
+    }
+
+    /* TABLE */
+    .table-section {
+      border: 1px solid #000000;
+      margin-bottom: 24px;
+    }
+
+    .table-title {
+      background: #000000;
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 8px 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    th {
+      background: #F3F4F6;
+      border-bottom: 1px solid #000000;
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #E5E7EB;
+      color: #111111;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    code {
+      font-family: "Courier New", Courier, monospace;
+      font-weight: bold;
+    }
+
+    .badge-port {
+      background: #F3F4F6;
+      border: 1px solid #999999;
+      padding: 1px 5px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+      }
+      .btn-print {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- HEADER CON LOGO B&W -->
+    <header>
+      <div class="header-left">
+        <!-- Logo CollaBoard con B en ángulo en blanco y negro -->
+        <svg class="logo-bw" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="48" height="48" rx="8" fill="#000000" />
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M13 10H27L34 17V20.5L29.5 24.5L35 29.5V32.5L29.5 38H13V10ZM18.5 15V21H24.5L28 18L24.5 15H18.5ZM18.5 27V33H25L29 30L25 27H18.5Z" fill="#FFFFFF" />
+          <path d="M27 10L34 17H28L24.5 15H27Z" fill="#E5E7EB" />
+          <path d="M29.5 24.5L35 29.5H29L25 27H29.5Z" fill="#E5E7EB" />
+        </svg>
+        <div>
+          <h1>CollaBoard — Vista de Componentes y Conectores (C&amp;C)</h1>
+          <p class="subtitle">Módulos: Pixels, Auth, Colaboración y Pizarra · Flujo vertical simplificado en blanco y negro</p>
+        </div>
+      </div>
+      <button class="btn-print" onclick="window.print()">Imprimir / Guardar PDF</button>
+    </header>
+
+    <!-- DIAGRAMA PRINCIPAL SIMPLIFICADO -->
+    <div class="diagram-frame">
+      <svg class="cc-diagram" viewBox="0 0 1200 680" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Flecha negra sólida hacia abajo -->
+          <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#000000" />
+          </marker>
+        </defs>
+
+        <!-- DELIMITADORES DE CAPAS HORIZONTALES -->
+        <line x1="20" y1="150" x2="1180" y2="150" stroke="#CCCCCC" stroke-dasharray="4 4" />
+        <line x1="20" y1="450" x2="1180" y2="450" stroke="#CCCCCC" stroke-dasharray="4 4" />
+
+        <text x="25" y="25" class="lane-label">[CAPA 1: CLIENTES / FRONTENDS]</text>
+        <text x="25" y="170" class="lane-label">[CAPA 2: MÓDULOS DE NEGOCIO / BACKENDS]</text>
+        <text x="25" y="470" class="lane-label">[CAPA 3: PERSISTENCIA / BASES DE DATOS]</text>
+
+
+        <!-- ======================================================== -->
+        <!-- LÍNEAS DE CONEXIÓN ESTRICTAMENTE VERTICALES (x1 == x2) -->
+        <!-- ======================================================== -->
+
+        <!-- LÍNEA 1: pixel_frontend -> pixel_backend (WebSocket) -->
+        <line x1="100" y1="130" x2="100" y2="240" class="conn-line" marker-end="url(#arrow)" />
+        <rect x="45" y="170" width="110" height="34" class="label-box" />
+        <text x="100" y="184" class="lbl-title">WebSocket</text>
+        <text x="100" y="196" class="lbl-sub">:8080/ws/pixels</text>
+
+        <!-- LÍNEA 2: pixel_frontend -> pixel_backend (HTTP) -->
+        <line x1="230" y1="130" x2="230" y2="240" class="conn-line" marker-end="url(#arrow)" />
+        <rect x="175" y="170" width="110" height="34" class="label-box" />
+        <text x="230" y="184" class="lbl-title">HTTP REST</text>
+        <text x="230" y="196" class="lbl-sub">:8080/api/pixels</text>
+
+        <!-- LÍNEA 3: auth_frontend -> auth_backend (HTTP) -->
+        <line x1="450" y1="130" x2="450" y2="240" class="conn-line" marker-end="url(#arrow)" />
+        <rect x="395" y="170" width="110" height="34" class="label-box" />
+        <text x="450" y="184" class="lbl-title">HTTP REST</text>
+        <text x="450" y="196" class="lbl-sub">:8001/auth</text>
+
+        <!-- LÍNEA 4: pizarra_frontend -> colaboracion_module (HTTP) -->
+        <line x1="720" y1="130" x2="720" y2="240" class="conn-line" marker-end="url(#arrow)" />
+        <rect x="665" y="170" width="110" height="34" class="label-box" />
+        <text x="720" y="184" class="lbl-title">HTTP REST</text>
+        <text x="720" y="196" class="lbl-sub">:8002/boards</text>
+
+        <!-- LÍNEA 5: pizarra_frontend -> pizarra_backend (WebSocket) -->
+        <line x1="940" y1="130" x2="940" y2="240" class="conn-line" marker-end="url(#arrow)" />
+        <rect x="885" y="170" width="110" height="34" class="label-box" />
+        <text x="940" y="184" class="lbl-title">WebSocket</text>
+        <text x="940" y="196" class="lbl-sub">:8000/ws/canvas</text>
+
+        <!-- LÍNEA 6: pizarra_frontend -> pizarra_backend (HTTP) -->
+        <line x1="1070" y1="130" x2="1070" y2="240" class="conn-line" marker-end="url(#arrow)" />
+        <rect x="1015" y="170" width="110" height="34" class="label-box" />
+        <text x="1070" y="184" class="lbl-title">HTTP REST</text>
+        <text x="1070" y="196" class="lbl-sub">:8000/elements</text>
+
+        <!-- LÍNEA 7: pixel_backend -> nosql_db (TCP NoSQL) -->
+        <line x1="165" y1="360" x2="165" y2="500" class="conn-line" marker-end="url(#arrow)" />
+        <rect x="95" y="415" width="140" height="34" class="label-box" />
+        <text x="165" y="429" class="lbl-title">TCP NoSQL</text>
+        <text x="165" y="441" class="lbl-sub">:27017 (Mongo Wire)</text>
+
+        <!-- LÍNEA 8: auth_backend -> sql_db (TCP SQL) -->
+        <line x1="450" y1="360" x2="450" y2="500" class="conn-line" marker-end="url(#arrow)" />
+        <rect x="380" y="415" width="140" height="34" class="label-box" />
+        <text x="450" y="429" class="lbl-title">TCP SQL</text>
+        <text x="450" y="441" class="lbl-sub">:5432 (PostgreSQL)</text>
+
+        <!-- LÍNEA 9: colaboracion_module -> sql_db (TCP SQL) -->
+        <line x1="720" y1="360" x2="720" y2="500" class="conn-line" marker-end="url(#arrow)" />
+        <rect x="650" y="415" width="140" height="34" class="label-box" />
+        <text x="720" y="429" class="lbl-title">TCP SQL</text>
+        <text x="720" y="441" class="lbl-sub">:5432 (PostgreSQL)</text>
+
+        <!-- LÍNEA 10: pizarra_backend -> sql_db (TCP SQL) -->
+        <line x1="1005" y1="360" x2="1005" y2="500" class="conn-line" marker-end="url(#arrow)" />
+        <rect x="935" y="415" width="140" height="34" class="label-box" />
+        <text x="1005" y="429" class="lbl-title">TCP SQL</text>
+        <text x="1005" y="441" class="lbl-sub">:5432 (PostgreSQL)</text>
+
+
+        <!-- ======================================================== -->
+        <!-- CUADRADOS DE COMPONENTES -->
+        <!-- ======================================================== -->
+
+        <!-- CUADRADO 1: pixel_frontend -->
+        <g id="box-pixel-frontend">
+          <rect x="40" y="40" width="250" height="90" class="comp-box" />
+          <rect x="40" y="40" width="250" height="26" class="comp-header" />
+          <text x="50" y="58" class="comp-title">pixel_frontend</text>
+          <text x="280" y="58" class="comp-port">:3000</text>
+          <text x="50" y="86" class="comp-desc">• React 18 / SPA (Módulo Pixels)</text>
+          <text x="50" y="106" class="comp-desc">• Canvas 1 píxel/turno (Cooldown 5s)</text>
+        </g>
+
+        <!-- CUADRADO 2: auth_frontend -->
+        <g id="box-auth-frontend">
+          <rect x="325" y="40" width="250" height="90" class="comp-box" />
+          <rect x="325" y="40" width="250" height="26" class="comp-header" />
+          <text x="335" y="58" class="comp-title">auth_frontend</text>
+          <text x="565" y="58" class="comp-port">:Web</text>
+          <text x="335" y="86" class="comp-desc">• Cliente Web (Módulo Auth)</text>
+          <text x="335" y="106" class="comp-desc">• Formulario Login / Registro</text>
+        </g>
+
+        <!-- CUADRADO 3: pizarra_frontend -->
+        <g id="box-pizarra-frontend">
+          <rect x="610" y="40" width="550" height="90" class="comp-box" />
+          <rect x="610" y="40" width="550" height="26" class="comp-header" />
+          <text x="620" y="58" class="comp-title">pizarra_frontend</text>
+          <text x="1150" y="58" class="comp-port">:5173</text>
+          <text x="620" y="86" class="comp-desc">• React 19 / SPA (Módulo de Pizarra y Colaboración)</text>
+          <text x="620" y="106" class="comp-desc">• Dibujo colaborativo, gestión de tableros y miembros</text>
+        </g>
+
+        <!-- CUADRADO 4: pixel_backend -->
+        <g id="box-pixel-backend">
+          <rect x="40" y="240" width="250" height="120" class="comp-box" />
+          <rect x="40" y="240" width="250" height="26" class="comp-header" />
+          <text x="50" y="258" class="comp-title">pixel_backend</text>
+          <text x="280" y="258" class="comp-port">:8080</text>
+          <text x="50" y="284" class="comp-desc">• FastAPI (Módulo Pixels)</text>
+          <text x="50" y="304" class="comp-desc">• Matriz 200x200 y Cooldown 5s</text>
+          <text x="50" y="324" class="comp-desc">• Driver Motor a MongoDB</text>
+        </g>
+
+        <!-- CUADRADO 5: auth_backend -->
+        <g id="box-auth-backend">
+          <rect x="325" y="240" width="250" height="120" class="comp-box" />
+          <rect x="325" y="240" width="250" height="26" class="comp-header" />
+          <text x="335" y="258" class="comp-title">auth_backend</text>
+          <text x="565" y="258" class="comp-port">:8001</text>
+          <text x="335" y="284" class="comp-desc">• FastAPI (Módulo Auth)</text>
+          <text x="335" y="304" class="comp-desc">• Emisor de Tokens JWT</text>
+          <text x="335" y="324" class="comp-desc">• Hashing de credenciales (bcrypt)</text>
+        </g>
+
+        <!-- CUADRADO 6: colaboracion_module -->
+        <g id="box-colaboracion-module">
+          <rect x="610" y="240" width="250" height="120" class="comp-box" />
+          <rect x="610" y="240" width="250" height="26" class="comp-header" />
+          <text x="620" y="258" class="comp-title">colaboracion_module</text>
+          <text x="850" y="258" class="comp-port">:8002</text>
+          <text x="620" y="284" class="comp-desc">• FastAPI (Módulo Colaboración)</text>
+          <text x="620" y="304" class="comp-desc">• Tableros, Miembros e Invites</text>
+          <text x="620" y="324" class="comp-desc">• Roles: Owner, Editor, Viewer</text>
+        </g>
+
+        <!-- CUADRADO 7: pizarra_backend -->
+        <g id="box-pizarra-backend">
+          <rect x="895" y="240" width="265" height="120" class="comp-box" />
+          <rect x="895" y="240" width="265" height="26" class="comp-header" />
+          <text x="905" y="258" class="comp-title">pizarra_backend</text>
+          <text x="1150" y="258" class="comp-port">:8000</text>
+          <text x="905" y="284" class="comp-desc">• FastAPI (Módulo Pizarra)</text>
+          <text x="905" y="304" class="comp-desc">• Salas WebSocket de dibujo</text>
+          <text x="905" y="324" class="comp-desc">• Trazos y Elementos del lienzo</text>
+        </g>
+
+        <!-- CUADRADO 8: nosql_db -->
+        <g id="box-nosql-db">
+          <rect x="40" y="500" width="250" height="100" class="comp-box" />
+          <rect x="40" y="500" width="250" height="26" class="comp-header" />
+          <text x="50" y="518" class="comp-title">nosql_db (MongoDB 7)</text>
+          <text x="280" y="518" class="comp-port">:27017</text>
+          <text x="50" y="546" class="comp-desc">• Base de datos NoSQL</text>
+          <text x="50" y="566" class="comp-desc">• Colecciones: pixels (x,y), activity</text>
+        </g>
+
+        <!-- CUADRADO 9: sql_db -->
+        <g id="box-sql-db">
+          <rect x="325" y="500" width="835" height="100" class="comp-box" />
+          <rect x="325" y="500" width="835" height="26" class="comp-header" />
+          <text x="335" y="518" class="comp-title">sql_db (PostgreSQL 16)</text>
+          <text x="1150" y="518" class="comp-port">:5432</text>
+          <text x="335" y="546" class="comp-desc">• Base de datos Relacional Transaccional ACID (Base: 'pizarra')</text>
+          <text x="335" y="566" class="comp-desc">• Tablas: users, credentials, boards, board_members, invites, elements</text>
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- TABLA DE CONEXIONES Y PUERTOS EN DOCKER -->
+    <div class="table-section">
+      <div class="table-title">CATÁLOGO DE CONEXIONES Y PUERTOS EN DOCKER</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Origen</th>
+            <th>Destino</th>
+            <th>Protocolo</th>
+            <th>Puerto Docker (Host ➔ Container)</th>
+            <th>Endpoint / Ruta</th>
+            <th>Función de la Conexión</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>pixel_frontend</code></td>
+            <td><code>pixel_backend</code></td>
+            <td>HTTP REST</td>
+            <td><span class="badge-port">8080:8000</span></td>
+            <td><code>GET /api/pixels/board</code>, <code>/stats</code></td>
+            <td>Carga inicial del lienzo 200×200 y métricas de colaboradores.</td>
+          </tr>
+          <tr>
+            <td><code>pixel_frontend</code></td>
+            <td><code>pixel_backend</code></td>
+            <td>WebSocket</td>
+            <td><span class="badge-port">8080:8000</span></td>
+            <td><code>WS /ws/pixels</code></td>
+            <td>Envío de <code>PLACE_PIXEL</code> y difusión en vivo de trazos en píxeles.</td>
+          </tr>
+          <tr>
+            <td><code>auth_frontend</code></td>
+            <td><code>auth_backend</code></td>
+            <td>HTTP REST</td>
+            <td><span class="badge-port">8001:8000</span></td>
+            <td><code>POST /auth/login</code>, <code>/register</code></td>
+            <td>Autenticación de credenciales y retorno de Token JWT.</td>
+          </tr>
+          <tr>
+            <td><code>pizarra_frontend</code></td>
+            <td><code>colaboracion_module</code></td>
+            <td>HTTP REST</td>
+            <td><span class="badge-port">8002:8000</span></td>
+            <td><code>GET/POST /boards</code>, <code>/invites</code></td>
+            <td>Gestión de tableros, invitaciones y roles de miembros (RBAC).</td>
+          </tr>
+          <tr>
+            <td><code>pizarra_frontend</code></td>
+            <td><code>pizarra_backend</code></td>
+            <td>HTTP REST</td>
+            <td><span class="badge-port">8000:8000</span></td>
+            <td><code>GET/POST /elements</code></td>
+            <td>Lectura y persistencia de trazos y figuras geométricas.</td>
+          </tr>
+          <tr>
+            <td><code>pizarra_frontend</code></td>
+            <td><code>pizarra_backend</code></td>
+            <td>WebSocket</td>
+            <td><span class="badge-port">8000:8000</span></td>
+            <td><code>WS /ws/canvas</code></td>
+            <td>Sincronización bidireccional en vivo de trazos y cursores de usuarios.</td>
+          </tr>
+          <tr>
+            <td><code>pixel_backend</code></td>
+            <td><code>nosql_db</code></td>
+            <td>TCP NoSQL</td>
+            <td><span class="badge-port">27017:27017</span></td>
+            <td><code>mongodb://pixels-nosql-db:27017</code></td>
+            <td>Driver Motor (Mongo Wire): upserts atómicos de píxeles sin bloqueo.</td>
+          </tr>
+          <tr>
+            <td><code>auth_backend</code></td>
+            <td><code>sql_db</code></td>
+            <td>TCP SQL</td>
+            <td><span class="badge-port">5432:5432</span></td>
+            <td><code>postgresql://pizarra-db:5432/pizarra</code></td>
+            <td>Persistencia de usuarios, credenciales y hashes de contraseñas.</td>
+          </tr>
+          <tr>
+            <td><code>colaboracion_module</code></td>
+            <td><code>sql_db</code></td>
+            <td>TCP SQL</td>
+            <td><span class="badge-port">5432:5432</span></td>
+            <td><code>postgresql://pizarra-db:5432/pizarra</code></td>
+            <td>Persistencia de tableros, membresías y tokens de invitación urlsafe.</td>
+          </tr>
+          <tr>
+            <td><code>pizarra_backend</code></td>
+            <td><code>sql_db</code></td>
+            <td>TCP SQL</td>
+            <td><span class="badge-port">5432:5432</span></td>
+            <td><code>postgresql://pizarra-db:5432/pizarra</code></td>
+            <td>Persistencia relacional de elementos del lienzo (clave foránea con CASCADE).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+/* Presencia y cursores en vivo. */
+
+.presence {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.presence-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.presence-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.presence-online .presence-dot {
+  background: var(--green);
+}
+
+.presence-connecting .presence-dot,
+.presence-reconnecting .presence-dot {
+  background: #d97706;
+  animation: presence-pulse 1s ease-in-out infinite;
+}
+
+.presence-denied .presence-dot,
+.presence-closed .presence-dot {
+  background: var(--red);
+}
+
+@keyframes presence-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.presence-list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.presence-avatar {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-left: -6px;
+  border: 2px solid var(--board);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.presence-avatar:first-child {
+  margin-left: 0;
+}
+
+.presence-more {
+  background: var(--muted);
+}
+
+.remote-cursors {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.remote-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 60ms linear;
+}
+
+.remote-cursor svg {
+  display: block;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.3));
+}
+
+.remote-cursor-name {
+  position: absolute;
+  top: 16px;
+  left: 12px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}

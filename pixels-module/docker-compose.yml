@@ -1,0 +1,62 @@
+services:
+  nosql-db:
+    image: mongo:7
+    container_name: pixels-nosql-db
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: collaboard_pixels
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    networks:
+      - pixels-network
+
+  pixel-backend:
+    build:
+      context: ./pixel-backend
+      dockerfile: Dockerfile
+    container_name: pixels-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb://nosql-db:27017
+      - DATABASE_NAME=collaboard_pixels
+      - CANVAS_WIDTH=200
+      - CANVAS_HEIGHT=200
+      - COOLDOWN_SECONDS=5.0
+      - HOST=0.0.0.0
+      - PORT=8000
+    depends_on:
+      nosql-db:
+        condition: service_healthy
+    networks:
+      - pixels-network
+
+  pixel-frontend:
+    build:
+      context: ./pixel-frontend
+      dockerfile: Dockerfile
+    container_name: pixels-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - pixel-backend
+    networks:
+      - pixels-network
+
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  pixels-network:
+    driver: bridge

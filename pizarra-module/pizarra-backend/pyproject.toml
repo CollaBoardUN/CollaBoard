@@ -1,0 +1,22 @@
+[project]
+name = "pizarra-backend"
+version = "1.0.0"
+description = "Pizarra colaborativa — módulo de tableros y colaboradores"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["B008"]  # Depends(...) en argumentos por defecto es el patrón de FastAPI
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]
