@@ -1,0 +1,94 @@
+% ------------------------------------------------------------------ 6. Descomposición
+\seccionnueva
+\section{Estructura de descomposición}
+\label{sec:descomposicion}
+
+La vista de descomposición muestra cómo está organizado el \emph{código}: módulos (carpetas de
+primer nivel del repositorio, cada uno con su propio ciclo de construcción) y sus submódulos. No
+repite el diagrama de contenedores: un mismo módulo puede producir varios procesos
+(\code{notifications-module} produce la API y el \textit{worker}) y un módulo puede reutilizarse en
+dos presentaciones (\code{web-ssr/src/core} y \code{ui} en el cliente local).
+
+\begin{figure}[H]
+\centering
+\small
+\begin{forest}
+  for tree={
+    folder, grow'=0, font=\sffamily\footnotesize, inner xsep=3pt, inner ysep=1.6pt,
+    edge={cbMuted,thick}, l sep'=6pt, s sep=1.2pt, fit=band,
+  },
+  mod/.style={font=\sffamily\footnotesize\bfseries, text=cbIndigoDark},
+  [\textbf{CollaBoard/} {\color{cbMuted}(monorepositorio)}, mod
+    [web-ssr/ {\color{cbMuted}· TypeScript · A}, mod
+      [app/ {\color{cbMuted}rutas SSR, Server Actions, BFF}]
+      [server/ {\color{cbMuted}DAL, sesión, gateway}]
+      [ui/ {\color{cbMuted}componentes React compartidos}]
+      [core/ {\color{cbMuted}dominio, transporte, tiempo real, chat, bandeja}]
+      [dev/ {\color{cbMuted}mocks de Chat y Notificaciones, gateway de desarrollo}]
+    ]
+    [desktop-client/ {\color{cbMuted}· TypeScript · F}, mod
+      [main/ {\color{cbMuted}proceso principal: sesión, HTTP y WS}]
+      [preload/ {\color{cbMuted}puente IPC mínimo}]
+      [renderer/ {\color{cbMuted}monta \texttt{ui/} con el adaptador Electron}]
+    ]
+    [gateway/ {\color{cbMuted}· Nginx · F}, mod]
+    [authentication-module/ {\color{cbMuted}· Go · B}, mod
+      [{cmd/server, internal/httpapi, security, users, database}]
+    ]
+    [colaboracion-module/ {\color{cbMuted}· Python · B}, mod
+      [{app/routers, permissions, models, migrations/}]
+    ]
+    [pizarra-module/pizarra-backend/ {\color{cbMuted}· Python · C y D}, mod
+      [{routers/ws, realtime/ {\color{cbMuted}(C)}}]
+      [{persistence/, migrations/ {\color{cbMuted}(D)}}]
+    ]
+    [chat-module/ {\color{cbMuted}· Java · C}, mod
+      [{api, websocket, domain, persistence}]
+    ]
+    [pixels-module/pixel-backend/ {\color{cbMuted}· Python · D}, mod]
+    [notifications-module/ {\color{cbMuted}· C\# · E}, mod
+      [NotificationApi/ {\color{cbMuted}eventos, outbox, bandeja}]
+      [MessageWorker/ {\color{cbMuted}consumidor idempotente}]
+    ]
+    [{docs/, e2e/, .github/workflows/ {\color{cbMuted}· documentación, pruebas de punta a punta, CI}}, mod]
+  ]
+\end{forest}
+\caption{Módulos y submódulos del repositorio. La letra indica el paquete de trabajo responsable.}
+\label{fig:descomposicion}
+\end{figure}
+
+\subsection{Catálogo de módulos}
+
+\begin{longtable}{@{}P{4.1cm} P{1.8cm} P{6.0cm} P{2.5cm}@{}}
+  \encabezado \hd{Módulo} & \hd{Lenguaje} & \hd{Responsabilidad} & \hd{Depende de} \\
+  \endfirsthead
+  \encabezado \hd{Módulo} & \hd{Lenguaje} & \hd{Responsabilidad} & \hd{Depende de} \\
+  \endhead
+  \code{web-ssr} & TypeScript & Presentación web con SSR; aporta \code{core/} y \code{ui/} reutilizables & contratos HTTP/WS \\
+  \rowcolor{cbGray} \code{desktop-client} & TypeScript & Presentación de escritorio & \code{web-ssr/core}, \code{ui} \\
+  \code{gateway} & Nginx (config.) & Enrutamiento público y proxy WebSocket & rutas de cada API \\
+  \rowcolor{cbGray} \code{authentication-module} & Go & Identidad y emisión de JWT & — \\
+  \code{colaboracion-module} & Python & Tableros, roles, invitaciones, autorización interna & JWT \\
+  \rowcolor{cbGray} \code{pizarra-module} & Python & Tiempo real del dibujo, estado e historial & JWT, contrato de acceso \\
+  \code{chat-module} & Java & Conversación por tablero & JWT, acceso, eventos \\
+  \rowcolor{cbGray} \code{pixels-module} & Python & Lienzo colectivo de píxeles & — \\
+  \code{notifications-module} & C\# & API de notificaciones y \textit{worker} & contrato de eventos \\
+  \bottomrule
+  \caption{Módulos del sistema. \emph{Depende de} se refiere a contratos, no a código importado.}
+  \label{tab:modulos}
+\end{longtable}
+
+\subsection{Reglas de dependencia y patrones}
+
+\begin{itemize}
+  \item \textbf{Sin dependencias de código entre servicios}: ningún módulo de backend importa código de otro; se integran solo por contratos HTTP, WebSocket y eventos documentados en \code{docs/}.
+  \item \textbf{Una sola reutilización de código, deliberada}: el cliente local usa \code{web-ssr/src/core} y \code{ui}. Una regla de ESLint garantiza que esas carpetas no dependen de Next.js.
+  \item \textbf{Cada tabla tiene una sola migración propietaria}: Colaboración es dueña de \code{boards}; Pizarra de \code{board\_states} y \code{board\_versions}; Auth de \code{auth.users}.
+  \item \textbf{Un módulo, varios procesos}: \code{notifications-module} se compila en dos proyectos (API y \textit{worker}) que comparten el dominio.
+  \item \textbf{Patrones}: descomposición por \emph{bounded context} del dominio, módulos con despliegue independiente, separación interfaz/implementación (\code{Transport}, adaptadores).
+\end{itemize}
+
+\begin{pendiente}{David y Estefan (descomposición)}
+Completar el árbol con los nombres reales de los submódulos de cada servicio al cierre del 1 de
+noviembre y verificar la columna \emph{Depende de}.
+\end{pendiente}

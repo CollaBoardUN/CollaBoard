@@ -1,0 +1,35 @@
+% ------------------------------------------------------------------ 1. Equipo
+\section{Equipo}
+\label{sec:equipo}
+
+\begin{resumen}
+\begin{tabularx}{\linewidth}{@{}l L@{}}
+  \textbf{Identificador} & \textbf{1e} \\
+  \textbf{Curso} & Arquitectura de Software 2026-II — Universidad Nacional de Colombia, Sede Bogotá \\
+  \textbf{Docente} & Jeisson Andrés Vergara Vargas \\
+\end{tabularx}
+\end{resumen}
+
+El trabajo del prototipo 2 se dividió en seis paquetes técnicos definidos antes de asignar
+personas; la asignación se hizo por sorteo reproducible.\footnote{Lista
+\texttt{[Estefan, Sebastian, David, Cristian, Jhon, Marlon]} mezclada una sola vez con
+\texttt{random.Random(semilla).shuffle} en Python; semilla \texttt{5035610508174475522}.} La evolución de Pizarra, la parte más exigente, se
+repartió entre cuatro integrantes con responsabilidades distintas; la asincronía, entre dos.
+
+\begin{table}[H]
+\centering
+\small
+\filas
+\begin{tabularx}{\linewidth}{@{}P{4.4cm} P{4.3cm} L P{1.8cm}@{}}
+  \encabezado \hd{Integrante} & \hd{Correo} & \hd{Paquete principal del P2} & \hd{Revisa a} \\
+  Cristian Camilo García Palacios & {\footnotesize\ttfamily crgarciapa@unal.edu.co} & E · NotificationAPI, outbox y \textit{worker} (C\#) & Sebastian \\
+  Marlon David Pabón Muñoz & {\footnotesize\ttfamily mapabon@unal.edu.co} & C · Tiempo real de Pizarra y Chat (Java) & David \\
+  Jhon Edison Prieto Artunduaga & {\footnotesize\ttfamily jhprieto@unal.edu.co} & A · Web SSR, lienzo, interfaz de chat y bandeja & Estefan \\
+  David Eduardo Calderón Parra & {\footnotesize\ttfamily dcalderonpa@unal.edu.co} & B · Colaboración, permisos e identidad & Cristian \\
+  Juan Sebastián Leguizamón Silva & {\footnotesize\ttfamily jleguizamons@unal.edu.co} & F · Gateway, despliegue, CI y cliente local & Marlon \\
+  Stephan Alain Roland Garcia Martiquet & {\footnotesize\ttfamily stgarciam@unal.edu.co} & D · Persistencia de Pizarra y Pixels & Jhon \\
+  \bottomrule
+\end{tabularx}
+\caption{Integrantes, paquetes de trabajo y revisión cruzada.}
+\label{tab:equipo}
+\end{table}
