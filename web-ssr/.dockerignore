@@ -1,0 +1,9 @@
+node_modules
+.next
+coverage
+dev
+tests/.artifacts
+*.log
+.env
+.env.*
+!.env.example

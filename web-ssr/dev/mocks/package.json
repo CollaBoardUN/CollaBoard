@@ -1,0 +1,17 @@
+{
+  "name": "collaboard-dev-mocks",
+  "version": "1.0.0",
+  "description": "Mocks de desarrollo de Chat API y NotificationAPI para la web SSR (no son parte del despliegue final).",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node main.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
