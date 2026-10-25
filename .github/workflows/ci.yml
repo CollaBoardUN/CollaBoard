@@ -92,6 +92,36 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  web-ssr:
+    name: Web SSR (lint, tipos, tests, build, integración SSR)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web-ssr
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            web-ssr/package-lock.json
+            web-ssr/dev/mocks/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Integración SSR (servidor Next + gateway falso)
+        run: npm run test:ssr
+      - name: Contrato de Chat y Notificaciones (mocks de desarrollo)
+        working-directory: web-ssr/dev/mocks
+        run: |
+          npm ci
+          npm test
+
   e2e:
     name: Punta a punta (navegador real)
     runs-on: ubuntu-latest
