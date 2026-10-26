@@ -22,7 +22,11 @@ import re
 import pytest
 from playwright.sync_api import Browser, BrowserContext, Page, expect, sync_playwright
 
-WEB = os.getenv("WEB_SSR_URL", "http://localhost:8088").rstrip("/")
+# Solo corre si se indica dónde está la web SSR: así `pytest e2e` del P1 (que no
+# levanta el gateway ni la web) la omite en vez de fallar.
+WEB_ENV = os.getenv("WEB_SSR_URL")
+pytestmark = pytest.mark.skipif(not WEB_ENV, reason="Define WEB_SSR_URL para probar la web SSR (ver docstring).")
+WEB = (WEB_ENV or "http://localhost:8088").rstrip("/")
 PASSWORD = "Password-demo-segura-123!"
 SESSION_COOKIE = "cb_session"
 
