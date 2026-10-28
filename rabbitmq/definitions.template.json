@@ -1,0 +1,47 @@
+{
+  "rabbit_version": "3.13",
+  "users": [
+    { "name": "__ADMIN_USER__", "password": "__ADMIN_PASSWORD__", "tags": ["administrator"], "limits": {} },
+    { "name": "__NOTIFICATION_API_USER__", "password": "__NOTIFICATION_API_PASSWORD__", "tags": [], "limits": {} },
+    { "name": "__MESSAGE_WORKER_USER__", "password": "__MESSAGE_WORKER_PASSWORD__", "tags": [], "limits": {} }
+  ],
+  "vhosts": [{ "name": "__VHOST__" }],
+  "permissions": [
+    { "user": "__ADMIN_USER__", "vhost": "__VHOST__", "configure": ".*", "write": ".*", "read": ".*" },
+    { "user": "__NOTIFICATION_API_USER__", "vhost": "__VHOST__", "configure": "^$", "write": "^__EXCHANGE__$", "read": "^$" },
+    { "user": "__MESSAGE_WORKER_USER__", "vhost": "__VHOST__", "configure": "^$", "write": "^$", "read": "^__QUEUE__$" }
+  ],
+  "topic_permissions": [],
+  "parameters": [],
+  "global_parameters": [],
+  "policies": [],
+  "exchanges": [
+    { "name": "__EXCHANGE__", "vhost": "__VHOST__", "type": "direct", "durable": true, "auto_delete": false, "internal": false, "arguments": {} },
+    { "name": "__DLX__", "vhost": "__VHOST__", "type": "direct", "durable": true, "auto_delete": false, "internal": false, "arguments": {} }
+  ],
+  "queues": [
+    {
+      "name": "__QUEUE__",
+      "vhost": "__VHOST__",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum",
+        "x-dead-letter-exchange": "__DLX__",
+        "x-dead-letter-routing-key": "__DLQ_ROUTING_KEY__",
+        "x-delivery-limit": __DELIVERY_LIMIT__
+      }
+    },
+    {
+      "name": "__DLQ__",
+      "vhost": "__VHOST__",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": { "x-queue-type": "quorum" }
+    }
+  ],
+  "bindings": [
+    { "source": "__EXCHANGE__", "vhost": "__VHOST__", "destination": "__QUEUE__", "destination_type": "queue", "routing_key": "__ROUTING_KEY__", "arguments": {} },
+    { "source": "__DLX__", "vhost": "__VHOST__", "destination": "__DLQ__", "destination_type": "queue", "routing_key": "__DLQ_ROUTING_KEY__", "arguments": {} }
+  ]
+}

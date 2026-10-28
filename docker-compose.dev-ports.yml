@@ -1,0 +1,16 @@
+# Override de DESARROLLO: publica las bases y el AMQP solo en 127.0.0.1 para
+# depurar con psql/mongosh/clientes AMQP. No usar en demos ni despliegues.
+#   docker compose -f docker-compose.yml -f docker-compose.stubs.yml -f docker-compose.dev-ports.yml up -d
+services:
+  user-db:
+    ports: ["127.0.0.1:15432:5432"]
+  board-db:
+    ports: ["127.0.0.1:15433:5432"]
+  canvas-db:
+    ports: ["127.0.0.1:15434:5432"]
+  notification-db:
+    ports: ["127.0.0.1:15435:5432"]
+  pixels-nosqldb:
+    ports: ["127.0.0.1:27017:27017"]
+  rabbitmq:
+    ports: ["127.0.0.1:5672:5672"]

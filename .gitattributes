@@ -1,0 +1,10 @@
+# Los scripts y la configuración que se ejecutan en Linux deben usar LF aunque
+# el repositorio se clone en Windows (core.autocrlf=true).
+*.sh text eol=lf
+gateway/** text eol=lf
+rabbitmq/** text eol=lf
+mongo/** text eol=lf
+stubs/** text eol=lf
+scripts/** text eol=lf
+docker-compose*.yml text eol=lf
+.env.example text eol=lf
