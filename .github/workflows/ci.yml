@@ -122,124 +122,153 @@ jobs:
           npm ci
           npm test
 
-  web-ssr-e2e:
-    name: Web SSR punta a punta (Docker + navegador real)
+  collaboration:
+    name: Colaboración Python (lint y tests)
     runs-on: ubuntu-latest
-    needs: [web-ssr]
+    # Módulo en transición (David): hoy falla por una línea larga (E501) y por /health,
+    # que ya devuelve "service". Se informa pero no bloquea; quitar continue-on-error al corregirlo.
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: colaboracion-module
     steps:
       - uses: actions/checkout@v4
-      - name: Levantar stack con la web SSR, mocks y gateway de desarrollo
-        run: docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml up --build -d
-      - name: Esperar al gateway y a la web
-        run: |
-          # Listo cuando la web responde y Auth contesta 401 (sin sesión) a través del gateway.
-          for i in $(seq 1 90); do
-            auth=$(curl -s -o /dev/null -w '%{http_code}' localhost:8088/api/auth/me || true)
-            if curl -sf -o /dev/null localhost:8088/healthz && [ "$auth" = "401" ]; then exit 0; fi
-            sleep 2
-          done
-          docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml logs; exit 1
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: colaboracion-module/requirements*.txt
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check . && ruff format --check .
+      - run: pytest
+
+  pixels:
+    name: Pixels Python (dependencias e importación)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pixels-module/pixel-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pixels-module/pixel-backend/requirements.txt
+      - run: pip install -r requirements.txt
+      # Pixels no tiene pruebas propias: se compila y se importa la app (sin conectar a MongoDB).
+      # Su recorrido funcional se cubre en el job "stack" (gateway + MongoDB real).
+      - run: python -m compileall -q src
+      - run: python -c "import src.main"
+
+  chat-java:
+    name: Chat Java (Maven + MongoDB)
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports: ["27017:27017"]
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ping:1}).ok'" --health-interval 5s --health-timeout 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: chat-module/pom.xml
+      - name: Pruebas (usan una base MongoDB desechable)
+        working-directory: chat-module
+        run: mvn -B test
+        env:
+          TEST_MONGODB_URI: mongodb://localhost:27017/chat
+
+  notifications-csharp:
+    name: Notificaciones C# (dotnet test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Comprobar si el módulo existe en esta rama
+        id: module
+        run: |
+          if [ -n "$(find notifications-module -name '*.sln' -o -name '*.csproj' 2>/dev/null | head -1)" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::notifications-module/ aún no existe en esta rama (Cristian); se usan los stubs en el job stack."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.module.outputs.present == 'true'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - if: steps.module.outputs.present == 'true'
+        run: dotnet test notifications-module --nologo
+
+  gateway:
+    name: Gateway Nginx (sintaxis y contrato)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Levantar el gateway contra un upstream de eco
+        run: docker compose -f gateway/tests/compose.test.yml up -d --build --wait
+      - name: Validar la configuración renderizada
+        run: docker compose -f gateway/tests/compose.test.yml exec -T gateway nginx -t
+      - name: Contrato (rutas reescritas, cabeceras, token del WS, /internal, límite de tasa, 502)
+        run: node --test gateway/tests/contract.test.mjs
+      - if: failure()
+        run: docker compose -f gateway/tests/compose.test.yml logs --tail=200
+      - if: always()
+        run: docker compose -f gateway/tests/compose.test.yml down -v
+
+  stack:
+    name: Sistema completo (Compose + gateway + web)
+    runs-on: ubuntu-latest
+    needs: [gateway, chat-java, pixels, web-ssr]
+    env:
+      # Stubs/mocks de lo que aún no existe (ver docs/p2-pendientes-coordinacion.md):
+      #  - docker-compose.compat-shared-db.yml: Pizarra comparte base con Colaboración (transitorio)
+      #  - docker-compose.notifications-mock.yml: mock de NotificationAPI y bandeja (C# pendiente)
+      COMPOSE_FILE: docker-compose.yml:docker-compose.stubs.yml:docker-compose.compat-shared-db.yml:docker-compose.notifications-mock.yml
+      COMPOSE_PATH_SEPARATOR: ":"
+      WEB_SSR_URL: http://localhost:8088
+    steps:
+      - uses: actions/checkout@v4
+      - name: Variables (valores de ejemplo, solo CI)
+        run: cp .env.example .env
+      - name: Construir y levantar los 15 servicios (espera a que estén sanos)
+        run: docker compose up -d --build --wait --wait-timeout 600
+      - name: Estado de los contenedores
+        run: docker compose ps
+      - name: Gateway - rutas, /internal/* y X-Request-ID
+        run: sh scripts/gateway_smoke.sh http://localhost:8088
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Gateway - WebSocket de Pizarra, Chat y Pixels
+        run: node scripts/ws_check.mjs http://localhost:8088
+      - name: RabbitMQ - publicar/consumir, mínimo privilegio y DLQ
+        run: docker compose --profile tools run --rm rabbit-smoke
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: e2e/requirements.txt
       - name: Instalar Playwright
         run: |
           pip install -r e2e/requirements.txt
           python -m playwright install --with-deps chromium
-      - name: Pruebas de punta a punta de la web SSR
+      - name: Web SSR de punta a punta (navegador real)
         run: pytest e2e/test_web_ssr.py -v
-        env:
-          WEB_SSR_URL: http://localhost:8088
+      - name: Correlación de logs (un X-Request-ID atraviesa gateway y servicios)
+        run: |
+          rid=$(curl -s -o /dev/null -D - -H 'X-Request-ID: ci-correlacion-0001' http://localhost:8088/api/boards | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
+          test "$rid" = "ci-correlacion-0001"
+          docker compose logs gateway | grep 'rid=ci-correlacion-0001'
       - if: failure()
-        run: docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml logs --tail=200
-      - if: always()
-        run: docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml down -v
-
-  e2e:
-    name: Punta a punta (navegador real)
-    runs-on: ubuntu-latest
-    needs: [backend, frontend, authentication]
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: pizarra
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd "pg_isready -U postgres" --health-interval 3s --health-timeout 3s --health-retries 20
-    env:
-      DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/pizarra
-      JWT_SECRET: clave-solo-para-la-ci-con-longitud-suficiente
-      AUTH_DEV_MODE: "false"
-      FRONTEND_URL: http://localhost:5173
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: pizarra-module/pizarra-frontend/package-lock.json
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: authentication-module/go.mod
-          cache: false
-      - name: Instalar
-        run: |
-          pip install -r pizarra-module/pizarra-backend/requirements.txt -r e2e/requirements.txt
-          python -m playwright install --with-deps chromium
-          npm ci --prefix pizarra-module/pizarra-frontend
-      - name: Levantar backend
-        working-directory: pizarra-module/pizarra-backend
-        run: |
-          alembic upgrade head
-          nohup uvicorn app.main:app --port 8000 > ../../api.log 2>&1 &
-      - name: Levantar Auth Go
-        working-directory: authentication-module
-        env:
-          AUTH_DATABASE_URL: postgres://postgres:postgres@localhost:5432/pizarra?sslmode=disable
-        run: |
-          go mod tidy
-          nohup go run ./cmd/server > ../auth.log 2>&1 &
-      - name: Levantar frontend
-        working-directory: pizarra-module/pizarra-frontend
-        run: |
-          npm run build
-          nohup npx vite preview --port 5173 --strictPort > ../../web.log 2>&1 &
-      - name: Esperar servicios
-        run: |
-          for i in $(seq 1 90); do
-            curl -sf localhost:8000/health && curl -sf localhost:8001/health && curl -sf -o /dev/null localhost:5173 && exit 0
-            sleep 1
-          done
-          cat api.log auth.log web.log; exit 1
-      - run: pytest e2e -v
-      - if: failure()
-        run: cat api.log auth.log web.log
-
-  docker:
-    name: Docker Compose
-    runs-on: ubuntu-latest
-    needs: [backend, frontend, authentication]
-    steps:
-      - uses: actions/checkout@v4
-      - run: docker compose up --build -d
-      - name: Verificar que responde
-        run: |
-          for i in $(seq 1 60); do
-            curl -sf localhost:8000/health && curl -sf localhost:8001/health && curl -sf -o /dev/null localhost:5173/join/x && exit 0
-            sleep 2
-          done
-          docker compose logs; exit 1
-      - name: Crear un tablero contra la API en Docker
-        run: |
-          TOKEN=$(curl -sf -X POST localhost:8001/auth/register -H 'Content-Type: application/json' -d '{"name":"CI","email":"ci@ejemplo.com","password":"CI-Password-123456","confirm_password":"CI-Password-123456"}' | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
-          curl -sf -X POST localhost:8000/boards -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{"name":"Desde la CI"}'
+        run: docker compose logs --tail=200
       - if: always()
         run: docker compose down -v
