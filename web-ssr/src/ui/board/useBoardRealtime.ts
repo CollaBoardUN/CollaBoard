@@ -16,7 +16,7 @@
 import { useEffect } from "react";
 
 import type { CanvasElement } from "@/core/domain/canvas";
-import { applyRemoteOps, isApplyingRemote, replaceBoardElements } from "@/core/realtime/boardBridge";
+import { applyRemoteOps, isApplyingRemote, reconcileBoardElements, replaceBoardElements } from "@/core/realtime/boardBridge";
 import { diffElements } from "@/core/realtime/elementOps";
 import { RealtimeClient } from "@/core/realtime/RealtimeClient";
 import { useRealtime } from "@/core/realtime/realtimeStore";
@@ -92,13 +92,14 @@ export function useBoardRealtime(boardId: string, initial: InitialCanvas = {}): 
           replaceBoardElements(message.elements);
         },
         onOps: (message) => {
-          applyRemoteOps(message.ops);
+          if (message.conn !== useRealtime.getState().selfConn) applyRemoteOps(message.ops);
           // Si el trazo en curso de ese usuario ya quedó confirmado, quitamos su "fantasma".
           const state = useRealtime.getState();
           const draft = state.drafts[message.conn];
           const committed = message.ops.some((op) => op.op === "add" && op.element.id === draft?.id);
           if (committed) state.setDraft(message.conn, null);
         },
+        onReconcile: reconcileBoardElements,
         onPresence: (peers) => useRealtime.getState().setPeers(peers),
         onCursor: (conn, x, y) => useRealtime.getState().setCursor(conn, { x, y }),
         onDraft: (conn, element) => useRealtime.getState().setDraft(conn, element),

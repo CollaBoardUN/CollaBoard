@@ -13,9 +13,9 @@ Una sala por tablero. Garantías:
 """
 
 import asyncio
+import colorsys
 import logging
 import uuid
-import zlib
 from collections import OrderedDict
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
@@ -33,7 +33,7 @@ from .validation import (
 
 log = logging.getLogger(__name__)
 
-# Colores de cursor/avatar, asignados de forma estable por usuario.
+# Colores preferidos para cursores y avatares. Cada sala los asigna sin repetir.
 PALETTE = [
     "#E11D48",
     "#2563EB",
@@ -49,8 +49,15 @@ PALETTE = [
 MAX_IDLE_ROOMS = 100
 
 
-def color_for(user_id: str) -> str:
-    return PALETTE[zlib.crc32(user_id.encode()) % len(PALETTE)]
+def _generated_color(index: int) -> str:
+    """Genera colores adicionales para tableros con más personas que la paleta."""
+    hue = (index * 0.618033988749895) % 1.0
+    # Alternar saturación y luminosidad amplía la gama sin recurrir a tonos
+    # demasiado claros para leer la etiqueta sobre el fondo del lienzo.
+    saturation = (0.68, 0.85, 0.55)[(index // 32) % 3]
+    value = (0.72, 0.58, 0.82)[(index // 96) % 3]
+    red, green, blue = colorsys.hsv_to_rgb(hue, saturation, value)
+    return f"#{round(red * 255):02X}{round(green * 255):02X}{round(blue * 255):02X}"
 
 
 @dataclass(eq=False)
@@ -62,10 +69,7 @@ class Connection:
     name: str
     role: Role
     id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
-
-    @property
-    def color(self) -> str:
-        return color_for(self.user_id)
+    color: str = ""
 
     def info(self) -> dict:
         return {
@@ -96,6 +100,9 @@ class Room:
         self.elements: dict[str, dict] = {}  # el orden de inserción es el z-order
         self.seq = 0
         self.connections: dict[str, Connection] = {}
+        # Un usuario conserva el mismo color en todas sus pestañas de este tablero.
+        # El mapa vive con la sala, así dos usuarios nunca comparten color aquí.
+        self.user_colors: dict[str, str] = {}
         self.lock = asyncio.Lock()
         self.on_ops = on_ops
         # False hasta que se cargue el estado guardado (ver RoomManager.ensure_loaded).
@@ -112,9 +119,39 @@ class Room:
 
     async def join(self, conn: Connection) -> None:
         async with self.lock:
+            conn.color = self._color_for_user(conn.user_id)
             self.connections[conn.id] = conn
             await conn.send(self.sync_message(conn))
             await self.broadcast({"type": "presence", "peers": self.presence()}, exclude=conn)
+
+    def _color_for_user(self, user_id: str) -> str:
+        existing = self.user_colors.get(user_id)
+        if existing is not None:
+            return existing
+
+        used = set(self.user_colors.values())
+        color = next((candidate for candidate in PALETTE if candidate not in used), None)
+        generated_index = 0
+        while color is None:
+            candidates = {
+                _generated_color(i) for i in range(generated_index, generated_index + 64)
+            } - used
+            generated_index += 64
+            if candidates:
+                # Elegir el más alejado de los colores ya usados, no solo el
+                # primero que no coincide exactamente al redondear a RGB.
+                def distance(candidate: str) -> int:
+                    rgb = tuple(int(candidate[i:i + 2], 16) for i in (1, 3, 5))
+                    return min(
+                        sum((value - int(other[i:i + 2], 16)) ** 2
+                            for value, i in zip(rgb, (1, 3, 5)))
+                        for other in used
+                    )
+
+                color = max(sorted(candidates), key=distance)
+
+        self.user_colors[user_id] = color
+        return color
 
     async def leave(self, conn: Connection) -> None:
         async with self.lock:

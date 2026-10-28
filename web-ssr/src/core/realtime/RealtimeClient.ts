@@ -25,6 +25,7 @@ import {
 } from "./protocol";
 import type { CanvasElement } from "@/core/domain/canvas";
 import { SOCKET_CONNECTING, SOCKET_OPEN, type SocketLike } from "@/core/transport/types";
+import { applyOps } from "./elementOps";
 
 export type RealtimeStatus = "connecting" | "online" | "reconnecting" | "denied" | "closed";
 
@@ -32,6 +33,8 @@ export interface RealtimeHandlers {
   onStatus: (status: RealtimeStatus) => void;
   onSync: (message: SyncMessage) => void;
   onOps: (message: OpsMessage) => void;
+  /** Estado confirmado, con los lotes locales aún pendientes proyectados encima. */
+  onReconcile?: (elements: CanvasElement[]) => void;
   onPresence: (peers: Peer[]) => void;
   onCursor: (conn: string, x: number, y: number) => void;
   onDraft: (conn: string, element: CanvasElement | null) => void;
@@ -55,6 +58,8 @@ interface Batch {
   ops: ElementOp[];
   /** Ya se envió por el socket actual (si se cae, vuelve a false al reconectar). */
   sent: boolean;
+  /** El eco confirma su aplicación antes de que llegue el ack de transporte. */
+  echoedAt?: number;
 }
 
 const BASE_DELAY_MS = 500;
@@ -75,6 +80,8 @@ export class RealtimeClient {
   private stopped = true;
   private refCounter = 0;
   private outbox: Batch[] = [];
+  private selfConn: string | null = null;
+  private confirmed: CanvasElement[] = [];
 
   constructor(private readonly options: RealtimeClientOptions) {}
 
@@ -99,6 +106,7 @@ export class RealtimeClient {
     this.outbox.push(batch);
     if (this.outbox.length > MAX_OUTBOX) this.outbox.shift();
     if (this.ready) this.flush();
+    this.reconcile();
   }
 
   sendCursor(x: number, y: number): void {
@@ -207,6 +215,15 @@ export class RealtimeClient {
     }
   }
 
+  private reconcile(): void {
+    if (!this.ready) return;
+    let elements = this.confirmed;
+    for (const batch of this.outbox) {
+      if (batch.echoedAt === undefined) elements = applyOps(elements, batch.ops);
+    }
+    this.options.handlers.onReconcile?.(elements);
+  }
+
   // ------------------------------------------------------------ mensajes
 
   private handle(raw: unknown): void {
@@ -221,6 +238,12 @@ export class RealtimeClient {
     switch (message.type) {
       case "sync":
         this.lastSeq = message.seq;
+        this.selfConn = message.you.conn;
+        this.confirmed = message.elements;
+        // Un eco ya observado y cubierto por sync prueba aceptación aunque se
+        // perdiera el ack. Reenviarlo podría pisar una edición ajena posterior.
+        this.outbox = this.outbox.filter((batch) => batch.echoedAt === undefined || batch.echoedAt > message.seq);
+        for (const batch of this.outbox) batch.echoedAt = undefined;
         this.ready = true;
         this.attempts = 0;
         handlers.onStatus("online");
@@ -230,6 +253,7 @@ export class RealtimeClient {
           for (const batch of this.outbox) batch.sent = false; // socket nuevo: reenviar todo lo no confirmado
         }
         this.flush();
+        this.reconcile();
         break;
       case "ops":
         if (!this.ready || message.seq <= this.lastSeq) break; // esperando sync, o repetido
@@ -238,10 +262,22 @@ export class RealtimeClient {
           break;
         }
         this.lastSeq = message.seq;
+        this.confirmed = applyOps(this.confirmed, message.ops);
+        if (message.conn === this.selfConn) {
+          // El servidor procesa los lotes de esta conexión en orden y emite
+          // ops antes de ack. Los ecos no llevan ref; se asocian en ese orden.
+          const batch = this.outbox.find((entry) => entry.sent && entry.echoedAt === undefined);
+          if (batch) batch.echoedAt = message.seq;
+        }
         handlers.onOps(message);
+        this.reconcile();
         break;
       case "ack":
         this.outbox = this.outbox.filter((batch) => batch.ref !== message.ref);
+        // Si se confirmó un lote cuyo eco no vimos, la base local todavía
+        // está incompleta. No retirar su proyección sobre una base antigua.
+        if (this.ready && message.seq !== null && message.seq > this.lastSeq) this.resync();
+        this.reconcile();
         break;
       case "presence":
         handlers.onPresence(message.peers);

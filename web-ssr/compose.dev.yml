@@ -2,7 +2,7 @@
 # Override de DESARROLLO de la web SSR (prototipo 2).
 #
 # Se combina con el Compose del P1 para probar la web de punta a punta mientras
-# llegan el gateway definitivo, Chat (Java) y Notificaciones (C#):
+# llega el gateway definitivo y NotificationAPI (C#). Chat ya usa Java:
 #
 #   docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml up --build -d
 #   -> http://localhost:8088
@@ -11,6 +11,30 @@
 # ==============================================================================
 
 services:
+  chat-api:
+    build:
+      context: ./chat-module
+    restart: unless-stopped
+    environment:
+      PORT: "8090"
+      JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
+      JWT_ISSUER: collaboard-auth
+      MONGODB_URI: mongodb://pixels-nosql-db:27017/chat
+      COLLABORATION_URL: http://colaboracion-backend:8000
+      COLLABORATION_BOARDS_PATH: /boards
+      NOTIFICATIONS_URL: http://dev-mocks:4100
+      NOTIFICATIONS_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN:-token-de-servicio-solo-desarrollo}
+      CHAT_ALLOWED_ORIGINS: ${CHAT_ALLOWED_ORIGINS:-http://localhost:8088,http://127.0.0.1:8088}
+    depends_on:
+      pixels-nosql-db:
+        condition: service_healthy
+      colaboracion-backend:
+        condition: service_started
+      dev-mocks:
+        condition: service_started
+    networks:
+      - collaboard-network
+
   web-ssr:
     build:
       context: ./web-ssr
@@ -35,6 +59,7 @@ services:
       PORT: "4100"
       JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
       COLLAB_URL: http://colaboracion-backend:8000
+      MOCK_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN:-token-de-servicio-solo-desarrollo}
     networks:
       - collaboard-network
 
@@ -49,6 +74,7 @@ services:
     depends_on:
       - web-ssr
       - dev-mocks
+      - chat-api
       - authentication-backend
       - colaboracion-backend
       - pizarra-backend
