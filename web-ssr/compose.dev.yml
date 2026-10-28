@@ -4,7 +4,7 @@
 # Se combina con el Compose del P1 para probar la web de punta a punta mientras
 # llega el gateway definitivo y NotificationAPI (C#). Chat ya usa Java:
 #
-#   docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml up --build -d
+#   docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml up --build -d
 #   -> http://localhost:8088
 #
 # Las rutas son relativas a la raíz del repositorio (directorio del primer archivo).

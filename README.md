@@ -4,6 +4,62 @@ Plataforma colaborativa modular en tiempo real donde varias personas crean, dibu
 
 ---
 
+## 🚀 Prototipo 2 — arranque desde un clon limpio
+
+Todo el servidor corre en contenedores detrás de **un único gateway Nginx** (`http://localhost:8088`).
+Vista de despliegue y decisiones: [docs/p2-despliegue.md](docs/p2-despliegue.md) · [docs/adr/](docs/adr/) ·
+pendientes con el equipo: [docs/p2-pendientes-coordinacion.md](docs/p2-pendientes-coordinacion.md).
+
+**Prerrequisitos:** Docker Desktop / Engine con Compose v2.24+ (el stack completo usa ≈1 GiB de RAM en reposo; dale al menos 4 GiB a Docker para compilar),
+Node.js 20+ (solo para las pruebas de WebSocket) y Python 3.12 (solo para el E2E web).
+
+```bash
+git clone https://github.com/CollaBoardUN/CollaBoard.git && cd CollaBoard
+git checkout gateway/nginx-rabbitmq            # rama del paquete F (hasta que se integre a main)
+
+cp .env.example .env                           # valores SOLO de desarrollo; cámbialos fuera de tu máquina
+docker compose up -d --build --wait            # construye e inicia los 15 servicios, espera a que estén sanos
+docker compose ps                              # todos deben aparecer "healthy"
+```
+
+`.env.example` activa `docker-compose.stubs.yml` (stubs de NotificationAPI y MessageWorker, que
+aún no existen en la rama). Si Pizarra todavía consulta permisos por SQL en la base de
+Colaboración (trabajo pendiente de David/Estefan), para el recorrido de dibujo completo añade
+los overrides de pruebas:
+
+```bash
+export COMPOSE_FILE=docker-compose.yml:docker-compose.stubs.yml:docker-compose.compat-shared-db.yml:docker-compose.notifications-mock.yml
+docker compose up -d --build --wait
+```
+
+| Qué | Dónde |
+|---|---|
+| Web SSR, API y WebSockets (mismo origen) | http://localhost:8088 |
+| Consola de RabbitMQ (solo desde esta máquina) | http://localhost:15672 (`RABBITMQ_ADMIN_USER` / `RABBITMQ_ADMIN_PASSWORD` de `.env`) |
+| Interfaz de Pixels (opcional: `docker compose --profile pixels-ui up -d`) | http://localhost:3000 |
+| Bases de datos y brokers | no se publican; para depurar: `-f docker-compose.dev-ports.yml` |
+
+**Verificar** (cada comando imprime `OK`/`FAIL` por comprobación):
+
+```bash
+curl -s localhost:8088/healthz                                   # ok
+sh scripts/gateway_smoke.sh http://localhost:8088                # rutas, /internal/* bloqueado, X-Request-ID
+node scripts/ws_check.mjs http://localhost:8088                  # WebSocket de Pizarra, Chat y Pixels
+docker compose --profile tools run --rm rabbit-smoke             # RabbitMQ: publicar/consumir, permisos, DLQ
+node --test gateway/tests/contract.test.mjs                      # contrato del gateway (ver gateway/tests/compose.test.yml)
+```
+
+**Logs correlacionados:** cada petición lleva `X-Request-ID`; el gateway lo escribe en su log
+de acceso (`docker compose logs gateway | grep rid=`) y lo reenvía a los servicios.
+
+**Detener:** `docker compose down` (conserva los volúmenes) · `docker compose down -v` (borra los datos).
+Reiniciar un servicio sin perder datos: `docker compose restart <servicio>`.
+
+
+> Lo que sigue en este README describe el **prototipo 1** (se conserva en `docker-compose.p1.yml`).
+
+---
+
 ## 📁 Arquitectura Modular del Repositorio
 
 El proyecto está organizado en **módulos independientes y desacoplados**, cada uno con su propio contenedor y ciclo de desarrollo:
@@ -100,7 +156,7 @@ docker compose up --build
 - **Frontend:** formularios en la aplicación de Pizarra `http://localhost:5173/login` y `/register`.
 - **Credenciales:** hash Argon2id; JWT HS256 con `sub` UUID. `JWT_SECRET` compartida con Pizarra y Colaboración.
 - **Persistencia:** PostgreSQL 16, tabla `auth.users` en el esquema `auth` de `pizarra-db`.
-- **Inicio conjunto:** desde la raíz, `docker compose up --build -d`. Los puertos de Pixels (3000/8080), Pizarra (5173/8000), Colaboración (8002) y Auth (8001) no colisionan.
+- **Inicio conjunto (P1):** desde la raíz, `docker compose -f docker-compose.p1.yml up --build -d`. Los puertos de Pixels (3000/8080), Pizarra (5173/8000), Colaboración (8002) y Auth (8001) no colisionan.
 - **Instrucciones y pruebas:** [docs/AUTENTICACION.md](docs/AUTENTICACION.md).
 
 ---
@@ -113,7 +169,7 @@ tiempo real hidratados en el navegador, chat por tablero y bandeja de notificaci
 
 ```bash
 # Desde la raíz: stack del P1 + web SSR + mocks de Chat/Notificaciones + gateway de desarrollo
-docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml up --build -d
+docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml up --build -d
 # -> http://localhost:8088
 ```
 
