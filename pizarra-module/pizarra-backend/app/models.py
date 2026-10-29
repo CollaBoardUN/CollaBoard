@@ -64,13 +64,6 @@ class Board(Base):
     invites: Mapped[list["Invite"]] = relationship(
         back_populates="board", cascade="all, delete-orphan"
     )
-    # Persistencia (Persona 4): estado actual e historial. Se borran con el tablero.
-    state: Mapped["BoardState | None"] = relationship(
-        back_populates="board", cascade="all, delete-orphan", uselist=False
-    )
-    versions: Mapped[list["BoardVersion"]] = relationship(
-        back_populates="board", cascade="all, delete-orphan"
-    )
 
 
 class BoardMember(Base):

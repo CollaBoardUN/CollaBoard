@@ -1,0 +1,23 @@
+[package]
+name = "collaboard-pixel-backend"
+version = "0.2.0"
+edition = "2021"
+description = "Motor de Pixels de Alto Rendimiento para CollaBoard P2 (Axum, Tokio, Atomics, DashMap, MongoDB)"
+
+[dependencies]
+axum = { version = "0.7", features = ["ws"] }
+tokio = { version = "1.38", features = ["full"] }
+tower = { version = "0.4", features = ["util"] }
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+mongodb = "3.1"
+dashmap = "6.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+reqwest = { version = "0.12", features = ["json"] }

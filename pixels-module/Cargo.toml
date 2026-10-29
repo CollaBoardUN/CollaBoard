@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "pixel-backend",
+]
+resolver = "2"
