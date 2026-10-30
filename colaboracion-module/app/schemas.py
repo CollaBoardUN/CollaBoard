@@ -84,3 +84,36 @@ class InvitePreview(BaseModel):
 class JoinResult(BaseModel):
     board_id: str
     role: Role
+
+
+# ---------------------------------------------------------------- contratos internos
+
+
+class InternalAccessOut(BaseModel):
+    """Respuesta de GET /internal/boards/{board_id}/access."""
+
+    board_id: str
+    board_name: str
+    owner_id: str
+    user_id: str
+    role: Role
+    exists: bool = True
+    board_status: str = "active"
+
+
+class InternalRecipientsOut(BaseModel):
+    """Respuesta de GET /internal/boards/{board_id}/recipients."""
+
+    board_id: str
+    board_name: str
+    owner_id: str
+    recipient_ids: list[str]
+
+
+class InternalBoardMetadataUpdate(BaseModel):
+    """Callback de Pizarra tras persistir el estado del lienzo."""
+
+    element_count: int | None = Field(default=None, ge=0)
+    seq: int | None = Field(default=None, ge=0)
+    state_hash: str | None = Field(default=None, max_length=128)
+    saved_at: datetime | None = None

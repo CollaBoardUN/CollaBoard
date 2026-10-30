@@ -1,7 +1,7 @@
 [project]
-name = "pizarra-backend"
-version = "1.0.0"
-description = "Pizarra colaborativa — módulo de tableros y colaboradores"
+name = "colaboracion-module"
+version = "2.0.0"
+description = "CollaBoard — Módulo Lógico de Colaboración (BoardDB, permisos e invitaciones)"
 requires-python = ">=3.11"
 
 [tool.pytest.ini_options]

@@ -1,22 +1,24 @@
 """Endpoints de tableros y miembros.
 
 POST   /boards                              crear (quien crea queda como owner)
-GET    /boards                              mis tableros (en los que soy miembro)
+GET    /boards                              mis tableros activos (en los que soy miembro)
 GET    /boards/{board_id}                   detalle + mi rol             (viewer+)
 PATCH  /boards/{board_id}                   renombrar                    (owner)
-DELETE /boards/{board_id}                   borrar                       (owner)
+DELETE /boards/{board_id}                   desactivar + limpiar         (owner)
 GET    /boards/{board_id}/members           lista de miembros            (viewer+)
 PATCH  /boards/{board_id}/members/{user_id} cambiar rol de un miembro    (owner)
 DELETE /boards/{board_id}/members/{user_id} quitar miembro / salirme     (owner, o uno mismo)
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..auth import CurrentUser, get_current_user
+from ..config import OUTBOX_ENABLED
 from ..database import get_db
-from ..models import Board, BoardMember, Role
+from ..models import Board, BoardMember, BoardStatus, Invite, Role, utcnow
+from ..outbox import dispatch_pending_once, enqueue_board_cleanup
 from ..permissions import BoardAccess, require_role
 from ..schemas import BoardCreate, BoardOut, BoardUpdate, MemberOut, MemberRoleUpdate
 
@@ -50,7 +52,7 @@ def create_board(
     db: Session = Depends(get_db),
     user: CurrentUser = Depends(get_current_user),
 ):
-    board = Board(name=data.name, owner_id=user.id)
+    board = Board(name=data.name, owner_id=user.id, status=BoardStatus.active.value)
     board.members.append(
         BoardMember(user_id=user.id, display_name=user.display_name, role=Role.owner)
     )
@@ -73,7 +75,10 @@ def list_my_boards(
         select(Board, BoardMember.role, member_count.c.n)
         .join(BoardMember, BoardMember.board_id == Board.id)
         .join(member_count, member_count.c.board_id == Board.id)
-        .where(BoardMember.user_id == user.id)
+        .where(
+            BoardMember.user_id == user.id,
+            Board.status == BoardStatus.active.value,
+        )
         .order_by(Board.updated_at.desc())
     ).all()
     return [
@@ -112,11 +117,35 @@ def rename_board(
 
 @router.delete("/{board_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_board(
+    background_tasks: BackgroundTasks,
     access: BoardAccess = Depends(require_role(Role.owner)),
     db: Session = Depends(get_db),
 ):
-    db.delete(db.merge(access.board))
+    """Borrado coordinado (plan P2, secciones 4 y 6):
+
+    1. Marca el tablero como inactivo (`status="deleting"`), bloqueando nuevos accesos.
+    2. Revoca enlaces de invitación activos.
+    3. Encola en la misma transacción SQL las solicitudes HTTP idempotentes de limpieza
+       hacia Canvas (`DELETE /internal/canvas/boards/{id}`) y Chat
+       (`DELETE /internal/chat/boards/{id}`).
+    4. No reconoce el borrado físico total (`status="deleted"`) antes de completar
+       ambas limpiezas.
+    """
+    board = db.merge(access.board)
+    now = utcnow()
+    board.status = BoardStatus.deleting.value
+    board.deleted_at = now
+    board.updated_at = now
+
+    for inv in db.scalars(select(Invite).where(Invite.board_id == board.id)).all():
+        inv.revoked = True
+
+    enqueue_board_cleanup(db, board)
     db.commit()
+
+    if OUTBOX_ENABLED:
+        background_tasks.add_task(dispatch_pending_once)
+
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
