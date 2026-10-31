@@ -1,0 +1,218 @@
+% ==============================================================================
+% Preámbulo del entregable 2 — CollaBoard (Equipo 1e)
+% Compilar con pdfLaTeX (opción por defecto de Overleaf). Ver README.md.
+% ==============================================================================
+
+% --- Idioma, codificación y tipografía ----------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-noshorthands,es-tabla,es-nodecimaldot]{babel}
+\usepackage[default,semibold]{sourcesanspro}
+\usepackage[scale=0.86]{sourcecodepro}
+\edef\sfdefault{\familydefault}% \sffamily también en Source Sans
+\usepackage{microtype}
+\usepackage{csquotes}
+\usepackage{newunicodechar}
+\usepackage{pifont}
+% La flecha de inputenc no existe en Source Sans semibold: se usa la matemática.
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{✓}{\ding{51}}
+
+% --- Página -------------------------------------------------------------------
+\usepackage[a4paper,top=2.6cm,bottom=2.4cm,left=2.4cm,right=2.4cm,headheight=28pt]{geometry}
+\usepackage{pdflscape}
+\usepackage{setspace}
+\setstretch{1.12}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\setlength{\emergencystretch}{2.5em}
+\usepackage{emptypage}
+
+% --- Colores (los del logo de CollaBoard) -------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{cbIndigo}{HTML}{4F46E5}
+\definecolor{cbIndigoDark}{HTML}{3730A3}
+\definecolor{cbCyan}{HTML}{0EA5E9}
+\definecolor{cbInk}{HTML}{1F2937}
+\definecolor{cbMuted}{HTML}{6B7280}
+\definecolor{cbLine}{HTML}{E5E7EB}
+\definecolor{cbSoft}{HTML}{EEF2FF}
+\definecolor{cbSoftCyan}{HTML}{E0F2FE}
+\definecolor{cbGreen}{HTML}{059669}
+\definecolor{cbSoftGreen}{HTML}{D1FAE5}
+\definecolor{cbAmber}{HTML}{B45309}
+\definecolor{cbSoftAmber}{HTML}{FEF3C7}
+\definecolor{cbRed}{HTML}{B91C1C}
+\definecolor{cbSoftRed}{HTML}{FEE2E2}
+\definecolor{cbViolet}{HTML}{7C3AED}
+\definecolor{cbSoftViolet}{HTML}{EDE9FE}
+\definecolor{cbGray}{HTML}{F3F4F6}
+\color{cbInk}
+
+% --- Títulos de sección --------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}[block]
+  {\sffamily\bfseries\Large\color{cbInk}}
+  {\colorbox{cbIndigo}{\parbox[c][1.05em][c]{1.6em}{\centering\color{white}\thesection}}}
+  {0.6em}{}[\vspace{2pt}{\color{cbLine}\titlerule[1.2pt]}]
+\titleformat{\subsection}
+  {\sffamily\bfseries\large\color{cbIndigoDark}}{\thesubsection}{0.7em}{}
+\titleformat{\subsubsection}
+  {\sffamily\bfseries\normalsize\color{cbInk}}{\thesubsubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.4em}{1em}
+\titlespacing*{\subsection}{0pt}{1.3em}{0.5em}
+\titlespacing*{\subsubsection}{0pt}{1em}{0.3em}
+% Las secciones fluyen; solo se cambia de página si quedan menos de ~14 líneas.
+\usepackage{needspace}
+\newcommand{\seccionnueva}{\Needspace{14\baselineskip}}
+
+% --- Índice --------------------------------------------------------------------
+\usepackage{tocloft}
+\renewcommand{\cfttoctitlefont}{\sffamily\bfseries\Large\color{cbInk}}
+\renewcommand{\cftsecfont}{\bfseries\color{cbInk}}
+\renewcommand{\cftsecpagefont}{\bfseries\color{cbIndigo}}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\setlength{\cftbeforesecskip}{0.55em}
+\renewcommand{\contentsname}{Contenido}
+
+% --- Encabezado y pie ----------------------------------------------------------
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\raisebox{-0.25\height}{\includegraphics[height=15pt]{figuras/collaboard-logo.png}}\hspace{0.5em}%
+  {\sffamily\small\bfseries CollaBoard}\hspace{0.4em}{\sffamily\small\color{cbMuted}Prototipo 2}}
+\fancyhead[R]{\sffamily\small\color{cbMuted}Equipo 1e · Arquitectura de Software 2026-II}
+\fancyfoot[L]{\sffamily\footnotesize\color{cbMuted}Universidad Nacional de Colombia — Sede Bogotá}
+\fancyfoot[R]{\sffamily\footnotesize\color{cbMuted}Página \textcolor{cbIndigo}{\thepage} de \pageref{LastPage}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[R]{\sffamily\footnotesize\color{cbMuted}\thepage}}
+
+% --- Tablas --------------------------------------------------------------------
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{makecell}
+\renewcommand{\arraystretch}{1.28}
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+% Fila de encabezado de tabla con el color de la marca.
+\newcommand{\encabezado}{\rowcolor{cbIndigo}}
+\newcommand{\hd}[1]{\textcolor{white}{\sffamily\bfseries\small #1}}
+\newcommand{\filas}{\rowcolors{2}{white}{cbGray}}
+
+% --- Figuras, leyendas y listas -----------------------------------------------
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[font={small,sf},labelfont={bf,color=cbIndigo},labelsep=period,skip=6pt]{caption}
+\usepackage{enumitem}
+\setlist{itemsep=0.2em,topsep=0.3em,leftmargin=1.4em}
+\setlist[itemize]{label=\textcolor{cbIndigo}{\small$\blacktriangleright$}}
+\usepackage{amssymb}
+
+% --- Recuadros -----------------------------------------------------------------
+\usepackage[most]{tcolorbox}
+\tcbset{
+  cbbase/.style={enhanced,boxrule=0pt,arc=3pt,left=10pt,right=10pt,top=7pt,bottom=7pt,
+    fonttitle=\sffamily\bfseries\small,breakable,before skip=0.8em,after skip=0.8em},
+}
+% Decisión de arquitectura.
+\newtcolorbox{decision}[1]{cbbase,colback=cbSoft,colframe=cbIndigo,borderline west={3pt}{0pt}{cbIndigo},
+  title={\textcolor{cbIndigo}{\ding{117}}\ \textcolor{cbIndigoDark}{Decisión: #1}},coltitle=cbIndigoDark,
+  colbacktitle=cbSoft,attach title to upper,after title={\par\smallskip}}
+% Nota informativa.
+\newtcolorbox{nota}[1][Nota]{cbbase,colback=cbSoftCyan,colframe=cbCyan,borderline west={3pt}{0pt}{cbCyan},
+  title={#1},coltitle=cbInk,colbacktitle=cbSoftCyan,attach title to upper,after title={:\ }}
+% Contenido que otra persona del equipo debe completar.
+\newtcolorbox{pendiente}[1]{cbbase,colback=cbSoftAmber,colframe=cbAmber,
+  borderline={0.6pt}{0pt}{cbAmber,dashed},
+  title={\textcolor{cbAmber}{\ding{46}\ PENDIENTE · #1}},coltitle=cbAmber,colbacktitle=cbSoftAmber,
+  attach title to upper,after title={\par\smallskip}}
+% Resumen destacado.
+\newtcolorbox{resumen}{cbbase,colback=white,colframe=cbLine,boxrule=0.6pt,arc=4pt,left=12pt,right=12pt}
+
+% Etiquetas de estado para tablas.
+\newcommand{\chip}[3]{\tcbox[on line,boxsep=0pt,left=4pt,right=4pt,top=1.5pt,bottom=1.5pt,arc=6pt,
+  boxrule=0pt,colback=#1]{\sffamily\scriptsize\bfseries\textcolor{#2}{#3}}}
+\newcommand{\hecho}{\chip{cbSoftGreen}{cbGreen}{Implementado}}
+\newcommand{\integracion}{\chip{cbSoftCyan}{cbIndigoDark}{En integración}}
+\newcommand{\porhacer}{\chip{cbSoftAmber}{cbAmber}{Pendiente}}
+\newcommand{\pone}{\chip{cbGray}{cbMuted}{Del P1}}
+
+% Código en línea.
+\newcommand{\code}[1]{\texttt{\small\textcolor{cbIndigoDark}{#1}}}
+
+% --- Listados de código --------------------------------------------------------
+\usepackage{listings}
+\lstdefinestyle{cb}{
+  basicstyle=\ttfamily\small\color{cbInk},
+  backgroundcolor=\color{cbGray},
+  frame=single, framerule=0pt, framesep=6pt, xleftmargin=6pt, xrightmargin=6pt,
+  columns=fullflexible, keepspaces=true, breaklines=true, breakatwhitespace=true,
+  showstringspaces=false, upquote=true,
+  commentstyle=\color{cbMuted}\itshape, keywordstyle=\color{cbIndigo}\bfseries,
+  stringstyle=\color{cbGreen},
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
+           {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1 {Ñ}{{\~N}}1
+           {→}{{$\rightarrow$}}1 {·}{{$\cdot$}}1,
+}
+\lstset{style=cb}
+
+% --- Diagramas -----------------------------------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,shapes.misc,fit,backgrounds,calc,shadows.blur}
+\usepackage[edges]{forest}
+
+\tikzset{
+  >={Stealth[length=2.4mm]},
+  % Componentes C&C.
+  comp/.style={draw=#1!80!black,fill=#1!10,rounded corners=3pt,thick,align=center,
+    font=\sffamily\small,minimum height=12mm,inner sep=4pt,blur shadow={shadow blur steps=4,shadow xshift=0.6pt,shadow yshift=-0.8pt,shadow opacity=18}},
+  comp/.default=cbIndigo,
+  db/.style={cylinder,shape border rotate=90,aspect=0.22,draw=#1!80!black,fill=#1!12,thick,
+    align=center,font=\sffamily\footnotesize,minimum width=21mm,minimum height=13mm,inner sep=2pt},
+  db/.default=cbGreen,
+  broker/.style={draw=cbAmber,fill=cbSoftAmber,thick,chamfered rectangle,chamfered rectangle xsep=2cm,
+    align=center,font=\sffamily\small,minimum height=11mm,inner sep=4pt},
+  client/.style={draw=cbViolet!80!black,fill=cbSoftViolet,rounded corners=6pt,thick,align=center,
+    font=\sffamily\small,minimum height=12mm,inner sep=5pt},
+  % Conectores.
+  http/.style={->,thick,draw=cbInk!75},
+  ws/.style={<->,thick,draw=cbIndigo,dashed},
+  amqp/.style={->,thick,draw=cbAmber,densely dashdotted},
+  sql/.style={->,thick,draw=cbGreen!70!black},
+  internal/.style={->,thick,draw=cbCyan!80!black},
+  lbl/.style={font=\sffamily\scriptsize,fill=white,inner sep=1.5pt,text=cbMuted},
+  tag/.style={font=\sffamily\scriptsize\bfseries,text=#1},
+  % Despliegue.
+  node3d/.style={draw=cbInk!60,fill=white,thick,inner sep=8pt,rounded corners=2pt},
+  container/.style={draw=cbIndigo!70,fill=cbSoft,rounded corners=2pt,align=center,
+    font=\sffamily\scriptsize,minimum width=27mm,minimum height=11mm,inner sep=3pt},
+  volume/.style={draw=cbGreen!70!black,fill=cbSoftGreen,cylinder,shape border rotate=90,aspect=0.25,
+    font=\sffamily\scriptsize,minimum width=17mm,minimum height=8mm,align=center,inner sep=1pt},
+  % Capas.
+  layer/.style={draw=#1!80!black,fill=#1!8,rounded corners=4pt,thick,minimum height=17mm,
+    text width=15.2cm,align=left,inner sep=6pt},
+  item/.style={draw=#1!70!black,fill=white,rounded corners=2pt,font=\sffamily\footnotesize,
+    minimum height=8mm,inner sep=3pt,align=center},
+}
+
+% --- Enlaces y metadatos del PDF ----------------------------------------------
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  colorlinks=true, linkcolor=cbIndigoDark, urlcolor=cbIndigo, citecolor=cbIndigo,
+  pdftitle={CollaBoard — Prototipo 2 (Equipo 1e)},
+  pdfauthor={Equipo 1e — Arquitectura de Software 2026-II, Universidad Nacional de Colombia},
+  pdfsubject={Prototipo 2: arquitectura distribuida},
+  pdfkeywords={CollaBoard, arquitectura de software, SSR, microservicios, RabbitMQ},
+}
+\usepackage{bookmark}
+\urlstyle{same}

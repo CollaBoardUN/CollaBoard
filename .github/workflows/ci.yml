@@ -92,6 +92,70 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  web-ssr:
+    name: Web SSR (lint, tipos, tests, build, integración SSR)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web-ssr
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            web-ssr/package-lock.json
+            web-ssr/dev/mocks/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Integración SSR (servidor Next + gateway falso)
+        run: npm run test:ssr
+      - name: Contrato de Chat y Notificaciones (mocks de desarrollo)
+        working-directory: web-ssr/dev/mocks
+        run: |
+          npm ci
+          npm test
+
+  web-ssr-e2e:
+    name: Web SSR punta a punta (Docker + navegador real)
+    runs-on: ubuntu-latest
+    needs: [web-ssr]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Levantar stack con la web SSR, mocks y gateway de desarrollo
+        run: docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml up --build -d
+      - name: Esperar al gateway y a la web
+        run: |
+          # Listo cuando la web responde y Auth contesta 401 (sin sesión) a través del gateway.
+          for i in $(seq 1 90); do
+            auth=$(curl -s -o /dev/null -w '%{http_code}' localhost:8088/api/auth/me || true)
+            if curl -sf -o /dev/null localhost:8088/healthz && [ "$auth" = "401" ]; then exit 0; fi
+            sleep 2
+          done
+          docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml logs; exit 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Instalar Playwright
+        run: |
+          pip install -r e2e/requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: Pruebas de punta a punta de la web SSR
+        run: pytest e2e/test_web_ssr.py -v
+        env:
+          WEB_SSR_URL: http://localhost:8088
+      - if: failure()
+        run: docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml logs --tail=200
+      - if: always()
+        run: docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml down -v
+
   e2e:
     name: Punta a punta (navegador real)
     runs-on: ubuntu-latest

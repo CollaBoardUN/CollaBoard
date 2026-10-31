@@ -1,0 +1,32 @@
+server:
+  port: ${PORT:8090}
+spring:
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  task:
+    scheduling:
+      pool:
+        size: 2
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/chat}
+      database: chat
+      auto-index-creation: true
+collaboard:
+  jwt:
+    secret: ${JWT_SECRET:}
+    issuer: ${JWT_ISSUER:collaboard-auth}
+  collaboration:
+    url: ${COLLABORATION_URL:http://localhost:8002}
+    timeout-ms: ${COLLABORATION_TIMEOUT_MS:4000}
+    boards-path: ${COLLABORATION_BOARDS_PATH:/boards}
+  notifications:
+    url: ${NOTIFICATIONS_URL:http://localhost:4100}
+    service-token: ${NOTIFICATIONS_SERVICE_TOKEN:}
+    poll-ms: ${NOTIFICATIONS_POLL_MS:4000}
+  websocket:
+    allowed-origins: ${CHAT_ALLOWED_ORIGINS:http://localhost:8088,http://127.0.0.1:8088}
+    recheck-ms: ${CHAT_RECHECK_MS:15000}
+logging:
+  level:
+    edu.collaboard.chat: INFO

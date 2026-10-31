@@ -1,0 +1,84 @@
+% ------------------------------------------------------------------ 8. Trazabilidad
+\seccionnueva
+\section{Trazabilidad, pruebas y limitaciones}
+\label{sec:trazabilidad}
+
+\subsection{Escenarios de aceptación}
+
+\begin{longtable}{@{}P{3.3cm} P{6.9cm} P{2.3cm} P{2.2cm}@{}}
+  \encabezado \hd{Escenario} & \hd{Evidencia esperada} & \hd{Dueño} & \hd{Estado} \\
+  \endfirsthead
+  \encabezado \hd{Escenario} & \hd{Evidencia esperada} & \hd{Dueño} & \hd{Estado} \\
+  \endhead
+  SSR real y privado & HTML inicial con los tableros sin ejecutar JavaScript; sin datos de otra cuenta ni JWT; sin sesión, redirección al login & Jhon & \hecho \\
+  \rowcolor{cbGray} Colaboración real & Crear e invitar por el gateway; logs de Colaboración; sin CRUD duplicado en Pizarra & David & \porhacer \\
+  Dos presentaciones & Web y ejecutable local abren el mismo tablero sin URLs directas de cada backend & Jhon + Sebastian & \integracion \\
+  \rowcolor{cbGray} Roles en vivo & \textit{Viewer} no dibuja; retirar a un miembro bloquea dibujo, historial y chat & David + Marlon & \integracion \\
+  Dibujo y persistencia & Dos clientes dibujan; tras \code{saved}, reiniciar sin borrar volúmenes conserva estado y versiones & Marlon + Estefan & \integracion \\
+  \rowcolor{cbGray} Chat Java & Enviar, paginar, reconectar y reenviar el mismo \code{client\_message\_id}: un solo mensaje & Marlon & \porhacer \\
+  Asincronía & Detener el \textit{worker}, aceptar invitación, ver pendiente; reiniciar y ver la bandeja & Cristian + Sebastian & \porhacer \\
+  \rowcolor{cbGray} Reentrega y fallo & Evento repetido sin duplicados; broker caído recuperado por outbox; evento inválido a la DLQ & Cristian & \porhacer \\
+  Bandeja privada & A no lee ni marca notificaciones de B; marcar la propia persiste & Cristian + Jhon & \integracion \\
+  \rowcolor{cbGray} Borrado coordinado & Desactivar tablero, bloquear acceso, limpiar Canvas y Chat sin recrear datos & David + Estefan + Marlon & \porhacer \\
+  Pixels sin regresión & Pintar por el gateway, refrescar, comprobar persistencia y enfriamiento & Estefan & \porhacer \\
+  \rowcolor{cbGray} Reproducibilidad & Otra persona sigue las instrucciones desde un clon limpio & Sebastian + revisor & \porhacer \\
+  \bottomrule
+  \caption{Escenarios mínimos del plan del prototipo 2 y su estado.}
+  \label{tab:escenarios}
+\end{longtable}
+
+\subsection{Pruebas ejecutadas}
+
+\begin{nota}[Alcance]
+Esta tabla solo registra pruebas efectivamente ejecutadas, con su fecha. Los resultados del
+prototipo 1 son antecedentes y no se presentan como resultados del prototipo 2.
+\end{nota}
+
+\begin{longtable}{@{}P{3.4cm} P{3.4cm} P{1.6cm} P{6.1cm}@{}}
+  \encabezado \hd{Suite} & \hd{Herramienta} & \hd{Resultado} & \hd{Qué demuestra} \\
+  \endfirsthead
+  \encabezado \hd{Suite} & \hd{Herramienta} & \hd{Resultado} & \hd{Qué demuestra} \\
+  \endhead
+  Web SSR · unitarias y componentes & Vitest + Testing Library & 119/119 & Transporte, BFF, chat (idempotencia, reintento, sondeo, cierre 4403), bandeja (optimista y reversión), tiempo real, componentes por rol \\
+  \rowcolor{cbGray} Web SSR · integración SSR & Servidor Next compilado + gateway falso & 10/10 & HTML con datos antes de JS, cuentas aisladas en paralelo, sin JWT, \code{no-store}, redirecciones, 404 sin revelar nombres, CSRF \\
+  Contrato Chat y Notificaciones & \code{node:test} sobre los mocks & 10/10 & JWT, membresía, \code{client\_message\_id}, cursores, WS solo a miembros, notificaciones solo a terceros, eventos idempotentes \\
+  \rowcolor{cbGray} Web SSR · punta a punta & Playwright + Docker (gateway, Auth, Colaboración, Pizarra, mocks) & 3/3 & SSR con JavaScript desactivado, recorrido de dos usuarios, \textit{viewer} sin herramientas, cierre de sesión \\
+  Web SSR · estáticas & ESLint (capas) + TypeScript estricto + \code{next build} & sin errores & Todas las páginas privadas se renderizan por petición \\
+  \bottomrule
+  \caption{Pruebas ejecutadas el 25 de octubre de 2026 (rama \code{feature/web-ssr}).}
+  \label{tab:pruebas}
+\end{longtable}
+
+\begin{pendiente}{Cada dueño de paquete}
+Agregar una fila por suite de su módulo (Colaboración, Pizarra, Chat, Pixels, Notificaciones,
+gateway, cliente local, CI) con la fecha y el resultado real de la última ejecución.
+\end{pendiente}
+
+\subsection{Limitaciones conocidas}
+
+\begin{itemize}
+  \item Una réplica por servicio de salas (Pizarra y Chat): la difusión WebSocket vive en la memoria de cada proceso.
+  \item Sin modo \textit{offline}: lo dibujado sin conexión se encola en memoria y se reenvía al reconectar, pero no sobrevive a recargar la página.
+  \item La bandeja se actualiza por sondeo cada 15 segundos; no hay WebSocket de notificaciones (decisión de alcance).
+  \item Entrega de notificaciones \emph{al menos una vez} con deduplicación; no se promete \emph{exactamente una vez}.
+  \item Sin correo ni notificaciones del sistema operativo, sin adjuntos en el chat y sin CRDT.
+\end{itemize}
+
+\subsection{Lenguajes de propósito general}
+
+\begin{table}[H]
+\centering
+\small
+\filas
+\begin{tabularx}{\linewidth}{@{}P{2.6cm} L@{}}
+  \encabezado \hd{Lenguaje} & \hd{Dónde se ejecuta lógica útil} \\
+  TypeScript & Web SSR (servidor y navegador) y cliente local Electron \\
+  Python & Colaboración, Pizarra y Pixels \\
+  Go & Auth \\
+  Java & Chat \\
+  C\# & NotificationAPI y MessageWorker \\
+  \bottomrule
+\end{tabularx}
+\caption{Cinco lenguajes de propósito general con lógica propia.}
+\label{tab:lenguajes}
+\end{table}

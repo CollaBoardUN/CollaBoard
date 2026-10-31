@@ -102,3 +102,22 @@ docker compose up --build
 - **Persistencia:** PostgreSQL 16, tabla `auth.users` en el esquema `auth` de `pizarra-db`.
 - **Inicio conjunto:** desde la raíz, `docker compose up --build -d`. Los puertos de Pixels (3000/8080), Pizarra (5173/8000), Colaboración (8002) y Auth (8001) no colisionan.
 - **Instrucciones y pruebas:** [docs/AUTENTICACION.md](docs/AUTENTICACION.md).
+
+---
+
+## 🌐 Prototipo 2 — Web SSR (`web-ssr`)
+
+Presentación web con renderizado en el servidor (Next.js 16 + TypeScript): dashboard y
+cabecera de cada tablero renderizados por petición, sesión en cookie HttpOnly, lienzo y
+tiempo real hidratados en el navegador, chat por tablero y bandeja de notificaciones.
+
+```bash
+# Desde la raíz: stack del P1 + web SSR + mocks de Chat/Notificaciones + gateway de desarrollo
+docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml up --build -d
+# -> http://localhost:8088
+```
+
+- Guía del módulo y pruebas: [web-ssr/README.md](web-ssr/README.md)
+- Diseño, seguridad y vista de capas: [docs/p2/WEB_SSR.md](docs/p2/WEB_SSR.md)
+- Contratos de Chat y Notificaciones: [docs/p2/CONTRATOS_WEB.md](docs/p2/CONTRATOS_WEB.md)
+- Reutilizar la interfaz en Electron: [docs/p2/ADAPTADOR_ELECTRON.md](docs/p2/ADAPTADOR_ELECTRON.md)

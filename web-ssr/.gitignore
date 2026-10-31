@@ -1,0 +1,23 @@
+# Dependencias
+/node_modules
+/dev/mocks/node_modules
+
+# Next.js
+/.next/
+/out/
+/build
+next-env.d.ts
+*.tsbuildinfo
+
+# Pruebas
+/coverage
+/tests/.artifacts
+
+# Entorno (se versiona solo el ejemplo)
+.env*
+!.env.example
+
+# Varios
+.DS_Store
+*.pem
+npm-debug.log*
