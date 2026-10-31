@@ -1,0 +1,6 @@
+# OPCIONAL solo pruebas locales de POST /internal/events con scripts/smoke.py.
+# Nunca habilitar en despliegue público; enlaza exclusivamente 127.0.0.1.
+services:
+  notification-api:
+    ports:
+      - "127.0.0.1:4100:8080"

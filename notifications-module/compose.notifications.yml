@@ -1,0 +1,108 @@
+# Overlay para probar C# junto con la base Tiempo_real-y-chat.
+# Uso:
+# docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml \
+#   -f notifications-module/compose.notifications.yml up --build -d
+services:
+  notification-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: notification
+      POSTGRES_PASSWORD: ${NOTIFICATION_DB_PASSWORD:?Define NOTIFICATION_DB_PASSWORD en el .env de la raiz}
+      POSTGRES_DB: notifications
+    volumes:
+      - notification_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notification -d notifications"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [collaboard-network]
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: collaboard
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?Define RABBITMQ_PASSWORD en el .env de la raiz}
+    ports:
+      - "127.0.0.1:15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 8s
+      timeout: 8s
+      retries: 20
+    networks: [collaboard-network]
+
+  notification-api:
+    build:
+      context: ./notifications-module
+      dockerfile: Dockerfile.api
+    restart: unless-stopped
+    environment: &notification_environment
+      NOTIFICATION_DATABASE_URL: Host=notification-db;Port=5432;Database=notifications;Username=notification;Password=${NOTIFICATION_DB_PASSWORD}
+      RABBITMQ_VHOST: /
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: collaboard
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en el .env de la raiz}
+      NOTIFICATIONS_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN:?Define NOTIFICATIONS_SERVICE_TOKEN en el .env de la raiz}
+      ASPNETCORE_URLS: http://+:4100
+    ports:
+      # Solo loopback para pruebas: /internal/events NUNCA se enruta por el gateway.
+      - "127.0.0.1:4100:4100"
+    depends_on:
+      notification-db:
+        condition: service_healthy
+    networks: [collaboard-network]
+
+  notification-worker:
+    build:
+      context: ./notifications-module
+      dockerfile: Dockerfile.worker
+    restart: unless-stopped
+    environment:
+      NOTIFICATION_DATABASE_URL: Host=notification-db;Port=5432;Database=notifications;Username=notification;Password=${NOTIFICATION_DB_PASSWORD}
+      RABBITMQ_VHOST: /
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: collaboard
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+    depends_on:
+      notification-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      notification-api:
+        condition: service_started
+    networks: [collaboard-network]
+
+  # Chat Java deja de enviar eventos al mock, sin modificar su código.
+  chat-api:
+    environment:
+      NOTIFICATIONS_URL: http://notification-api:4100
+      NOTIFICATIONS_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN}
+    depends_on:
+      notification-api:
+        condition: service_started
+
+  # El gateway de desarrollo sigue intacto en web-ssr/.
+  # Se monta una COPIA generada que cambia únicamente el upstream de notificaciones.
+  dev-gateway:
+    volumes:
+      - ./notifications-module/gateway.notifications.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      notification-api:
+        condition: service_started
+
+  # Compatible con la futura rama de David: el P1 ignora estas variables.
+  colaboracion-backend:
+    environment:
+      NOTIFICATIONS_URL: http://notification-api:4100
+      INTERNAL_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN}
+
+
+volumes:
+  notification_data:
+  rabbitmq_data:

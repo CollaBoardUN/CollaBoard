@@ -1,0 +1,63 @@
+# Overlay FINAL para gateway/nginx-rabbitmq de Sebastian, NO para web-ssr/compose.dev.yml.
+# Reemplaza los stubs notification-api/message-worker sin cambiar servicios ajenos.
+# Usar explícitamente: docker compose -f docker-compose.yml -f notifications-module/compose.gateway.yml up --build -d
+services:
+  notification-api:
+    build:
+      context: ./notifications-module
+      dockerfile: Dockerfile.api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      NOTIFICATION_DATABASE_URL: Host=notification-db;Port=5432;Database=${NOTIFICATION_DB_NAME};Username=${NOTIFICATION_DB_USER};Password=${NOTIFICATION_DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      NOTIFICATIONS_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST:-collaboard}
+      RABBITMQ_USER: ${RABBITMQ_NOTIFICATION_API_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_NOTIFICATION_API_PASSWORD}
+      RABBITMQ_MANAGED_TOPOLOGY: "true"
+      RABBITMQ_EVENTS_EXCHANGE: ${RABBITMQ_EVENTS_EXCHANGE:-notifications.events}
+      RABBITMQ_TASKS_QUEUE: ${RABBITMQ_TASKS_QUEUE:-notifications.tasks}
+      RABBITMQ_TASKS_ROUTING_KEY: ${RABBITMQ_TASKS_ROUTING_KEY:-notification.task}
+    depends_on:
+      notification-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks: [internal]
+
+  message-worker:
+    build:
+      context: ./notifications-module
+      dockerfile: Dockerfile.worker
+    restart: unless-stopped
+    environment:
+      NOTIFICATION_DATABASE_URL: Host=notification-db;Port=5432;Database=${NOTIFICATION_DB_NAME};Username=${NOTIFICATION_DB_USER};Password=${NOTIFICATION_DB_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST:-collaboard}
+      RABBITMQ_USER: ${RABBITMQ_MESSAGE_WORKER_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_MESSAGE_WORKER_PASSWORD}
+      RABBITMQ_MANAGED_TOPOLOGY: "true"
+      RABBITMQ_EVENTS_EXCHANGE: ${RABBITMQ_EVENTS_EXCHANGE:-notifications.events}
+      RABBITMQ_TASKS_QUEUE: ${RABBITMQ_TASKS_QUEUE:-notifications.tasks}
+      RABBITMQ_TASKS_ROUTING_KEY: ${RABBITMQ_TASKS_ROUTING_KEY:-notification.task}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      notification-db:
+        condition: service_healthy
+      notification-api:
+        condition: service_started
+    networks: [internal]
+
+  gateway:
+    depends_on:
+      notification-api:
+        condition: service_started
+
+  # Cuando se incorpore el outbox de David, no dejarle el puerto por defecto 8085.
+  collaboration-api:
+    environment:
+      NOTIFICATIONS_URL: http://notification-api:8080
+      INTERNAL_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN}

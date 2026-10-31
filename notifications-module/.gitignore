@@ -1,0 +1,7 @@
+# Archivo generado desde nginx.conf actual; no versionar copia del trabajo de Jhon.
+gateway.notifications.conf
+**/bin/
+**/obj/
+**/__pycache__/
+*.user
+.env
