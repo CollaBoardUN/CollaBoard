@@ -1,0 +1,48 @@
+# Contexto http: mapas, formato de log, zonas de límite y resolutor DNS.
+# Las variables ${...} las sustituye envsubst al arrancar el contenedor; las
+# variables de Nginx ($uri, $http_...) se dejan intactas.
+
+# Docker reasigna IP al recrear contenedores. Con resolver + variables en
+# proxy_pass, Nginx vuelve a resolver el nombre (no solo al arrancar) y puede
+# iniciar aunque algún servicio todavía no exista.
+resolver ${NGINX_RESOLVER} valid=10s ipv6=off;
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  ""      close;
+}
+
+# X-Request-ID: se respeta el entrante solo si es seguro (evita inyección en
+# logs); si no, se genera uno nuevo.
+map $http_x_request_id $collaboard_request_id {
+  "~^[A-Za-z0-9._-]{8,64}$" $http_x_request_id;
+  default                   $request_id;
+}
+
+# Sin query string en el log: puede llevar credenciales (transición ?token=).
+log_format collaboard '$remote_addr [$time_iso8601] "$request_method $uri" '
+                      '$status rid=$collaboard_request_id up=$upstream_addr '
+                      'us=$upstream_status rt=$request_time';
+
+# --- Transición Pizarra: su WebSocket solo lee ?token=. El gateway toma el JWT
+# de Authorization (Bearer) o de la cookie cb_session (navegador) y lo
+# añade a la URL SOLO hacia el upstream. Authorization y Cookie viajan intactas.
+# Cuando Pizarra acepte cabecera/cookie: PIZARRA_WS_TOKEN_QUERY=off.
+map $http_authorization $ws_bearer {
+  "~*^Bearer\s+(?<bearer>\S+)$" $bearer;
+  default                       "";
+}
+map $ws_bearer $ws_token {
+  ""      $cookie_cb_session;
+  default $ws_bearer;
+}
+map "${PIZARRA_WS_TOKEN_QUERY}:$ws_token" $pizarra_ws_args {
+  "~^on:(?<jwt>.+)$" "token=$jwt";
+  default            $args;
+}
+
+# --- Límite de tasa por IP. $rl_key vacío = sin límite (servidor interno).
+limit_req_zone $rl_key zone=api:10m  rate=${RATE_LIMIT_API};
+limit_req_zone $rl_key zone=auth:10m rate=${RATE_LIMIT_AUTH};
+limit_req_status 429;
+limit_req_log_level warn;

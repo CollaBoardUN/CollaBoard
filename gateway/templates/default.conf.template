@@ -1,0 +1,55 @@
+# Dos servidores sobre las mismas rutas de API:
+#  - :80   público (único puerto publicado al host). Sirve además la web SSR.
+#  - :${GATEWAY_INTERNAL_PORT} interno, SOLO en la red `internal`: el servidor
+#    SSR/BFF lo usa para consultar las APIs. No tiene `location /`, así el SSR
+#    nunca vuelve a pedirse páginas a sí mismo (sin bucles), y no limita tasa:
+#    todas sus peticiones salen de una sola IP.
+
+server {
+  listen 80 default_server;
+  server_name _;
+  access_log /dev/stdout collaboard;
+  client_max_body_size ${CLIENT_MAX_BODY_SIZE};
+
+  set $rl_key $binary_remote_addr;
+  add_header X-Request-ID $collaboard_request_id always;
+
+  include /etc/nginx/conf.d/snippets/error-pages.conf;
+  location = /healthz {
+    access_log off;
+    default_type text/plain;
+    return 200 "ok\n";
+  }
+
+  include /etc/nginx/conf.d/snippets/api-routes.conf;
+
+  # Todo lo demás: páginas de la web SSR (y su BFF en /bff/*).
+  location / {
+    include /etc/nginx/snippets/proxy-common.conf;
+    proxy_pass http://$web_upstream;
+  }
+}
+
+server {
+  listen ${GATEWAY_INTERNAL_PORT};
+  server_name _;
+  access_log /dev/stdout collaboard;
+  client_max_body_size ${CLIENT_MAX_BODY_SIZE};
+
+  set $rl_key "";
+  add_header X-Request-ID $collaboard_request_id always;
+
+  include /etc/nginx/conf.d/snippets/error-pages.conf;
+  location = /healthz {
+    access_log off;
+    default_type text/plain;
+    return 200 "ok\n";
+  }
+
+  include /etc/nginx/conf.d/snippets/api-routes.conf;
+
+  location / {
+    default_type application/json;
+    return 404 '{"detail":"Ruta interna no publicada"}';
+  }
+}

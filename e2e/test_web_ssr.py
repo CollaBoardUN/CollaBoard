@@ -12,7 +12,7 @@ Escenarios del plan P2 (sección 10) que cubre esta presentación:
 Requiere el stack con la web SSR detrás del gateway (Chat y Notificaciones
 pueden ser los mocks de desarrollo):
 
-    docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml up --build -d
+    docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml up --build -d
     WEB_SSR_URL=http://localhost:8088 pytest e2e/test_web_ssr.py -v
 """
 

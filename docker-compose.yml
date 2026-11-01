@@ -1,209 +1,358 @@
 # ==============================================================================
-# Docker Compose Global - CollaBoard
-# Despliega todos los módulos de la plataforma simultáneamente:
-#   1. Módulo Pizarra:       Frontend http://localhost:5173 | Backend http://localhost:8000
-#   2. Módulo Colaboración:  API Backend http://localhost:8002
-#   3. Módulo Pixels:        Frontend http://localhost:3000 | Backend http://localhost:8080
+# CollaBoard — Prototipo 2 · Despliegue de servidores (Compose)
+#
+# Solo el gateway (:GATEWAY_PORT) y la consola de RabbitMQ (127.0.0.1:15672) se
+# publican al host. Las APIs, bases y el broker viven en la red `internal`.
+#
+# Servicios aún inexistentes (NotificationAPI y MessageWorker, de Cristian) se
+# cubren con stubs en docker-compose.stubs.yml; .env.example los activa con
+# COMPOSE_FILE. Overrides: docker-compose.dev-ports.yml (puertos de depuración).
+# El Compose del prototipo 1 se conserva en docker-compose.p1.yml.
 # ==============================================================================
 
+x-restart: &restart
+  restart: unless-stopped
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+x-python-health: &python-health
+  interval: 5s
+  timeout: 3s
+  retries: 20
+  start_period: 20s
+
 services:
-  # ----------------------------------------------------------------------------
-  # 1. Base de Datos Relacional (PostgreSQL) para Pizarra y Colaboración
-  # ----------------------------------------------------------------------------
-  pizarra-db:
-    image: postgres:16-alpine
-    container_name: collaboard-pizarra-db
-    restart: unless-stopped
+  # ---------------------------------------------------------------- Entrada pública
+  gateway:
+    <<: [*restart, *logging]
+    build:
+      context: ./gateway
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: pizarra
+      GATEWAY_INTERNAL_PORT: ${GATEWAY_INTERNAL_PORT:-8081}
+      PIZARRA_WS_TOKEN_QUERY: ${PIZARRA_WS_TOKEN_QUERY:-on}
+      NOTIFICATION_API_UPSTREAM: ${NOTIFICATION_API_UPSTREAM:-notification-api:8080}
+      NOTIFICATION_API_PATH_PREFIX: ${NOTIFICATION_API_PATH_PREFIX:-/api/notifications}
+      CHAT_API_UPSTREAM: ${CHAT_API_UPSTREAM:-chat-api:8090}
+      RATE_LIMIT_API: ${RATE_LIMIT_API:-30r/s}
+      RATE_LIMIT_API_BURST: ${RATE_LIMIT_API_BURST:-60}
+      RATE_LIMIT_AUTH: ${RATE_LIMIT_AUTH:-5r/s}
+      RATE_LIMIT_AUTH_BURST: ${RATE_LIMIT_AUTH_BURST:-10}
     ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+      - "${GATEWAY_PORT:-8088}:80"
+    depends_on:
+      web-ssr:
+        condition: service_healthy
+      auth-api:
+        condition: service_healthy
+      collaboration-api:
+        condition: service_healthy
+      pizarra-api:
+        condition: service_healthy
+      chat-api:
+        condition: service_healthy
+      pixels-api:
+        condition: service_healthy
+    networks: [edge, internal]
+
+  # ---------------------------------------------------------------- Presentación web
+  web-ssr:
+    <<: [*restart, *logging]
+    build:
+      context: ./web-ssr
+    environment:
+      # Ruta/puerto interno del gateway distinto de la página: sin bucles SSR.
+      GATEWAY_INTERNAL_URL: http://gateway:${GATEWAY_INTERNAL_PORT:-8081}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+      PUBLIC_PIXELS_URL: ${PUBLIC_PIXELS_URL:-}
+      BFF_ALLOWED_ORIGINS: ${BFF_ALLOWED_ORIGINS:-}
+    networks: [internal]
+
+  # ---------------------------------------------------------------- APIs de negocio
+  auth-api:
+    <<: [*restart, *logging]
+    build:
+      context: ./authentication-module
+    environment:
+      AUTH_DATABASE_URL: postgres://${USER_DB_USER}:${USER_DB_PASSWORD}@user-db:5432/${USER_DB_NAME}?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:?Copia .env.example a .env}
+      AUTH_PORT: "8001"
+      FRONTEND_URL: ${PUBLIC_ORIGIN:-http://localhost:8088}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d pizarra"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8001/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    depends_on:
+      user-db:
+        condition: service_healthy
+    networks: [internal]
+
+  collaboration-api:
+    <<: [*restart, *logging]
+    build:
+      context: ./colaboracion-module
+    environment:
+      DATABASE_URL: postgresql+psycopg://${BOARD_DB_USER}:${BOARD_DB_PASSWORD}@board-db:5432/${BOARD_DB_NAME}
+      JWT_SECRET: ${JWT_SECRET:?Copia .env.example a .env}
+      JWT_ALGORITHM: HS256
+      FRONTEND_URL: ${PUBLIC_ORIGIN:-http://localhost:8088}
+      AUTH_DEV_MODE: "false"
+      COLABORACION_SERVICE_URL: http://collaboration-api:8000
+      INTERNAL_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN}
+      INTERNAL_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN}
+      NOTIFICATIONS_URL: http://notification-api:8080
+      PIZARRA_INTERNAL_URL: http://pizarra-api:8000
+    healthcheck:
+      <<: *python-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+    depends_on:
+      board-db:
+        condition: service_healthy
+    networks: [internal]
+
+  pizarra-api:
+    <<: [*restart, *logging]
+    build:
+      context: ./pizarra-module/pizarra-backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://${CANVAS_DB_USER}:${CANVAS_DB_PASSWORD}@canvas-db:5432/${CANVAS_DB_NAME}
+      JWT_SECRET: ${JWT_SECRET:?Copia .env.example a .env}
+      JWT_ALGORITHM: HS256
+      FRONTEND_URL: ${PUBLIC_ORIGIN:-http://localhost:8088}
+      AUTH_DEV_MODE: "false"
+    healthcheck:
+      <<: *python-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+    depends_on:
+      canvas-db:
+        condition: service_healthy
+    networks: [internal]
+
+  chat-api:
+    <<: [*restart, *logging]
+    build:
+      context: ./chat-module
+    environment:
+      PORT: "8090"
+      JWT_SECRET: ${JWT_SECRET:?Copia .env.example a .env}
+      JWT_ISSUER: collaboard-auth
+      MONGODB_URI: mongodb://${CHAT_MONGO_USER}:${CHAT_MONGO_PASSWORD}@pixels-nosqldb:27017/chat?authSource=chat
+      COLLABORATION_URL: http://collaboration-api:8000
+      COLLABORATION_BOARDS_PATH: /boards
+      NOTIFICATIONS_URL: http://notification-api:8080
+      NOTIFICATIONS_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN:?Copia .env.example a .env}
+      CHAT_ALLOWED_ORIGINS: ${CHAT_ALLOWED_ORIGINS:-http://localhost:8088,http://127.0.0.1:8088}
+    depends_on:
+      pixels-nosqldb:
+        condition: service_healthy
+    networks: [internal]
+
+  pixels-api:
+    <<: [*restart, *logging]
+    build:
+      context: ./pixels-module/pixel-backend
+    environment:
+      MONGODB_URL: mongodb://${PIXELS_MONGO_USER}:${PIXELS_MONGO_PASSWORD}@pixels-nosqldb:27017/collaboard_pixels?authSource=collaboard_pixels
+      DATABASE_NAME: collaboard_pixels
+      CANVAS_WIDTH: "200"
+      CANVAS_HEIGHT: "200"
+      COOLDOWN_SECONDS: "5.0"
+      HOST: 0.0.0.0
+      PORT: "8000"
+    healthcheck:
+      <<: *python-health
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8000/api/health"]
+    depends_on:
+      pixels-nosqldb:
+        condition: service_healthy
+    networks: [internal]
+
+  # notification-api y message-worker (C#): ver docker-compose.stubs.yml
+
+  # ---------------------------------------------------------------- Broker (C07)
+  rabbitmq:
+    <<: [*restart, *logging]
+    build:
+      context: ./rabbitmq
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_ADMIN_USER: ${RABBITMQ_ADMIN_USER}
+      RABBITMQ_ADMIN_PASSWORD: ${RABBITMQ_ADMIN_PASSWORD}
+      RABBITMQ_NOTIFICATION_API_USER: ${RABBITMQ_NOTIFICATION_API_USER}
+      RABBITMQ_NOTIFICATION_API_PASSWORD: ${RABBITMQ_NOTIFICATION_API_PASSWORD}
+      RABBITMQ_MESSAGE_WORKER_USER: ${RABBITMQ_MESSAGE_WORKER_USER}
+      RABBITMQ_MESSAGE_WORKER_PASSWORD: ${RABBITMQ_MESSAGE_WORKER_PASSWORD}
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST:-collaboard}
+      RABBITMQ_EVENTS_EXCHANGE: ${RABBITMQ_EVENTS_EXCHANGE:-notifications.events}
+      RABBITMQ_TASKS_QUEUE: ${RABBITMQ_TASKS_QUEUE:-notifications.tasks}
+      RABBITMQ_TASKS_ROUTING_KEY: ${RABBITMQ_TASKS_ROUTING_KEY:-notification.task}
+      RABBITMQ_DLX: ${RABBITMQ_DLX:-notifications.dlx}
+      RABBITMQ_DLQ: ${RABBITMQ_DLQ:-notifications.tasks.dlq}
+      RABBITMQ_DLQ_ROUTING_KEY: ${RABBITMQ_DLQ_ROUTING_KEY:-notifications.failed}
+      RABBITMQ_MAX_DELIVERIES: ${RABBITMQ_MAX_DELIVERIES:-3}
+    ports:
+      # Solo consola de administración, y solo desde la propia máquina.
+      - "${RABBITMQ_CONSOLE_BIND:-127.0.0.1}:15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
+    networks: [internal]
+
+  # ---------------------------------------------------------------- Almacenes
+  user-db:
+    <<: [*restart, *logging]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${USER_DB_USER}
+      POSTGRES_PASSWORD: ${USER_DB_PASSWORD}
+      POSTGRES_DB: ${USER_DB_NAME}
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 3s
       timeout: 3s
       retries: 20
-    networks:
-      - collaboard-network
+    networks: [internal]
 
-  # ----------------------------------------------------------------------------
-  # 2. Módulo Pizarra - Backend (FastAPI + WebSockets salas de dibujo)
-  # ----------------------------------------------------------------------------
-  pizarra-backend:
-    build:
-      context: ./pizarra-module/pizarra-backend
-      dockerfile: Dockerfile
-    container_name: collaboard-pizarra-backend
-    restart: unless-stopped
+  board-db:
+    <<: [*restart, *logging]
+    image: postgres:16-alpine
     environment:
-      CANVAS_DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
-      DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
-      COLABORACION_SERVICE_URL: http://colaboracion-backend:8000
-      JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
-      JWT_ALGORITHM: HS256
-      FRONTEND_URL: http://localhost:5173
-      AUTH_DEV_MODE: "false"
-    ports:
-      - "8000:8000"
-    depends_on:
-      pizarra-db:
-        condition: service_healthy
+      POSTGRES_USER: ${BOARD_DB_USER}
+      POSTGRES_PASSWORD: ${BOARD_DB_PASSWORD}
+      POSTGRES_DB: ${BOARD_DB_NAME}
+    volumes:
+      - board_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [internal]
+
+  canvas-db:
+    <<: [*restart, *logging]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${CANVAS_DB_USER}
+      POSTGRES_PASSWORD: ${CANVAS_DB_PASSWORD}
+      POSTGRES_DB: ${CANVAS_DB_NAME}
+    volumes:
+      - canvas_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [internal]
+
+  notification-db:
+    <<: [*restart, *logging]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${NOTIFICATION_DB_USER}
+      POSTGRES_PASSWORD: ${NOTIFICATION_DB_PASSWORD}
+      POSTGRES_DB: ${NOTIFICATION_DB_NAME}
+    volumes:
+      - notification_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [internal]
+
+  # MongoDB: dos bases lógicas (collaboard_pixels y chat) con credenciales separadas.
+  pixels-nosqldb:
+    <<: [*restart, *logging]
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      PIXELS_MONGO_USER: ${PIXELS_MONGO_USER}
+      PIXELS_MONGO_PASSWORD: ${PIXELS_MONGO_PASSWORD}
+      CHAT_MONGO_USER: ${CHAT_MONGO_USER}
+      CHAT_MONGO_PASSWORD: ${CHAT_MONGO_PASSWORD}
+    volumes:
+      - pixels_mongo_data:/data/db
+      - ./mongo/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet -u \"$$MONGO_INITDB_ROOT_USERNAME\" -p \"$$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase admin --eval 'db.runCommand({ping:1}).ok' | grep -q 1"]
       interval: 5s
       timeout: 5s
       retries: 20
       start_period: 10s
-    networks:
-      - collaboard-network
+    networks: [internal]
 
-  # ----------------------------------------------------------------------------
-  # 3. Módulo Pizarra - Frontend (React 19 SPA)
-  # ----------------------------------------------------------------------------
-  pizarra-frontend:
-    build:
-      context: ./pizarra-module/pizarra-frontend
-      dockerfile: Dockerfile
-      args:
-        VITE_API_URL: http://localhost:8000
-        VITE_DEV_LOGIN: "false"
-        VITE_AUTH_URL: http://localhost:8001
-    container_name: collaboard-pizarra-frontend
-    restart: unless-stopped
-    ports:
-      - "5173:80"
-    depends_on:
-      - pizarra-backend
-      - authentication-backend
-    networks:
-      - collaboard-network
-
-  # ----------------------------------------------------------------------------
-  # 4. Módulo Colaboración - Backend Lógico (Tableros, Miembros, Roles y Permisos)
-  # ----------------------------------------------------------------------------
-  colaboracion-backend:
-    build:
-      context: ./colaboracion-module
-      dockerfile: Dockerfile
-    container_name: collaboard-colaboracion-backend
-    restart: unless-stopped
+  # ---------------------------------------------------------------- Opcional
+  # Prueba de humo del broker (perfil `tools`), en la red interna:
+  #   docker compose --profile tools run --rm rabbit-smoke
+  rabbit-smoke:
+    profiles: ["tools"]
+    image: python:3.12-slim
+    working_dir: /scripts
+    command: ["sh", "-c", "pip install -q --disable-pip-version-check pika==1.3.2 && python rabbit_smoke_test.py"]
     environment:
-      CANVAS_DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
-      DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
-      COLABORACION_SERVICE_URL: http://colaboracion-backend:8000
-      JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
-      JWT_ALGORITHM: HS256
-      FRONTEND_URL: http://localhost:5173
-      AUTH_DEV_MODE: "false"
-    ports:
-      - "8002:8000"
-    depends_on:
-      pizarra-db:
-        condition: service_healthy
-      pizarra-backend:
-        condition: service_healthy
-    networks:
-      - collaboard-network
-
-  # ----------------------------------------------------------------------------
-  # 5. Base de Datos NoSQL (MongoDB 7) para Pixels Wplace
-  # ----------------------------------------------------------------------------
-  pixels-nosql-db:
-    image: mongo:7
-    container_name: collaboard-pixels-db
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_DATABASE: collaboard_pixels
-    ports:
-      - "27017:27017"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST:-collaboard}
+      RABBITMQ_EVENTS_EXCHANGE: ${RABBITMQ_EVENTS_EXCHANGE:-notifications.events}
+      RABBITMQ_TASKS_QUEUE: ${RABBITMQ_TASKS_QUEUE:-notifications.tasks}
+      RABBITMQ_TASKS_ROUTING_KEY: ${RABBITMQ_TASKS_ROUTING_KEY:-notification.task}
+      RABBITMQ_DLQ: ${RABBITMQ_DLQ:-notifications.tasks.dlq}
+      RABBITMQ_MAX_DELIVERIES: ${RABBITMQ_MAX_DELIVERIES:-3}
+      RABBITMQ_ADMIN_USER: ${RABBITMQ_ADMIN_USER}
+      RABBITMQ_ADMIN_PASSWORD: ${RABBITMQ_ADMIN_PASSWORD}
+      RABBITMQ_NOTIFICATION_API_USER: ${RABBITMQ_NOTIFICATION_API_USER}
+      RABBITMQ_NOTIFICATION_API_PASSWORD: ${RABBITMQ_NOTIFICATION_API_PASSWORD}
+      RABBITMQ_MESSAGE_WORKER_USER: ${RABBITMQ_MESSAGE_WORKER_USER}
+      RABBITMQ_MESSAGE_WORKER_PASSWORD: ${RABBITMQ_MESSAGE_WORKER_PASSWORD}
     volumes:
-      - mongo_data:/data/db
-    healthcheck:
-      test: ["CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 5s
-    networks:
-      - collaboard-network
-
-  # ----------------------------------------------------------------------------
-  # 6. Módulo Pixels - Backend (FastAPI + WebSockets lienzo 200x200)
-  # ----------------------------------------------------------------------------
-  pixels-backend:
-    build:
-      context: ./pixels-module/pixel-backend
-      dockerfile: Dockerfile
-    container_name: collaboard-pixels-backend
-    restart: unless-stopped
-    environment:
-      - PIXELS_MONGO_URI=mongodb://pixels-nosql-db:27017
-      - MONGODB_URL=mongodb://pixels-nosql-db:27017
-      - DATABASE_NAME=collaboard_pixels
-      - CANVAS_WIDTH=200
-      - CANVAS_HEIGHT=200
-      - COOLDOWN_SECONDS=5.0
-      - HOST=0.0.0.0
-      - PORT=8000
-    ports:
-      - "8080:8000"
+      - ./scripts:/scripts:ro
     depends_on:
-      pixels-nosql-db:
+      rabbitmq:
         condition: service_healthy
-    networks:
-      - collaboard-network
+    networks: [internal]
 
-  # ----------------------------------------------------------------------------
-  # 7. Módulo Pixels - Frontend (React 18 SPA)
-  # ----------------------------------------------------------------------------
-  pixels-frontend:
+  # Interfaz del lienzo de Pixels (P1). Perfil `pixels-ui`: http://localhost:3000
+  pixels-ui:
+    <<: [*restart, *logging]
+    profiles: ["pixels-ui"]
     build:
       context: ./pixels-module/pixel-frontend
-      dockerfile: Dockerfile
       args:
-        VITE_BACKEND_HTTP_URL: http://localhost:8080
-        VITE_BACKEND_WS_URL: ws://localhost:8080/ws/pixels
-    container_name: collaboard-pixels-frontend
-    restart: unless-stopped
+        VITE_BACKEND_HTTP_URL: http://localhost:${GATEWAY_PORT:-8088}
+        VITE_BACKEND_WS_URL: ws://localhost:${GATEWAY_PORT:-8088}/ws/pixels
     ports:
       - "3000:80"
     depends_on:
-      - pixels-backend
-    networks:
-      - collaboard-network
-
-  # ----------------------------------------------------------------------------
-  # 8. Autenticación - Go + Chi, JWT HS256 y Argon2id (puerto 8001)
-  # ----------------------------------------------------------------------------
-  authentication-backend:
-    build:
-      context: ./authentication-module
-      dockerfile: Dockerfile
-    container_name: collaboard-authentication-backend
-    restart: unless-stopped
-    environment:
-      AUTH_DATABASE_URL: postgres://postgres:postgres@pizarra-db:5432/pizarra?sslmode=disable
-      JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
-      AUTH_PORT: 8001
-      FRONTEND_URL: http://localhost:5173
-    ports:
-      - "8001:8001"
-    depends_on:
-      pizarra-db:
-        condition: service_healthy
-    networks:
-      - collaboard-network
+      - gateway
+    networks: [edge]
 
 volumes:
-  pgdata:
-    driver: local
-  mongo_data:
-    driver: local
+  user_db_data:
+  board_db_data:
+  canvas_db_data:
+  notification_db_data:
+  pixels_mongo_data:
+  rabbitmq_data:
 
 networks:
-  collaboard-network:
+  # Única red con salida al host: solo el gateway (y la UI opcional de Pixels).
+  edge:
+    driver: bridge
+  # Red de servicios y datos. No se publica ningún puerto desde aquí salvo el
+  # de la consola de RabbitMQ (127.0.0.1:15672).
+  internal:
     driver: bridge

@@ -10,8 +10,8 @@ Requisitos: Docker Desktop en modo contenedores Linux, Docker Compose v2 y acces
 Docker Hub/Maven Central durante la primera compilación. Docker debe estar iniciado.
 
 ```powershell
-docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml build chat-api pizarra-backend web-ssr dev-mocks
-docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml up --build -d
+docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml build chat-api pizarra-backend web-ssr dev-mocks
+docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml up --build -d
 ```
 
 Abrir **http://localhost:8088** desde Antigravity. El gateway envía exclusivamente
@@ -28,8 +28,8 @@ No usar `down -v` si se quiere conservar esos datos.
 Para consultar estado y logs después de levantarlo:
 
 ```powershell
-docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml ps chat-api
-docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml logs --tail=100 chat-api
+docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml ps chat-api
+docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml logs --tail=100 chat-api
 ```
 
 ### Entrega en vivo y cambio de configuración del proxy
@@ -44,8 +44,8 @@ Para aplicar un cambio de `nginx.conf` al gateway que ya está encendido, sin
 recompilar Java/web ni reiniciar el stack:
 
 ```powershell
-docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml exec -T dev-gateway nginx -t
-docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml exec -T dev-gateway nginx -s reload
+docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml exec -T dev-gateway nginx -t
+docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml exec -T dev-gateway nginx -s reload
 ```
 
 La regresión del proxy utiliza el archivo real de Nginx y upstreams de prueba

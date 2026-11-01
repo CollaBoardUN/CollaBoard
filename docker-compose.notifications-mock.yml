@@ -1,0 +1,37 @@
+# Override de PRUEBAS: sustituye el stub de NotificationAPI por el mock completo de
+# la web SSR (web-ssr/dev/mocks: bandeja por usuario, idempotencia y eventos internos),
+# para ejercitar el recorrido "escribir en el chat -> notificación" mientras el servicio
+# C# real no exista. La CI lo usa junto con docker-compose.compat-shared-db.yml.
+#
+# Un Nginx hace de `notification-api`: el cliente HTTP de Chat (JDK) envía `Upgrade: h2c`
+# en HTTP plano y el mock (Node) lo trata como WebSocket inválido y resetea la conexión;
+# Nginx habla HTTP/1.1 con el mock y no reenvía Upgrade. Ver docs/p2-pendientes-coordinacion.md.
+# Cuando llegue NotificationAPI real este archivo deja de ser necesario.
+services:
+  notification-mock:
+    build:
+      context: ./web-ssr/dev/mocks
+    environment:
+      PORT: "4100"
+      JWT_SECRET: ${JWT_SECRET:?Copia .env.example a .env}
+      COLLAB_URL: http://collaboration-api:8000
+      MOCK_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN:?Copia .env.example a .env}
+    networks: [internal]
+    depends_on:
+      collaboration-api:
+        condition: service_healthy
+
+  notification-api:
+    image: nginx:1.27-alpine
+    build: !reset null
+    environment: !reset {}
+    volumes:
+      - ./stubs/notification-mock-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    depends_on:
+      notification-mock:
+        condition: service_healthy

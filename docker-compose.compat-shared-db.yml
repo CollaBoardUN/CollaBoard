@@ -1,0 +1,17 @@
+# Override TRANSITORIO de integración. Mientras Pizarra conserve su copia de las
+# tablas de tableros y consulte permisos en SQL (trabajo pendiente de David y
+# Estefan), solo ve los tableros que Colaboración crea si ambos comparten base,
+# como en el prototipo 1. Con esto se puede probar dibujo + chat de punta a punta.
+#
+# NO es la arquitectura objetivo (CanvasDB independiente). Se elimina cuando
+# Pizarra consulte la autorización a Colaboración por HTTP.
+#   docker compose -f docker-compose.yml -f docker-compose.stubs.yml -f docker-compose.compat-shared-db.yml up -d
+services:
+  pizarra-api:
+    environment:
+      DATABASE_URL: postgresql+psycopg://${BOARD_DB_USER}:${BOARD_DB_PASSWORD}@board-db:5432/${BOARD_DB_NAME}
+    depends_on:
+      board-db:
+        condition: service_healthy
+      collaboration-api:
+        condition: service_healthy
