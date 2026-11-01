@@ -210,10 +210,19 @@ def test_recorrido_web_completo(browser: Browser):
     expect(beto.get_by_role("log").get_by_text("Aviso con chat cerrado")).to_be_visible()
 
     # La bandeja de Ana recibe "Beto escribió en ...".
-    bell = ana.get_by_role("button", name=re.compile(r"Notificaciones, \d+ sin leer"))
+    # Ana ya tiene 1 aviso sin leer ("Beto se unió a ...") y el mensaje enviado
+    # con el chat abierto no genera aviso. Por eso se espera exactamente
+    # "2 sin leer": una regex genérica (\d+) coincidía con el "1" previo y abría la
+    # bandeja antes de que Chat -> RabbitMQ -> Notificaciones entregara el aviso.
+    bell = ana.get_by_role("button", name="Notificaciones, 2 sin leer", exact=True)
     expect(bell).to_be_visible(timeout=25_000)
     bell.click()
-    expect(ana.get_by_text(f"{beto_nombre} escribió en {tablero}")).to_be_visible()
+    # El panel abierto se refresca solo (sondeo REST cada segundo), sin pulsar
+    # "Actualizar notificaciones". Timeout amplio por la latencia del broker en CI.
+    bandeja = ana.get_by_role("region", name="Bandeja de notificaciones")
+    expect(bandeja).to_be_visible()
+    aviso = bandeja.get_by_role("listitem").filter(has_text="Aviso con chat cerrado")
+    expect(aviso.get_by_text(f"{beto_nombre} escribió en {tablero}", exact=True)).to_be_visible(timeout=15_000)
 
     assert not errors, f"errores de JavaScript: {errors}"
 
