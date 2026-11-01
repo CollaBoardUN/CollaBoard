@@ -17,7 +17,6 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime
 from pathlib import Path
 
 # Asegurar app en el PYTHONPATH
@@ -25,11 +24,10 @@ BACKEND_DIR = Path(__file__).resolve().parent.parent
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
-from sqlalchemy import create_engine, select, text
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, text  # noqa: E402
+from sqlalchemy.orm import sessionmaker  # noqa: E402
 
-from app.persistence.models import BoardState, BoardVersion, PurgedBoard
-from app.persistence.store import state_hash
+from app.persistence.models import BoardState, BoardVersion, PurgedBoard  # noqa: E402
 
 logging.basicConfig(
     level=logging.INFO,
@@ -70,17 +68,22 @@ def migrate(source_url: str, target_url: str) -> bool:
             )
         ).fetchall()
 
-        states_migrated = 0
         states_verified = 0
 
         for row in source_states:
             board_id = row.board_id
-            elements = row.elements if isinstance(row.elements, list) else json.loads(row.elements or "[]")
+            elements = (
+                row.elements if isinstance(row.elements, list) else json.loads(row.elements or "[]")
+            )
             source_hash = compute_hash(elements)
 
             if row.chash and row.chash != source_hash:
-                log.warning("Discrepancia en origen para board_state %s: guardado=%s, calculado=%s",
-                            board_id, row.chash, source_hash)
+                log.warning(
+                    "Discrepancia en origen para board_state %s: guardado=%s, calculado=%s",
+                    board_id,
+                    row.chash,
+                    source_hash,
+                )
 
             # Insertar o actualizar en CanvasDB
             existing = tgt_db.get(BoardState, board_id)
@@ -107,14 +110,18 @@ def migrate(source_url: str, target_url: str) -> bool:
                 existing.saved_at = row.saved_at
 
             tgt_db.commit()
-            states_migrated += 1
 
             # Verificación inmediata de consistencia
             tgt_state = tgt_db.get(BoardState, board_id)
             target_hash = compute_hash(tgt_state.elements)
             if target_hash != source_hash:
-                log.error("ERROR CRÍTICO: El hash en destino para board_state %s no coincide! (src: %s, tgt: %s)",
-                          board_id, source_hash, target_hash)
+                log.error(
+                    "ERROR CRÍTICO: El hash en destino para board_state %s no coincide! "
+                    "(src: %s, tgt: %s)",
+                    board_id,
+                    source_hash,
+                    target_hash,
+                )
                 return False
             states_verified += 1
 
@@ -130,12 +137,13 @@ def migrate(source_url: str, target_url: str) -> bool:
             )
         ).fetchall()
 
-        versions_migrated = 0
         versions_verified = 0
 
         for row in source_versions:
             v_id = row.id
-            elements = row.elements if isinstance(row.elements, list) else json.loads(row.elements or "[]")
+            elements = (
+                row.elements if isinstance(row.elements, list) else json.loads(row.elements or "[]")
+            )
             source_hash = compute_hash(elements)
 
             existing_v = tgt_db.get(BoardVersion, v_id)
@@ -160,12 +168,13 @@ def migrate(source_url: str, target_url: str) -> bool:
                 existing_v.elements = elements
 
             tgt_db.commit()
-            versions_migrated += 1
 
             tgt_v = tgt_db.get(BoardVersion, v_id)
             target_hash = compute_hash(tgt_v.elements)
             if target_hash != source_hash:
-                log.error("ERROR CRÍTICO: El hash en destino para board_version %s no coincide!", v_id)
+                log.error(
+                    "ERROR CRÍTICO: El hash en destino para board_version %s no coincide!", v_id
+                )
                 return False
             versions_verified += 1
 
@@ -173,8 +182,13 @@ def migrate(source_url: str, target_url: str) -> bool:
 
     log.info("==================================================")
     log.info("MIGRACIÓN COMPLETADA EXITOSAMENTE:")
-    log.info("- %d estados de tablero transferidos y verificados (100%% integridad)", states_verified)
-    log.info("- %d versiones de historial transferidas y verificadas (100%% integridad)", versions_verified)
+    log.info(
+        "- %d estados de tablero transferidos y verificados (100%% integridad)", states_verified
+    )
+    log.info(
+        "- %d versiones de historial transferidas y verificadas (100%% integridad)",
+        versions_verified,
+    )
     log.info("- Origen P1 intacto sin alteraciones.")
     log.info("==================================================")
     return True
@@ -184,12 +198,16 @@ def main():
     parser = argparse.ArgumentParser(description="Migración P1 a CanvasDB")
     parser.add_argument(
         "--source-url",
-        default=os.getenv("P1_DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/pizarra"),
+        default=os.getenv(
+            "P1_DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/pizarra"
+        ),
         help="URL de base de datos origen (P1)",
     )
     parser.add_argument(
         "--target-url",
-        default=os.getenv("CANVAS_DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/canvas"),
+        default=os.getenv(
+            "CANVAS_DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/canvas"
+        ),
         help="URL de base de datos destino (CanvasDB)",
     )
     args = parser.parse_args()

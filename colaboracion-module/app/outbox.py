@@ -168,9 +168,7 @@ async def dispatch_pending_once(
             stmt = select(OutboxEvent).where(OutboxEvent.status == OutboxStatus.pending.value)
             if not ignore_schedule:
                 stmt = stmt.where(OutboxEvent.next_attempt_at <= now)
-            pending = list(
-                db.scalars(stmt.order_by(OutboxEvent.created_at).limit(limit)).all()
-            )
+            pending = list(db.scalars(stmt.order_by(OutboxEvent.created_at).limit(limit)).all())
 
             for item in pending:
                 headers = {

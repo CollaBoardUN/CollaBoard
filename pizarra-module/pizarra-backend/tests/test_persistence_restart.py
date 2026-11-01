@@ -24,8 +24,8 @@ from app.persistence.store import (
 
 def test_canvasdb_persistence_across_restart():
     # Usamos archivo SQLite en disco para simular persistencia en BD real
-    with tempfile.NamedTemporaryFile(suffix=".db") as db_file:
-        db_url = f"sqlite:///{db_file.name}"
+    with tempfile.TemporaryDirectory() as db_dir:
+        db_url = f"sqlite:///{db_dir}/restart.db"
 
         # --- PASO 1: Arrancar sesión previa al reinicio ---
         engine1 = create_engine(db_url)

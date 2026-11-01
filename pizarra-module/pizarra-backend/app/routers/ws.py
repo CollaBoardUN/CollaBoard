@@ -33,6 +33,7 @@ import time
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from ..auth import decode_token
+from ..config import AUTH_DEV_MODE
 from ..database import SessionLocal
 from ..models import Role
 from ..permissions import can, get_role, get_role_remote
@@ -53,7 +54,7 @@ ROLE_RECHECK_SECONDS = 5.0
 
 async def _role_of(board_id: str, user_id: str) -> Role | None:
     role = await get_role_remote(board_id, user_id)
-    if role is None:
+    if role is None and AUTH_DEV_MODE:
         with SessionLocal() as db:
             role = get_role(db, board_id, user_id)
     return role

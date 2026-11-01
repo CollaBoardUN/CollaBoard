@@ -42,3 +42,8 @@ AUTOSAVE_MAX_WAIT_SECONDS = float(os.getenv("AUTOSAVE_MAX_WAIT_SECONDS", "10"))
 
 # Cada cuántos segundos (como mucho) se crea una versión automática mientras se edita.
 AUTOSAVE_SNAPSHOT_EVERY_SECONDS = float(os.getenv("AUTOSAVE_SNAPSHOT_EVERY_SECONDS", "300"))
+
+INTERNAL_SERVICE_TOKEN = os.getenv(
+    "INTERNAL_SERVICE_TOKEN",
+    os.getenv("NOTIFICATIONS_SERVICE_TOKEN", "token-de-servicio-solo-desarrollo"),
+)

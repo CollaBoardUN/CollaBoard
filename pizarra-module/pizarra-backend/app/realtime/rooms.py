@@ -141,10 +141,12 @@ class Room:
                 # Elegir el más alejado de los colores ya usados, no solo el
                 # primero que no coincide exactamente al redondear a RGB.
                 def distance(candidate: str) -> int:
-                    rgb = tuple(int(candidate[i:i + 2], 16) for i in (1, 3, 5))
+                    rgb = tuple(int(candidate[i : i + 2], 16) for i in (1, 3, 5))
                     return min(
-                        sum((value - int(other[i:i + 2], 16)) ** 2
-                            for value, i in zip(rgb, (1, 3, 5)))
+                        sum(
+                            (value - int(other[i : i + 2], 16)) ** 2
+                            for value, i in zip(rgb, (1, 3, 5), strict=True)
+                        )
                         for other in used
                     )
 

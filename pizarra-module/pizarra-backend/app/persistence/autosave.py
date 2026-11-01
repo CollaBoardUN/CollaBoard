@@ -200,9 +200,7 @@ class Autosaver:
 
         if pending is not None:
             saved_time = datetime.now(UTC).isoformat()
-            await room.broadcast(
-                {"type": "saved", "seq": seq, "saved_at": saved_time}
-            )
+            await room.broadcast({"type": "saved", "seq": seq, "saved_at": saved_time})
             # Notificación HTTP interna a Colaboración (PATCH /internal/boards/{id}/metadata)
             metadata = {
                 "seq": seq,

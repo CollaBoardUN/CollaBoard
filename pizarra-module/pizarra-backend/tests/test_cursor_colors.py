@@ -1,8 +1,9 @@
 """Asignación de colores por tablero, sin cambiar el protocolo de presencia."""
+
 import asyncio
 
 from app.models import Role
-from app.realtime.rooms import Connection, PALETTE, Room
+from app.realtime.rooms import PALETTE, Connection, Room
 
 
 class Socket:
@@ -35,6 +36,7 @@ def test_distintos_usuarios_distinto_color_y_pestanas_comparten_color():
         reconnected = connection("ana")
         await room.join(reconnected)
         assert reconnected.color == ana.color
+
     asyncio.run(scenario())
 
 
@@ -51,4 +53,5 @@ def test_paleta_agotada_no_repite_y_cada_tablero_asigna_independientemente():
         await other.join(conn)
         assert conn.color == PALETTE[0]
         assert conn.color != room.user_colors["user-1"]
+
     asyncio.run(scenario())

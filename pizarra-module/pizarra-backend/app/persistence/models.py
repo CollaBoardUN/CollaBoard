@@ -85,6 +85,7 @@ class BoardVersion(Base):
 
 class PurgedBoard(Base):
     """Registro de tableros purgados para bloquear autosaves tardíos en CanvasDB."""
+
     __tablename__ = "purged_boards"
 
     board_id: Mapped[str] = mapped_column(String(36), primary_key=True)

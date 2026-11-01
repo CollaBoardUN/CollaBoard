@@ -9,7 +9,7 @@ from typing import Any
 
 import httpx
 
-from .config import AUTH_DEV_MODE, COLABORACION_SERVICE_URL
+from .config import AUTH_DEV_MODE, COLABORACION_SERVICE_URL, INTERNAL_SERVICE_TOKEN
 
 log = logging.getLogger(__name__)
 
@@ -46,6 +46,7 @@ async def check_board_access(
     headers: dict[str, str] = {
         "X-User-Id": user_id,
         "Accept": "application/json",
+        "X-Service-Token": INTERNAL_SERVICE_TOKEN,
     }
     if token:
         headers["Authorization"] = f"Bearer {token}" if not token.startswith("Bearer ") else token
@@ -93,7 +94,7 @@ async def notify_board_saved(board_id: str, metadata: dict[str, Any]) -> bool:
     }
     """
     url = f"{COLABORACION_SERVICE_URL.rstrip('/')}/internal/boards/{board_id}/metadata"
-    headers = {"Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json", "X-Service-Token": INTERNAL_SERVICE_TOKEN}
 
     try:
         client = get_http_client()

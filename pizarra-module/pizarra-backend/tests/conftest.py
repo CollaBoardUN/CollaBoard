@@ -80,3 +80,28 @@ def join(client, headers, token):
     r = client.post(f"/invites/{token}/accept", headers=headers)
     assert r.status_code == 200, r.text
     return r.json()
+
+
+@pytest.fixture(autouse=True)
+def collaboration_contract(monkeypatch):
+    """El doble de Colaboración usa las membresías locales de los fixtures P1."""
+    from app import permissions
+    from app.database import SessionLocal
+    from app.routers import ws
+
+    async def remote_role(board_id, user_id, token=None):
+        with SessionLocal() as db:
+            return permissions.get_role(db, board_id, user_id)
+
+    monkeypatch.setattr(permissions, "get_role_remote", remote_role)
+    monkeypatch.setattr(ws, "get_role_remote", remote_role)
+
+
+@pytest.fixture(autouse=True)
+def saved_metadata_contract(monkeypatch):
+    from app.persistence import autosave
+
+    async def notify_saved(board_id, metadata):
+        return True
+
+    monkeypatch.setattr(autosave, "notify_board_saved", notify_saved)

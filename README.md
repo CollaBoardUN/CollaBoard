@@ -168,12 +168,13 @@ cabecera de cada tablero renderizados por petición, sesión en cookie HttpOnly,
 tiempo real hidratados en el navegador, chat por tablero y bandeja de notificaciones.
 
 ```bash
-# Desde la raíz: stack del P1 + web SSR + mocks de Chat/Notificaciones + gateway de desarrollo
-docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml up --build -d
+# Desde la raíz: prototipo 2 integrado con servicios reales
+# Primera instalación: copiar .env.example a .env y ajustar valores
+docker compose -p collaboard -f docker-compose.yml -f notifications-module/compose.gateway.yml up --build -d
 # -> http://localhost:8088
 ```
 
 - Guía del módulo y pruebas: [web-ssr/README.md](web-ssr/README.md)
 - Diseño, seguridad y vista de capas: [docs/p2/WEB_SSR.md](docs/p2/WEB_SSR.md)
 - Contratos de Chat y Notificaciones: [docs/p2/CONTRATOS_WEB.md](docs/p2/CONTRATOS_WEB.md)
-- Reutilizar la interfaz en Electron: [docs/p2/ADAPTADOR_ELECTRON.md](docs/p2/ADAPTADOR_ELECTRON.md)
+- Revisión de la integración: [docs/p2/INTEGRACION_FINAL.md](docs/p2/INTEGRACION_FINAL.md)

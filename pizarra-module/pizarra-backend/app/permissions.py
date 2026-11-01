@@ -11,6 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .auth import CurrentUser, get_current_user
+from .config import AUTH_DEV_MODE
 from .database import get_db
 from .internal_client import check_board_access
 from .models import ROLE_RANK, Role
@@ -55,7 +56,7 @@ def get_role(db: Session, board_id: str, user_id: str) -> Role | None:
             )
         )
     except Exception:
-        return Role.owner
+        return None
 
 
 def require_role(minimum: Role):
@@ -70,7 +71,7 @@ def require_role(minimum: Role):
         role = await get_role_remote(board_id, user.id)
 
         # 2. Si no se obtuvo rol por HTTP (ej. entorno de tests), verificar fallback local
-        if role is None:
+        if role is None and AUTH_DEV_MODE:
             local_role = get_role(db, board_id, user.id)
             if local_role is not None:
                 role = local_role

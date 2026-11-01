@@ -2,7 +2,6 @@
 #   docker compose -f gateway/tests/compose.test.yml up -d --build --wait
 #   node --test gateway/tests/contract.test.mjs
 #   docker compose -f gateway/tests/compose.test.yml down
-name: gateway-contract
 
 x-gateway: &gateway
   build:
