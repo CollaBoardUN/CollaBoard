@@ -2,6 +2,14 @@ package edu.collaboard.chat.realtime;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.collaboard.chat.data.ChatMessage;
+import edu.collaboard.chat.data.ChatRead;
+import java.time.Instant;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.dao.DuplicateKeyException;
 import edu.collaboard.chat.security.ChatPrincipal;
 import edu.collaboard.chat.security.JwtService;
 import edu.collaboard.chat.service.BoardPermissions;
@@ -24,14 +32,16 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @Component
 public class ChatSocketHandler extends TextWebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(ChatSocketHandler.class);
+    private final MongoTemplate mongo;
+    private final Map<String, Long> viewing = new ConcurrentHashMap<>();
     private final JwtService jwt;
     private final BoardPermissions permissions;
     private final ObjectMapper json;
     private final Map<String, Connection> connections = new ConcurrentHashMap<>();
     private record Connection(WebSocketSession socket, String boardId, ChatPrincipal user) {}
 
-    public ChatSocketHandler(JwtService jwt, BoardPermissions permissions, ObjectMapper json) {
-        this.jwt = jwt; this.permissions = permissions; this.json = json;
+    public ChatSocketHandler(JwtService jwt, BoardPermissions permissions, ObjectMapper json, MongoTemplate mongo) {
+        this.mongo = mongo; this.jwt = jwt; this.permissions = permissions; this.json = json;
     }
 
     @Override public void afterConnectionEstablished(WebSocketSession session) throws IOException {
@@ -88,12 +98,50 @@ public class ChatSocketHandler extends TextWebSocketHandler {
             var body = json.readTree(message.getPayload());
             if (body != null && body.isObject() && "ping".equals(body.path("type").asText())) {
                 send(connection, Map.of("type", "pong"));
+            } else if (body != null && "receipts".equals(body.path("type").asText())) {
+                send(connection, Map.of("type", "receipts", "receipts", mongo.find(
+                    Query.query(Criteria.where("boardId").is(connection.boardId())), ChatRead.class)));
+            } else if (body != null && "view".equals(body.path("type").asText())) {
+                if (!body.path("active").asBoolean(false)) { viewing.remove(session.getId()); return; }
+                String id = body.path("message_id").asText("");
+                if (!id.isBlank()) {
+                    ChatMessage anchor = mongo.findById(id, ChatMessage.class);
+                    if (anchor == null || !anchor.boardId().equals(connection.boardId())) return;
+                    recordRead(connection, anchor);
+                }
+                viewing.put(session.getId(), System.currentTimeMillis());
             } else {
                 send(connection, Map.of("type", "error", "code", "http_only", "message", "Envía mensajes por HTTP"));
             }
         } catch (com.fasterxml.jackson.core.JsonProcessingException invalid) {
             send(connection, Map.of("type", "error", "code", "bad_message", "message", "JSON inválido"));
         }
+    }
+
+    public boolean isViewing(String boardId, String userId) {
+        long now = System.currentTimeMillis();
+        return connections.values().stream().anyMatch(c -> c.boardId().equals(boardId)
+            && c.user().id().equals(userId) && c.socket().isOpen()
+            && now - viewing.getOrDefault(c.socket().getId(), 0L) < 8_000);
+    }
+
+    private void recordRead(Connection c, ChatMessage message) {
+        String key = c.boardId() + ":" + c.user().id();
+        Criteria newer = new Criteria().orOperator(Criteria.where("messageCreatedAt").lt(message.createdAt()),
+            new Criteria().andOperator(Criteria.where("messageCreatedAt").is(message.createdAt()),
+                Criteria.where("messageId").lt(message.id())), Criteria.where("messageCreatedAt").exists(false));
+        Query query = Query.query(new Criteria().andOperator(Criteria.where("_id").is(key), newer));
+        Update update = new Update().set("boardId", c.boardId()).set("userId", c.user().id())
+            .set("userName", c.user().name()).set("messageId", message.id())
+            .set("messageCreatedAt", message.createdAt()).set("readAt", Instant.now());
+        try {
+            ChatRead receipt = mongo.findAndModify(query, update,
+                FindAndModifyOptions.options().upsert(true).returnNew(true), ChatRead.class);
+            for (Connection target : connections.values()) {
+                if (target.boardId().equals(c.boardId()) && authorized(target))
+                    send(target, Map.of("type", "read", "receipt", receipt));
+            }
+        } catch (DuplicateKeyException olderOrSame) { /* Monotonic cursor: no repeated or older receipt. */ }
     }
 
     private void send(Connection connection, Object payload) {
@@ -107,12 +155,14 @@ public class ChatSocketHandler extends TextWebSocketHandler {
 
     private void close(WebSocketSession socket, int code, String reason) {
         connections.remove(socket.getId());
+        viewing.remove(socket.getId());
         try { if (socket.isOpen()) socket.close(new CloseStatus(code, reason)); }
         catch (IOException ignored) { /* Ya se retiró de la difusión. */ }
     }
 
     @Override public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         connections.remove(session.getId());
+        viewing.remove(session.getId());
     }
     @Override public void handleTransportError(WebSocketSession session, Throwable exception) {
         close(session, 1011, "Error de transporte");

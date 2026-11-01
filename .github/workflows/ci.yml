@@ -247,7 +247,7 @@ jobs:
           pip install -r e2e/requirements.txt
           python -m playwright install --with-deps chromium
       - name: Web SSR de punta a punta (navegador real)
-        run: pytest e2e/test_web_ssr.py -v
+        run: python -m pytest e2e/test_web_ssr.py e2e/test_notifications.py -v
       - name: Correlación de logs (un X-Request-ID atraviesa gateway y servicios)
         run: |
           rid=$(curl -s -o /dev/null -D - -H 'X-Request-ID: ci-correlacion-0001' http://localhost:8088/api/boards | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')

@@ -10,6 +10,7 @@ import { Avatar } from "./Avatar";
 import { CollaBoardLogo } from "./CollaBoardLogo";
 
 interface TopBarProps {
+  onOpenNotifications?: () => void;
   /** Contenido central (p. ej. la cabecera del tablero). */
   children?: ReactNode;
   /** Bandeja renderizada en el servidor, para mostrar el contador sin esperar al cliente. */
@@ -18,7 +19,7 @@ interface TopBarProps {
   signOut?: ReactNode;
 }
 
-export function TopBar({ children, initialInbox, signOut }: TopBarProps) {
+export function TopBar({ children, initialInbox, signOut, onOpenNotifications }: TopBarProps) {
   const user = useSessionUser();
   const { pixelsUrl } = useClientConfig();
 
@@ -39,7 +40,7 @@ export function TopBar({ children, initialInbox, signOut }: TopBarProps) {
             <span>Pixels ↗</span>
           </a>
         )}
-        <NotificationBell initial={initialInbox} />
+        <NotificationBell initial={initialInbox} onOpen={onOpenNotifications} />
         <div className="topbar-user">
           <Avatar id={user.id} name={user.name} size={30} />
           <span className="topbar-name">{user.name}</span>

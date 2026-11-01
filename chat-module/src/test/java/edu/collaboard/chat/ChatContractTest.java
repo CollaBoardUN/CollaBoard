@@ -111,6 +111,7 @@ class ChatContractTest {
     }
 
     @BeforeEach void reset() {
+        mongo.dropCollection("read_receipts");
         messages.deleteAll();
         MEMBERS.clear(); MEMBERS.addAll(Set.of("ana", "beto"));
         COLLAB_DOWN.set(false); NOTIFY_DOWN.set(false); EVENTS.clear();
@@ -326,6 +327,33 @@ class ChatContractTest {
         post("ana", "en vivo", "live-message-1");
         browser.ping(); // si hubiera eco duplicado, next() devolvería message y fallaría
         assertThat(otherBoard.received).isEmpty();
+    }
+
+    @Test void viewingSuppressesNotificationsAndReadReceiptsPersistAndNeverMoveBackwards() throws Exception {
+        Probe reader = connect(token("beto"), false, null, "b1");
+        reader.socket.sendText("{\"type\":\"view\",\"active\":true}", true).join();
+        reader.ping();
+        String id = body(post("ana", "visible", "viewed-message-1")).path("id").asText();
+        assertThat(reader.next().path("type").asText()).isEqualTo("message");
+        assertThat(messages.findById(id).orElseThrow().notificationStatus()).isEqualTo("SENT");
+        reader.socket.sendText(JSON.writeValueAsString(Map.of("type", "view", "active", true, "message_id", id)), true).join();
+        JsonNode receipt = reader.next().path("receipt");
+        assertThat(receipt.path("user_id").asText()).isEqualTo("beto");
+        assertThat(receipt.path("message_id").asText()).isEqualTo(id);
+        reader.socket.sendText("{\"type\":\"receipts\"}", true).join();
+        assertThat(reader.next().path("receipts").get(0).path("message_id").asText()).isEqualTo(id);
+        reader.socket.sendText("{\"type\":\"view\",\"active\":false}", true).join();
+        reader.ping();
+        String hidden = body(post("ana", "cerrado", "hidden-message-1")).path("id").asText();
+        assertThat(messages.findById(hidden).orElseThrow().notificationStatus()).isEqualTo("PENDING");
+        reader.next(); // hidden message still arrives through WS; it was not marked read.
+        reader.socket.sendText(JSON.writeValueAsString(Map.of("type", "view", "active", true, "message_id", hidden)), true).join();
+        assertThat(reader.next().path("receipt").path("message_id").asText()).isEqualTo(hidden);
+        reader.socket.sendText(JSON.writeValueAsString(Map.of("type", "view", "active", true, "message_id", id)), true).join();
+        reader.ping(); // an older cursor must not emit another receipt
+        reader.socket.sendText("{\"type\":\"receipts\"}", true).join();
+        assertThat(reader.next().path("receipts").get(0).path("message_id").asText()).isEqualTo(hidden);
+
     }
 
     @Test void webSocketRejectsSessionAndMembershipAndUntrustedOrigins() throws Exception {

@@ -504,3 +504,33 @@
     gap: 0.5rem;
   }
 }
+
+/* Notification overlay lives above the header/canvas stacking contexts. */
+.inbox-panel { position: fixed; top: 72px; right: 16px; z-index: 200; width: min(440px, calc(100vw - 24px)); max-height: calc(100dvh - 88px); border-radius: 16px; box-shadow: 0 16px 60px rgb(15 23 42 / 0.2); }
+.inbox-head { align-items: center; padding: 16px; }
+.inbox-header-actions, .inbox-toolbar, .inbox-filters, .inbox-row-actions { display: flex; align-items: center; gap: 6px; }
+.inbox-toolbar { flex-wrap: wrap; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.inbox-filters { margin-right: auto; padding: 3px; background: var(--surface); border-radius: 8px; }
+.inbox-filters button, .inbox-action, .inbox-confirm button { border: 0; border-radius: 6px; padding: 7px 8px; background: transparent; color: inherit; font: inherit; font-size: 12px; cursor: pointer; }
+.inbox-filters button[aria-pressed="true"] { background: var(--board); color: var(--blue); box-shadow: 0 1px 3px #0001; }
+.inbox-action { display: inline-flex; align-items: center; gap: 4px; }
+.inbox-action:hover { background: var(--surface); }
+.inbox-danger { color: #b42332; }
+.inbox-panel button:disabled { opacity: 0.45; cursor: default; }
+.inbox-list { min-height: 0; overscroll-behavior: contain; padding: 6px; }
+.inbox-row { display: flex; border-radius: 10px; margin-bottom: 4px; border: 1px solid transparent; }
+.inbox-row.inbox-unread { background: #eff5ff; border-color: #e0eaff; }
+.inbox-row:hover { background: var(--surface); }
+.inbox-row .inbox-item { min-width: 0; flex: 1; padding: 12px 8px; }
+.inbox-row-actions { flex: none; align-self: flex-start; padding: 8px 4px 0 0; }
+.inbox-text { gap: 4px; overflow-wrap: anywhere; }
+.inbox-text strong { line-height: 1.4; }
+.inbox-preview { color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.inbox-empty { display: grid; justify-items: center; gap: 12px; text-align: center; padding: 36px 24px; color: var(--muted); }
+.inbox-foot { flex: none; padding: 10px 16px; font-size: 11px; }
+.inbox-confirm { padding: 10px 16px; background: #fff4f4; border-bottom: 1px solid #fee2e2; }
+.inbox-confirm p { margin: 0 0 6px; font-size: 13px; }
+@media (max-width: 540px) { .inbox-panel { top: 68px; right: 12px; max-height: calc(100dvh - 80px); } }
+
+.chat-read { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 5px; font-size: 10px; color: var(--muted); max-width: 280px; overflow-wrap: anywhere; }
+.chat-read-seen { color: #1366bb; }

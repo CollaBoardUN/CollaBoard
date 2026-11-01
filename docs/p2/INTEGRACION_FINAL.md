@@ -68,3 +68,29 @@ recargar para comprobar persistencia, enviar chat y recibir notificaciones.
 Revisar roles viewer/editor y probar Pixels. Después revisar el diff de esta
 rama contra main y publicar la integración cuando el responsable la apruebe.
 No se ha hecho push ni se ha modificado main remoto durante esta integración.
+
+
+## Bandeja y confirmaciones de lectura
+
+La bandeja permite marcar individualmente o leer todas, filtrar sin leer,
+borrar una notificación o borrar todas con confirmación. Leer no cierra el panel;
+abrir un tablero es una acción separada. Las operaciones masivas se aplican a
+la bandeja completa del usuario autenticado, incluyendo avisos fuera de la página visible.
+El borrado conserva internamente la unicidad evento/destinatario para evitar
+que una reentrega de RabbitMQ vuelva a crear un aviso borrado.
+
+El panel se muestra fuera de los contextos de apilamiento de la cabecera y abre
+cerrando el chat. Se refresca por REST cada segundo mientras la pestaña está visible;
+Chat publica su outbox cada 500 ms y NotificationAPI cada 500 ms. No se añade un servicio.
+
+Chat comunica por su WebSocket cuándo el panel está visible, enfocado y al final
+del historial. Esa presencia tiene una vigencia de 8 segundos, renovada cada 2 segundos.
+Los usuarios activos no se incluyen entre destinatarios de avisos redundantes.
+Los cursores de lectura se guardan en la colección `read_receipts` de la base de Chat;
+son monotónicos y se validan contra el tablero y la identidad de la conexión.
+La interfaz muestra quién vio cada mensaje propio y recupera las lecturas al reconectar.
+Un chat cerrado, oculto o leyendo más arriba no marca los mensajes nuevos como vistos.
+
+Validación de esta mejora: 144 pruebas web, 18 pruebas Java con MongoDB desechable,
+y 4 recorridos de navegador sobre servicios reales. En el recorrido de prueba,
+el aviso con chat cerrado apareció en 0,94 segundos; no es una garantía de latencia.

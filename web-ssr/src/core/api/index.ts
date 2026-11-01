@@ -80,6 +80,9 @@ export function notificationsApi(api: ApiClient) {
     list: (opts: { limit?: number } = {}, signal?: AbortSignal) =>
       api.get<NotificationList>(`/api/notifications${query({ limit: opts.limit ?? 20 })}`, signal),
     markRead: (id: string) => api.patch<AppNotification>(`/api/notifications/${enc(id)}/read`),
+    markAllRead: () => api.patch<{ updated: number }>("/api/notifications/read-all"),
+    remove: (id: string) => api.delete(`/api/notifications/${enc(id)}`),
+    removeAll: () => api.delete("/api/notifications"),
   };
 }
 

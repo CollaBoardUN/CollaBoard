@@ -25,7 +25,7 @@ public sealed class OutboxDispatcher : BackgroundService
             {
                 _logger.LogWarning("Outbox: publicación pendiente para reintento ({ErrorType})", error.GetType().Name);
             }
-            try { await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken); }
+            try { await Task.Delay(TimeSpan.FromMilliseconds(500), stoppingToken); }
             catch (OperationCanceledException) { break; }
         }
     }

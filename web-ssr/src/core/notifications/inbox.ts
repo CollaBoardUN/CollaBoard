@@ -66,13 +66,14 @@ export interface InboxControllerOptions {
 
 export class InboxController {
   private timer: ReturnType<typeof setInterval> | undefined;
+  private mutations = 0;
   private inFlight: AbortController | null = null;
 
   constructor(private readonly options: InboxControllerOptions) {}
 
   start(): void {
     void this.refresh();
-    this.timer = setInterval(() => void this.refresh(), this.options.pollEveryMs ?? 15_000);
+    this.timer = setInterval(() => void this.refresh(), this.options.pollEveryMs ?? 1_000);
     globalThis.document?.addEventListener("visibilitychange", this.onVisibility);
   }
 
@@ -84,7 +85,7 @@ export class InboxController {
 
   async refresh(): Promise<void> {
     if (globalThis.document?.visibilityState === "hidden") return;
-    this.inFlight?.abort();
+    if (this.mutations || this.inFlight) return;
     const controller = new AbortController();
     this.inFlight = controller;
     try {
@@ -95,6 +96,8 @@ export class InboxController {
       this.options.store.getState().setUnavailable(
         error instanceof ApiError && error.status !== 0 ? error.message : "La bandeja no está disponible ahora",
       );
+    } finally {
+      if (this.inFlight === controller) this.inFlight = null;
     }
   }
 
@@ -102,13 +105,29 @@ export class InboxController {
     const store = this.options.store.getState();
     const previous = store.markReadLocal(id, new Date().toISOString());
     if (!previous || previous.read_at) return;
+    this.mutations++;
+    this.inFlight?.abort();
+    this.inFlight = null;
     try {
       store.replace(await this.options.apis.notifications.markRead(id));
     } catch {
       store.replace(previous);
       throw new Error("No se pudo marcar como leída");
-    }
+    } finally { this.mutations--; }
   }
+
+  private async mutate(action: () => Promise<unknown>): Promise<void> {
+    this.mutations++;
+    this.inFlight?.abort();
+    this.inFlight = null;
+    try { await action(); }
+    finally { this.mutations--; }
+    await this.refresh();
+  }
+
+  markAllRead = () => this.mutate(() => this.options.apis.notifications.markAllRead());
+  remove = (id: string) => this.mutate(() => this.options.apis.notifications.remove(id));
+  removeAll = () => this.mutate(() => this.options.apis.notifications.removeAll());
 
   private readonly onVisibility = (): void => {
     if (globalThis.document?.visibilityState === "visible") void this.refresh();

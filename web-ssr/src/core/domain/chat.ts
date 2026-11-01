@@ -33,7 +33,18 @@ export interface SendChatMessage {
   client_message_id: string;
 }
 
+export interface ChatReadReceipt {
+  board_id: string;
+  user_id: string;
+  user_name: string;
+  message_id: string;
+  message_created_at: string;
+  read_at: string;
+}
+
 export type ChatServerMessage =
+  | { type: "read"; receipt: ChatReadReceipt }
+  | { type: "receipts"; receipts: ChatReadReceipt[] }
   | { type: "message"; message: ChatMessage }
   | { type: "error"; code: string; message: string }
   | { type: "pong" };

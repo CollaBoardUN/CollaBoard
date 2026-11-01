@@ -5,7 +5,7 @@
  */
 import { createStore, type StoreApi } from "zustand/vanilla";
 
-import { compareMessages, type ChatMessage, type ChatPage } from "../domain/chat";
+import { compareMessages, type ChatMessage, type ChatPage, type ChatReadReceipt } from "../domain/chat";
 
 export type LiveStatus = "connecting" | "online" | "polling" | "denied" | "closed";
 
@@ -19,6 +19,7 @@ export interface PendingMessage {
 }
 
 export interface ChatState {
+  receipts: ChatReadReceipt[];
   messages: ChatMessage[];
   pending: PendingMessage[];
   nextCursor: string | null;
@@ -29,6 +30,7 @@ export interface ChatState {
 }
 
 export interface ChatActions {
+  receiveReceipt: (receipt: ChatReadReceipt) => void;
   setHistoryLoading: () => void;
   setHistoryError: (message: string) => void;
   /** Primera página (o recarga completa). */
@@ -64,6 +66,8 @@ export function createChatStore(initial?: ChatPage | null): ChatStore {
   return createStore<ChatState & ChatActions>((set, get) => ({
     messages: initial ? [...initial.items].sort(compareMessages) : [],
     pending: [],
+    receipts: [],
+    receiveReceipt: (receipt) => set((state) => ({ receipts: [...state.receipts.filter((r) => r.user_id !== receipt.user_id), receipt] })),
     nextCursor: initial?.next_cursor ?? null,
     history: initial ? "ready" : "idle",
     historyError: null,

@@ -92,7 +92,7 @@ location = /ws/pixels {
 }
 
 # --- NotificationAPI (C#): /api/notifications[/{id}/read] -> ${NOTIFICATION_API_PATH_PREFIX}[...]
-location ~ "^/api/notifications(?:/[A-Za-z0-9_-]{1,64}/read)?$" {
+location ~ "^/api/notifications(?:/read-all|/[A-Za-z0-9_-]{1,64}(?:/read)?)?$" {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
   rewrite ^/api/notifications(.*)$ ${NOTIFICATION_API_PATH_PREFIX}$1 break;
   include /etc/nginx/snippets/proxy-common.conf;

@@ -37,6 +37,8 @@ export class ChatController {
   private pollTimer: ReturnType<typeof setInterval> | undefined;
   private pingTimer: ReturnType<typeof setInterval> | undefined;
   private catchingUp = false;
+  private viewing = false;
+  private viewedMessage = "";
 
   constructor(private readonly options: ChatControllerOptions) {}
 
@@ -133,6 +135,8 @@ export class ChatController {
       this.stopPolling();
       this.store.setLive("online");
       this.pingTimer = setInterval(() => this.ping(), this.options.pingEveryMs ?? 25_000);
+      socket.send(JSON.stringify({ type: "receipts" }));
+      this.reportView();
       void this.catchUp();
     };
     socket.onmessage = (event) => this.handle(event.data);
@@ -175,6 +179,17 @@ export class ChatController {
     if (socket.readyState <= SOCKET_OPEN) socket.close();
   }
 
+  setViewing(active: boolean, messageId = ""): void {
+    this.viewing = active;
+    this.viewedMessage = messageId;
+    this.reportView();
+  }
+
+  private reportView(): void {
+    if (this.socket?.readyState === SOCKET_OPEN)
+      this.socket.send(JSON.stringify({ type: "view", active: this.viewing, message_id: this.viewedMessage }));
+  }
+
   private ping(): void {
     if (this.socket?.readyState === SOCKET_OPEN) this.socket.send(JSON.stringify({ type: "ping" }));
   }
@@ -185,6 +200,10 @@ export class ChatController {
       message = JSON.parse(String(raw)) as ChatServerMessage;
     } catch {
       return;
+    }
+    if (message.type === "read" && message.receipt?.board_id === this.options.boardId) this.store.receiveReceipt(message.receipt);
+    if (message.type === "receipts" && Array.isArray(message.receipts)) {
+      message.receipts.filter((r) => r.board_id === this.options.boardId).forEach(this.store.receiveReceipt);
     }
     if (message.type === "message" && message.message?.board_id === this.options.boardId) {
       this.store.receive([message.message]);

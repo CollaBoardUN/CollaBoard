@@ -202,7 +202,14 @@ def test_recorrido_web_completo(browser: Browser):
     expect(beto.get_by_role("log").get_by_text(texto)).to_be_visible()
     expect(ana.get_by_role("log").get_by_text(texto)).to_be_visible(timeout=10_000)
 
-    # La bandeja de Ana recibe "Beto escribió en ..." (sondeo REST).
+    # Con el chat abierto no hay aviso redundante. Cerrarlo y recibir otro
+    # mensaje sí debe producir una notificación.
+    ana.get_by_role("button", name="Cerrar chat").click()
+    beto.get_by_label("Escribe un mensaje").fill("Aviso con chat cerrado")
+    beto.keyboard.press("Enter")
+    expect(beto.get_by_role("log").get_by_text("Aviso con chat cerrado")).to_be_visible()
+
+    # La bandeja de Ana recibe "Beto escribió en ...".
     bell = ana.get_by_role("button", name=re.compile(r"Notificaciones, \d+ sin leer"))
     expect(bell).to_be_visible(timeout=25_000)
     bell.click()

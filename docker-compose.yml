@@ -146,6 +146,7 @@ services:
       COLLABORATION_URL: http://collaboration-api:8000
       COLLABORATION_BOARDS_PATH: /boards
       NOTIFICATIONS_URL: http://notification-api:8080
+      NOTIFICATIONS_POLL_MS: "500"
       NOTIFICATIONS_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN:?Copia .env.example a .env}
       CHAT_ALLOWED_ORIGINS: ${CHAT_ALLOWED_ORIGINS:-http://localhost:8088,http://127.0.0.1:8088}
     depends_on:

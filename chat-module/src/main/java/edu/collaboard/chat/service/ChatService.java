@@ -90,7 +90,7 @@ public class ChatService {
         var existing = messages.findByBoardIdAndSenderIdAndClientMessageId(boardId, user.id(), clientMessageId);
         if (existing.isPresent()) return new SendResult(existing.get(), false);
         List<String> recipients = collaboration.memberIds(user.token(), boardId).stream()
-                .filter(id -> !id.equals(user.id())).distinct().toList();
+                .filter(id -> !id.equals(user.id()) && !sockets.isViewing(boardId, id)).distinct().toList();
         String messageId = UUID.randomUUID().toString();
         // MongoDB guarda milisegundos: la respuesta y los cursores deben usar
         // exactamente la misma precisión que la lectura posterior.
@@ -108,7 +108,7 @@ public class ChatService {
                 "preview", text.length() > 120 ? text.substring(0, 120) : text));
 
         ChatMessage message = new ChatMessage(messageId, boardId, user.id(), user.name(), text,
-                clientMessageId, now, event, "PENDING");
+                clientMessageId, now, event, recipients.isEmpty() ? "SENT" : "PENDING");
         try {
             // Mensaje y evento pendiente se insertan en UN documento atómico.
             // Funciona también con MongoDB standalone, sin transacciones multi-documento.

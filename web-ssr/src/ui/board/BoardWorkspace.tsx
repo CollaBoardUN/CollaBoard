@@ -51,7 +51,7 @@ export function BoardWorkspace({ board: initialBoard, canvas, initialCanvas, ini
 
   return (
     <div className={chatOpen ? "board-layout board-chat-open" : "board-layout"}>
-      <TopBar initialInbox={initialInbox} signOut={signOut}>
+      <TopBar initialInbox={initialInbox} signOut={signOut} onOpenNotifications={() => setChatOpen(false)}>
         <div className="board-head">
           <NavLink href="/" className="back" aria-label="Volver a mis tableros">
             ←
