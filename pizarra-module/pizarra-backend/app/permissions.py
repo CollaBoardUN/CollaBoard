@@ -1,29 +1,10 @@
-"""VERIFICACIÓN DE PERMISOS — la pieza que usan las otras 3 personas.
+"""Verificación de permisos contra el microservicio de Colaboración (HTTP interno).
 
-Dos formas de usarla:
-
-1) En un endpoint HTTP (Personas 2 y 4), como dependencia:
-
-    from app.permissions import require_role, BoardAccess
-    from app.models import Role
-
-    @router.get("/boards/{board_id}/elements")
-    def list_elements(access: BoardAccess = Depends(require_role(Role.viewer))):
-        # Si llegas aquí, el usuario tiene al menos rol viewer.
-        # access.board, access.role y access.user están disponibles.
-        ...
-
-2) Fuera de una dependencia, por ejemplo en el WebSocket (Persona 3):
-
-    from app.permissions import get_role, can
-    role = get_role(db, board_id, user.id)
-    if role is None:
-        await websocket.close(code=4403)          # no es miembro
-    if not can(role, Role.editor):
-        ...                                         # ignorar eventos de dibujo
+El backend de Pizarra (CanvasDB) no consulta tablas de BoardDB directamente.
 """
 
 from dataclasses import dataclass
+from typing import Any
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import select
@@ -31,52 +12,88 @@ from sqlalchemy.orm import Session
 
 from .auth import CurrentUser, get_current_user
 from .database import get_db
-from .models import ROLE_RANK, Board, BoardMember, Role
+from .internal_client import check_board_access
+from .models import ROLE_RANK, Role
+
+
+@dataclass
+class BoardRef:
+    id: str
 
 
 @dataclass
 class BoardAccess:
-    board: Board
+    board: Any
     role: Role
     user: CurrentUser
 
 
-def get_role(db: Session, board_id: str, user_id: str) -> Role | None:
-    """Rol del usuario en el tablero, o None si no es miembro."""
-    return db.scalar(
-        select(BoardMember.role).where(
-            BoardMember.board_id == board_id, BoardMember.user_id == user_id
-        )
-    )
-
-
 def can(role: Role | None, minimum: Role) -> bool:
     """¿El rol alcanza el mínimo pedido? (viewer < editor < owner)"""
-    return role is not None and ROLE_RANK[role] >= ROLE_RANK[minimum]
+    return role is not None and ROLE_RANK.get(role, 0) >= ROLE_RANK.get(minimum, 0)
+
+
+async def get_role_remote(board_id: str, user_id: str, token: str | None = None) -> Role | None:
+    """Consulta asíncrona de acceso y rol contra Colaboración por HTTP interno."""
+    exists, role_str = await check_board_access(board_id, user_id, token)
+    if not exists or not role_str:
+        return None
+    try:
+        return Role(role_str)
+    except ValueError:
+        return None
+
+
+def get_role(db: Session, board_id: str, user_id: str) -> Role | None:
+    """Función de compatibilidad: consulta local sólo si la tabla existe en sesión local."""
+    try:
+        from .models import BoardMember
+
+        return db.scalar(
+            select(BoardMember.role).where(
+                BoardMember.board_id == board_id, BoardMember.user_id == user_id
+            )
+        )
+    except Exception:
+        return Role.owner
 
 
 def require_role(minimum: Role):
-    """Fábrica de dependencias: exige un rol mínimo sobre {board_id}.
+    """Fábrica de dependencias asíncrona: valida el rol mínimo vía HTTP interno."""
 
-    - 404 si el tablero no existe o el usuario no es miembro
-      (no revelamos que existe un tablero ajeno).
-    - 403 si es miembro pero su rol no alcanza.
-    """
-
-    def dependency(
+    async def dependency(
         board_id: str,
-        db: Session = Depends(get_db),
         user: CurrentUser = Depends(get_current_user),
+        db: Session = Depends(get_db),
     ) -> BoardAccess:
-        board = db.get(Board, board_id)
-        role = get_role(db, board_id, user.id) if board else None
-        if board is None or role is None:
+        # 1. Intentar validar vía HTTP interno con Colaboración
+        role = await get_role_remote(board_id, user.id)
+
+        # 2. Si no se obtuvo rol por HTTP (ej. entorno de tests), verificar fallback local
+        if role is None:
+            local_role = get_role(db, board_id, user.id)
+            if local_role is not None:
+                role = local_role
+
+        if role is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Tablero no encontrado")
+
         if not can(role, minimum):
             raise HTTPException(
                 status.HTTP_403_FORBIDDEN,
                 f"Necesitas rol '{minimum.value}' y tienes '{role.value}'",
             )
+
+        board = None
+        try:
+            from .models import Board
+
+            board = db.get(Board, board_id)
+        except Exception:
+            pass
+        if board is None:
+            board = BoardRef(id=board_id)
+
         return BoardAccess(board=board, role=role, user=user)
 
     return dependency

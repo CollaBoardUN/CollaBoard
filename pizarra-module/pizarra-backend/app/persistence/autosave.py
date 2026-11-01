@@ -39,8 +39,9 @@ from ..config import (
     AUTOSAVE_SNAPSHOT_EVERY_SECONDS,
 )
 from ..database import SessionLocal
+from ..internal_client import notify_board_saved
 from ..realtime.rooms import Room, manager
-from .store import BoardGone, create_version, save_state
+from .store import BoardGone, content_hash, create_version, save_state
 
 log = logging.getLogger(__name__)
 
@@ -91,12 +92,23 @@ class Autosaver:
         self._tasks: dict[str, asyncio.Task] = {}
         self._background: set[asyncio.Task] = set()  # guardados finales en curso
         self._locks: dict[str, asyncio.Lock] = {}
+        self._purged: set[str] = set()
         self._closing = False
+
+    def mark_purged(self, board_id: str) -> None:
+        """Marca un tablero como purgado para bloquear cualquier autosave tardío."""
+        self._purged.add(board_id)
+        self._pending.pop(board_id, None)
+        task = self._tasks.pop(board_id, None)
+        if task and not task.done():
+            task.cancel()
 
     # ------------------------------------------------------------ enganche
 
     async def on_ops(self, board_id: str, seq: int, ops: list[dict]) -> None:
         """Se llama por cada lote aplicado. Debe ser rápido: solo marca y agenda."""
+        if board_id in self._purged:
+            return
         room = self._manager.rooms.get(board_id)
         if room is None:
             return
@@ -147,7 +159,11 @@ class Autosaver:
         con el estado actual, aunque ya estuviera guardado.
         """
         board_id = room.board_id
+        if board_id in self._purged:
+            return
         async with self.board_lock(board_id):
+            if board_id in self._purged:
+                return
             pending = self._pending.pop(board_id, None)
             if pending is None and not final:
                 return
@@ -183,9 +199,21 @@ class Autosaver:
             await self._maybe_snapshot(board_id, elements, seq, final)
 
         if pending is not None:
+            saved_time = datetime.now(UTC).isoformat()
             await room.broadcast(
-                {"type": "saved", "seq": seq, "saved_at": datetime.now(UTC).isoformat()}
+                {"type": "saved", "seq": seq, "saved_at": saved_time}
             )
+            # Notificación HTTP interna a Colaboración (PATCH /internal/boards/{id}/metadata)
+            metadata = {
+                "seq": seq,
+                "element_count": len(elements),
+                "state_hash": content_hash(elements),
+                "saved_at": saved_time,
+            }
+            try:
+                asyncio.create_task(notify_board_saved(board_id, metadata))
+            except Exception:
+                log.warning("No se pudo programar notificación de guardado para %s", board_id)
 
     async def flush_final(self, room: Room) -> None:
         """Guardado final de una sala que se quedó vacía (incluye la versión automática).

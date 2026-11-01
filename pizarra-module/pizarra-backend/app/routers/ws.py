@@ -31,12 +31,11 @@ import logging
 import time
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
-from starlette.concurrency import run_in_threadpool
 
 from ..auth import decode_token
 from ..database import SessionLocal
 from ..models import Role
-from ..permissions import can, get_role
+from ..permissions import can, get_role, get_role_remote
 from ..persistence.autosave import autosaver
 from ..realtime.rooms import Connection, manager
 from ..realtime.validation import clean_cursor
@@ -52,9 +51,12 @@ MAX_MESSAGE_BYTES = 2_000_000
 ROLE_RECHECK_SECONDS = 5.0
 
 
-def _role_of(board_id: str, user_id: str) -> Role | None:
-    with SessionLocal() as db:
-        return get_role(db, board_id, user_id)
+async def _role_of(board_id: str, user_id: str) -> Role | None:
+    role = await get_role_remote(board_id, user_id)
+    if role is None:
+        with SessionLocal() as db:
+            role = get_role(db, board_id, user_id)
+    return role
 
 
 async def _error(conn: Connection, code: str, message: str) -> None:
@@ -74,7 +76,7 @@ async def board_ws(websocket: WebSocket, board_id: str, token: str = "") -> None
         await websocket.close(code=CLOSE_UNAUTHORIZED, reason="Token inválido")
         return
 
-    role = await run_in_threadpool(_role_of, board_id, user.id)
+    role = await _role_of(board_id, user.id)
     if role is None:
         await websocket.close(code=CLOSE_FORBIDDEN, reason="No eres miembro del tablero")
         return
@@ -112,7 +114,7 @@ async def board_ws(websocket: WebSocket, board_id: str, token: str = "") -> None
             # Así, si el owner quita o degrada a alguien, el cambio se aplica enseguida.
             now = time.monotonic()
             if kind == "ops" or now - last_check > ROLE_RECHECK_SECONDS:
-                current = await run_in_threadpool(_role_of, board_id, user.id)
+                current = await _role_of(board_id, user.id)
                 last_check = now
                 if current is None:
                     await websocket.close(code=CLOSE_FORBIDDEN, reason="Ya no eres miembro")

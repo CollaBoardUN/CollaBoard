@@ -23,3 +23,7 @@ coverage/
 .idea/
 .DS_Store
 *.log
+
+# Rust
+target/
+**/target/

@@ -40,7 +40,9 @@ services:
     container_name: collaboard-pizarra-backend
     restart: unless-stopped
     environment:
+      CANVAS_DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
       DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
+      COLABORACION_SERVICE_URL: http://colaboracion-backend:8000
       JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
       JWT_ALGORITHM: HS256
       FRONTEND_URL: http://localhost:5173
@@ -90,7 +92,9 @@ services:
     container_name: collaboard-colaboracion-backend
     restart: unless-stopped
     environment:
+      CANVAS_DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
       DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
+      COLABORACION_SERVICE_URL: http://colaboracion-backend:8000
       JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
       JWT_ALGORITHM: HS256
       FRONTEND_URL: http://localhost:5173
@@ -137,6 +141,7 @@ services:
     container_name: collaboard-pixels-backend
     restart: unless-stopped
     environment:
+      - PIXELS_MONGO_URI=mongodb://pixels-nosql-db:27017
       - MONGODB_URL=mongodb://pixels-nosql-db:27017
       - DATABASE_NAME=collaboard_pixels
       - CANVAS_WIDTH=200
