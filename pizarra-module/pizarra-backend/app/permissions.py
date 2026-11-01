@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from fastapi import Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import inspect, select
 from sqlalchemy.orm import Session
 
 from .auth import CurrentUser, get_current_user
@@ -89,7 +89,10 @@ def require_role(minimum: Role):
         try:
             from .models import Board
 
-            board = db.get(Board, board_id)
+            # CanvasDB ya no tiene `boards` (la autoridad es Colaboración/BoardDB).
+            # Consultarla sin comprobar dejaba un ERROR en Postgres por petición.
+            if inspect(db.get_bind()).has_table("boards"):
+                board = db.get(Board, board_id)
         except Exception:
             pass
         if board is None:

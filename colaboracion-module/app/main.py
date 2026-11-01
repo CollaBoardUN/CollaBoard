@@ -23,6 +23,15 @@ from .routers import boards, dev_auth, internal, invites
 
 log = logging.getLogger("collaboard.colaboracion")
 
+# Uvicorn solo configura sus propios loggers: sin esto, los INFO de la app (la
+# línea "http request_id=...") se descartaban y no había correlación en los logs.
+_app_log = logging.getLogger("collaboard")
+if not _app_log.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(levelname)s %(name)s %(message)s"))
+    _app_log.addHandler(_handler)
+    _app_log.setLevel(logging.INFO)
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
