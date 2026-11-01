@@ -1,19 +1,20 @@
-# Docker Compose para el Módulo Lógico de Colaboración (Tableros, Miembros, Roles y Permisos)
+# Docker Compose del Módulo Lógico de Colaboración (Paquete B)
+# Despliega BoardDB (exclusiva de Colaboración) y colaboracion-backend.
 services:
-  colaboracion-db:
+  board-db:
     image: postgres:16-alpine
-    container_name: colaboracion-postgres-db
+    container_name: collaboard-board-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: pizarra
+      POSTGRES_DB: boards
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - colaboracion_pgdata:/var/lib/postgresql/data
+      - board_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d pizarra"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d boards"]
       interval: 3s
       timeout: 3s
       retries: 20
@@ -27,21 +28,34 @@ services:
     container_name: colaboracion-backend
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+psycopg://postgres:postgres@colaboracion-db:5432/pizarra
+      BOARD_DATABASE_URL: postgresql+psycopg://postgres:postgres@board-db:5432/boards
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@board-db:5432/boards
       JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
       JWT_ALGORITHM: HS256
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
-      AUTH_DEV_MODE: ${AUTH_DEV_MODE:-true}
+      JWT_ISSUER: ${JWT_ISSUER:-collaboard-auth}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8088}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:8088,http://127.0.0.1:8088,http://localhost:5173}
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:-token-de-servicio-solo-desarrollo}
+      NOTIFICATIONS_URL: ${NOTIFICATIONS_URL:-http://notification-api:8085}
+      PIZARRA_INTERNAL_URL: ${PIZARRA_INTERNAL_URL:-http://pizarra-backend:8000}
+      CHAT_INTERNAL_URL: ${CHAT_INTERNAL_URL:-http://chat-api:8090}
+      AUTH_DEV_MODE: ${AUTH_DEV_MODE:-false}
     ports:
-      - "8000:8000"
+      - "8002:8000"
     depends_on:
-      colaboracion-db:
+      board-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
     networks:
       - colaboracion-network
 
 volumes:
-  colaboracion_pgdata:
+  board_pgdata:
     driver: local
 
 networks:

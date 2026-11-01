@@ -1,8 +1,8 @@
 """Login FALSO para desarrollo — solo existe si AUTH_DEV_MODE=true.
 
 Permite usar y probar el frontend mientras el módulo de auth real no está
-listo: emite un JWT firmado con la misma clave y formato ("sub", "name")
-que debe usar el módulo real. Cuando el login real exista, se pone
+listo: emite un JWT firmado con la misma clave y formato ("sub", "name", "iss", "exp")
+que usa el módulo de autenticación en Go. Cuando el login real está activo, se pone
 AUTH_DEV_MODE=false y este endpoint desaparece.
 """
 
@@ -12,7 +12,7 @@ import jwt
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from ..config import JWT_ALGORITHM, JWT_SECRET
+from ..config import JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET
 
 router = APIRouter(prefix="/dev", tags=["Solo desarrollo"])
 
@@ -32,6 +32,7 @@ def dev_token(data: DevLogin):
     payload = {
         "sub": data.user_id,
         "name": data.name or data.user_id,
+        "iss": JWT_ISSUER,
         "exp": datetime.now(UTC) + timedelta(days=7),
     }
     return TokenOut(access_token=jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM))

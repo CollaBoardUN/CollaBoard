@@ -11,18 +11,21 @@ Flujo:
   2. Lo copia y lo manda (WhatsApp, correo...): http://front/join/<token>
   3. El otro usuario abre el link, inicia sesión si hace falta,
      ve el nombre del tablero y pulsa "Unirme".
+  4. Al aceptar (si es miembro nuevo o sube de rol), se persiste en la misma
+     transacción el evento `invite.accepted` hacia el propietario en el outbox.
 """
 
 from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..auth import CurrentUser, get_current_user
-from ..config import FRONTEND_URL
+from ..config import FRONTEND_URL, OUTBOX_ENABLED
 from ..database import get_db
-from ..models import ROLE_RANK, BoardMember, Invite, Role
+from ..models import ROLE_RANK, BoardMember, BoardStatus, Invite, Role
+from ..outbox import dispatch_pending_once, enqueue_invite_accepted
 from ..permissions import BoardAccess, get_role, require_role
 from ..schemas import InviteCreate, InviteOut, InvitePreview, JoinResult
 
@@ -38,6 +41,8 @@ def _as_utc(dt: datetime | None) -> datetime | None:
 
 def _is_active(invite: Invite) -> bool:
     if invite.revoked:
+        return False
+    if invite.board is None or invite.board.status != BoardStatus.active.value:
         return False
     exp = _as_utc(invite.expires_at)
     return exp is None or exp > datetime.now(UTC)
@@ -135,6 +140,7 @@ def preview_invite(
 @router.post("/invites/{token}/accept", response_model=JoinResult)
 def accept_invite(
     token: str,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     user: CurrentUser = Depends(get_current_user),
 ):
@@ -145,6 +151,7 @@ def accept_invite(
         )
     )
 
+    changed = False
     if member is None:
         member = BoardMember(
             board_id=invite.board_id,
@@ -154,11 +161,26 @@ def accept_invite(
         )
         db.add(member)
         invite.uses += 1
+        changed = True
     elif ROLE_RANK[invite.role] > ROLE_RANK[member.role]:
         # Si ya era viewer y el link es de editor, sube de rol.
         # Nunca bajamos de rol a alguien por abrir un link.
         member.role = invite.role
         invite.uses += 1
+        changed = True
+
+    if changed:
+        enqueue_invite_accepted(
+            db,
+            board=invite.board,
+            actor_id=user.id,
+            actor_name=user.display_name,
+            role=member.role,
+        )
 
     db.commit()
+
+    if changed and OUTBOX_ENABLED:
+        background_tasks.add_task(dispatch_pending_once)
+
     return JoinResult(board_id=invite.board_id, role=member.role)

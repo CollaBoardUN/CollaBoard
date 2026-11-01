@@ -1,64 +1,34 @@
-# Módulo Lógico de Colaboración - CollaBoard
+# CollaBoard — Módulo Lógico de Colaboración (Paquete B)
 
-Este módulo encapsula la **lógica de negocio de tableros y colaboradores** (Persona 1) de la plataforma CollaBoard. Es un microservicio de backend desacoplado que define y aplica las reglas de gobernanza, acceso y compartición de tableros.
+Autoridad única de **tableros, miembros, roles (`owner`, `editor`, `viewer`), invitaciones por enlace, autorización interna (`/internal/*`) y outbox transaccional** sobre **BoardDB** (`board-db` en PostgreSQL).
 
----
+## Responsabilidades en el Prototipo 2
 
-## Responsabilidades del Módulo
+1. **Dominio exclusivo de tableros (`BoardDB`):**
+   - Tablas propias: `boards`, `board_members`, `board_invites`, `outbox_events`.
+   - Cero tablas de usuarios (`UserDB`) ni de lienzo/versiones (`CanvasDB`).
+2. **Autorización interna por HTTP (`/internal/*`):**
+   - `GET /internal/boards/{board_id}/access` — valida existencia, estado activo y rol del usuario (`owner`, `editor`, `viewer`).
+   - `GET /internal/boards/{board_id}/recipients` — lista destinatarios autorizados de un tablero excluyendo al actor.
+   - `PATCH /internal/boards/{board_id}/metadata` — recibe el callback de guardado de Pizarra sin permitir que un autosave tardío resucite tableros borrados.
+3. **Sesión compatible con Web SSR y cliente local Electron:**
+   - Acepta `Authorization: Bearer <JWT>` o cookie HttpOnly `cb_session`, validando `iss="collaboard-auth"` y verificando `Origin` en operaciones mutantes con cookie.
+4. **Outbox transaccional y borrado coordinado:**
+   - Al aceptar una invitación (`POST /invites/{token}/accept`), persiste en la misma transacción SQL el evento `invite.accepted` dirigido al propietario y lo despacha con reintentos hacia `POST {NOTIFICATIONS_URL}/internal/events` conservando el mismo `event_id`.
+   - Al borrar un tablero (`DELETE /boards/{board_id}`), cambia `status="deleting"`, bloquea accesos e invitaciones de inmediato, y despacha `DELETE` idempotentes hacia Canvas y Chat antes de marcar `status="deleted"`.
 
-1. **Gestión de Tableros (CRUD):**
-   - Crear, listar, renombrar y eliminar tableros.
-2. **Control de Acceso y Roles:**
-   - Roles soportados: **dueño** (`owner`), **editor** (`editor`) y **solo ver** (`viewer`).
-   - Función centralizada `require_role(role)` para proteger recursos.
-3. **Membresías de Colaboradores:**
-   - Asignar o cambiar roles de miembros.
-   - Quitar miembros o permitir que un colaborador abandone el tablero.
-4. **Enlaces de Invitación:**
-   - Generación de links de invitación únicos con rol preasignado y fecha de caducidad.
-   - Endpoint seguro para unirse a un tablero mediante link (`POST /join/{token}`).
-   - Subida automática de permisos si un usuario `viewer` abre un link de `editor`.
-
----
-
-## Estructura del Módulo
-
-```
-colaboracion-module/
-├── Dockerfile
-├── docker-compose.yml
-├── README.md
-├── requirements.txt
-├── requirements-dev.txt
-├── alembic.ini
-├── pyproject.toml
-├── migrations/             (Migraciones de tablas boards, board_members, board_invites)
-├── tests/                  (Pruebas unitarias y de integración)
-└── app/
-    ├── main.py             (FastAPI con endpoints de tableros e invitaciones)
-    ├── auth.py             (Adaptador de lectura de JWT)
-    ├── permissions.py      (require_role, get_role, can)
-    ├── models.py           (Modelos SQLAlchemy: Board, BoardMember, BoardInvite, Role)
-    ├── schemas.py          (Esquemas Pydantic para requests y responses)
-    ├── database.py         (Conexión a PostgreSQL y sesiones)
-    ├── config.py           (Configuración y variables de entorno)
-    └── routers/
-        ├── boards.py       (Endpoints CRUD y miembros)
-        ├── invites.py      (Endpoints de enlaces y unión)
-        └── dev_auth.py     (Login de desarrollo)
-```
-
----
-
-## Cómo Ejecutar el Módulo
-
-### Con Docker Compose
-Desde esta carpeta (`colaboracion-module/`):
+## Ejecución local y pruebas
 
 ```bash
-docker compose up --build
+cd colaboracion-module
+python -m pip install -r requirements-dev.txt
+python -m pytest -q
+python -m ruff check .
 ```
 
-- **Documentación Swagger:** http://localhost:8000/docs
-- **Health Check:** http://localhost:8000/health
-- **PostgreSQL:** localhost:5432
+Con Docker Compose (levanta `board-db` en el puerto `5433` y `colaboracion-backend` en `8002`):
+
+```bash
+docker compose up --build -d
+curl http://localhost:8002/health
+```

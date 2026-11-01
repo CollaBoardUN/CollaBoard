@@ -16,15 +16,19 @@ type Config struct {
 }
 
 func Load() (Config, error) {
+	dbURL := os.Getenv("USER_DATABASE_URL")
+	if dbURL == "" {
+		dbURL = os.Getenv("AUTH_DATABASE_URL")
+	}
 	c := Config{
 		Port:        env("AUTH_PORT", "8001"),
-		DatabaseURL: os.Getenv("AUTH_DATABASE_URL"),
+		DatabaseURL: dbURL,
 		JWTSecret:   os.Getenv("JWT_SECRET"),
-		FrontendURL: strings.TrimRight(env("FRONTEND_URL", "http://localhost:5173"), "/"),
+		FrontendURL: strings.TrimRight(env("FRONTEND_URL", "http://localhost:8088"), "/"),
 		TokenTTL:    time.Hour,
 	}
 	if c.DatabaseURL == "" {
-		return c, errors.New("AUTH_DATABASE_URL es obligatorio")
+		return c, errors.New("USER_DATABASE_URL o AUTH_DATABASE_URL es obligatorio")
 	}
 	if len(c.JWTSecret) < 32 {
 		return c, errors.New("JWT_SECRET debe contener al menos 32 bytes")

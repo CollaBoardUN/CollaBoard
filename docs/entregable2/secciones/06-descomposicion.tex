@@ -20,37 +20,47 @@ dos presentaciones (\code{web-ssr/src/core} y \code{ui} en el cliente local).
   mod/.style={font=\sffamily\footnotesize\bfseries, text=cbIndigoDark},
   [\textbf{CollaBoard/} {\color{cbMuted}(monorepositorio)}, mod
     [web-ssr/ {\color{cbMuted}· TypeScript · A}, mod
-      [app/ {\color{cbMuted}rutas SSR, Server Actions, BFF}]
-      [server/ {\color{cbMuted}DAL, sesión, gateway}]
-      [ui/ {\color{cbMuted}componentes React compartidos}]
-      [core/ {\color{cbMuted}dominio, transporte, tiempo real, chat, bandeja}]
-      [dev/ {\color{cbMuted}mocks de Chat y Notificaciones, gateway de desarrollo}]
+      [src/app/ {\color{cbMuted}rutas SSR, Server Actions, BFF (\texttt{/bff/[...path]})}]
+      [src/server/ {\color{cbMuted}DAL, sesión \texttt{cb\_session}, gateway}]
+      [src/ui/ {\color{cbMuted}dashboard, canvas, chat, campana de notificaciones}]
+      [src/core/ {\color{cbMuted}dominio, transporte, tiempo real, chat, bandeja}]
+      [dev/ {\color{cbMuted}mocks de desarrollo y gateway Nginx local}]
     ]
     [desktop-client/ {\color{cbMuted}· TypeScript · F}, mod
-      [main/ {\color{cbMuted}proceso principal: sesión, HTTP y WS}]
-      [preload/ {\color{cbMuted}puente IPC mínimo}]
-      [renderer/ {\color{cbMuted}monta \texttt{ui/} con el adaptador Electron}]
+      [main/ {\color{cbMuted}proceso principal: sesión Bearer, HTTP y WS}]
+      [preload/ {\color{cbMuted}puente IPC acotado con \texttt{contextIsolation}}]
+      [renderer/ {\color{cbMuted}monta \texttt{ui/} con \texttt{electronTransport}}]
     ]
     [gateway/ {\color{cbMuted}· Nginx · F}, mod]
     [authentication-module/ {\color{cbMuted}· Go · B}, mod
-      [{cmd/server, internal/httpapi, security, users, database}]
+      [cmd/server/ {\color{cbMuted}punto de entrada HTTP y apagado limpio}]
+      [internal/httpapi/ {\color{cbMuted}\texttt{/auth/register}, \texttt{/auth/login}, \texttt{/auth/me}, limitador}]
+      [internal/security/ {\color{cbMuted}Argon2id (\texttt{password.go}) y JWT HS256 (\texttt{token.go})}]
+      [internal/users/ {\color{cbMuted}\texttt{PostgresRepository} sobre \texttt{auth.users}}]
+      [internal/database/ {\color{cbMuted}conexión \texttt{pgx} y migraciones \texttt{goose} en \texttt{UserDB}}]
     ]
     [colaboracion-module/ {\color{cbMuted}· Python · B}, mod
-      [{app/routers, permissions, models, migrations/}]
+      [app/routers/ {\color{cbMuted}\texttt{boards.py}, \texttt{invites.py}, \texttt{internal.py} (\texttt{/internal/*})}]
+      [app/permissions.py {\color{cbMuted}autoridad de roles (\texttt{viewer}, \texttt{editor}, \texttt{owner}) y estado activo}]
+      [app/auth.py {\color{cbMuted}validación JWT Bearer o cookie \texttt{cb\_session} + \texttt{Origin}}]
+      [app/outbox.py {\color{cbMuted}despachador transaccional (\texttt{invite.accepted} y limpieza)}]
+      [app/models.py {\color{cbMuted}\texttt{Board}, \texttt{BoardMember}, \texttt{Invite}, \texttt{OutboxEvent}}]
+      [migrations/ {\color{cbMuted}Alembic propietario exclusivo de \texttt{BoardDB}}]
     ]
     [pizarra-module/pizarra-backend/ {\color{cbMuted}· Python · C y D}, mod
-      [{routers/ws, realtime/ {\color{cbMuted}(C)}}]
-      [{persistence/, migrations/ {\color{cbMuted}(D)}}]
+      [{app/routers/ws.py, app/realtime/ {\color{cbMuted}salas, orden \texttt{seq}, presencia (C)}}]
+      [{app/persistence/, app/routers/versions.py, app/routers/internal\_canvas.py {\color{cbMuted}autosave, versiones y purga (D)}}]
+      [{app/internal\_client.py, migrations/ {\color{cbMuted}cliente HTTP hacia Colaboración y \texttt{CanvasDB} (D)}}]
     ]
     [chat-module/ {\color{cbMuted}· Java · C}, mod
-      [{api, websocket, domain, persistence}]
+      [{api/, realtime/, security/, service/, data/ {\color{cbMuted}REST, WS, JWT, \texttt{CollaborationClient}, MongoDB}} ]
     ]
-    [pixels-module/pixel-backend/ {\color{cbMuted}· Python · D}, mod]
+    [pixels-module/ {\color{cbMuted}· Python/Rust + React · D}, mod]
     [notifications-module/ {\color{cbMuted}· C\# · E}, mod
-      [NotificationApi/ {\color{cbMuted}eventos, outbox, bandeja}]
-      [MessageWorker/ {\color{cbMuted}consumidor idempotente}]
+      [NotificationApi/ {\color{cbMuted}\texttt{POST /internal/events}, outbox, bandeja REST}]
+      [MessageWorker/ {\color{cbMuted}consumidor AMQP idempotente y DLQ}]
     ]
-    [{docs/, e2e/, .github/workflows/ {\color{cbMuted}· documentación, pruebas de punta a punta, CI}}, mod]
+    [{scripts/, docs/, e2e/, .github/workflows/ {\color{cbMuted}· migración P1$\rightarrow$P2, contratos, E2E y CI}}, mod]
   ]
 \end{forest}
 \caption{Módulos y submódulos del repositorio. La letra indica el paquete de trabajo responsable.}
@@ -65,14 +75,14 @@ dos presentaciones (\code{web-ssr/src/core} y \code{ui} en el cliente local).
   \encabezado \hd{Módulo} & \hd{Lenguaje} & \hd{Responsabilidad} & \hd{Depende de} \\
   \endhead
   \code{web-ssr} & TypeScript & Presentación web con SSR; aporta \code{core/} y \code{ui/} reutilizables & contratos HTTP/WS \\
-  \rowcolor{cbGray} \code{desktop-client} & TypeScript & Presentación de escritorio & \code{web-ssr/core}, \code{ui} \\
-  \code{gateway} & Nginx (config.) & Enrutamiento público y proxy WebSocket & rutas de cada API \\
-  \rowcolor{cbGray} \code{authentication-module} & Go & Identidad y emisión de JWT & — \\
-  \code{colaboracion-module} & Python & Tableros, roles, invitaciones, autorización interna & JWT \\
-  \rowcolor{cbGray} \code{pizarra-module} & Python & Tiempo real del dibujo, estado e historial & JWT, contrato de acceso \\
-  \code{chat-module} & Java & Conversación por tablero & JWT, acceso, eventos \\
-  \rowcolor{cbGray} \code{pixels-module} & Python & Lienzo colectivo de píxeles & — \\
-  \code{notifications-module} & C\# & API de notificaciones y \textit{worker} & contrato de eventos \\
+  \rowcolor{cbGray} \code{desktop-client} & TypeScript & Presentación de escritorio (Electron) & \code{web-ssr/core}, \code{ui} \\
+  \code{gateway} & Nginx (config.) & Enrutamiento público, bloqueo de \code{/internal/*} y proxy WS & rutas de cada API \\
+  \rowcolor{cbGray} \code{authentication-module} & Go & Registro, login, Argon2id y emisión de JWT sobre \code{UserDB} & — \\
+  \code{colaboracion-module} & Python & Autoridad única de tableros, miembros, invitaciones, \code{/internal/boards/*} y outbox sobre \code{BoardDB} & JWT, contrato de eventos y limpieza \\
+  \rowcolor{cbGray} \code{pizarra-module} & Python & Salas de dibujo WS, estado JSONB e historial sobre \code{CanvasDB} & JWT, \code{/internal/boards/\{id\}/access} y \code{/metadata} \\
+  \code{chat-module} & Java & Historial paginado, difusión WS y evento \code{chat.message.created} sobre MongoDB (\code{chat}) & JWT, \code{/internal/boards/\{id\}/access}, eventos \\
+  \rowcolor{cbGray} \code{pixels-module} & Python / Rust & Lienzo compartido $200\times 200$ y \textit{cooldown} sobre \code{PixelDB} & — \\
+  \code{notifications-module} & C\# & Recepción de eventos internos, outbox hacia RabbitMQ, \textit{worker} idempotente y bandeja sobre \code{NotificationDB} & JWT, contrato \code{/internal/events}, AMQP \\
   \bottomrule
   \caption{Módulos del sistema. \emph{Depende de} se refiere a contratos, no a código importado.}
   \label{tab:modulos}
@@ -81,14 +91,9 @@ dos presentaciones (\code{web-ssr/src/core} y \code{ui} en el cliente local).
 \subsection{Reglas de dependencia y patrones}
 
 \begin{itemize}
-  \item \textbf{Sin dependencias de código entre servicios}: ningún módulo de backend importa código de otro; se integran solo por contratos HTTP, WebSocket y eventos documentados en \code{docs/}.
+  \item \textbf{Sin dependencias de código ni de base de datos entre servicios}: ningún módulo de backend importa paquetes de otro ni consulta tablas ajenas; se integran exclusivamente por contratos HTTP internos (\code{/internal/*}), WebSocket y eventos documentados en \code{docs/p2/}.
   \item \textbf{Una sola reutilización de código, deliberada}: el cliente local usa \code{web-ssr/src/core} y \code{ui}. Una regla de ESLint garantiza que esas carpetas no dependen de Next.js.
-  \item \textbf{Cada tabla tiene una sola migración propietaria}: Colaboración es dueña de \code{boards}; Pizarra de \code{board\_states} y \code{board\_versions}; Auth de \code{auth.users}.
-  \item \textbf{Un módulo, varios procesos}: \code{notifications-module} se compila en dos proyectos (API y \textit{worker}) que comparten el dominio.
-  \item \textbf{Patrones}: descomposición por \emph{bounded context} del dominio, módulos con despliegue independiente, separación interfaz/implementación (\code{Transport}, adaptadores).
+  \item \textbf{Cada tabla tiene una sola migración propietaria}: Auth gobierna \code{auth.users} en \code{UserDB}; Colaboración gobierna \code{boards}, \code{board\_members}, \code{board\_invites} y \code{outbox\_events} en \code{BoardDB}; Pizarra gobierna \code{board\_states}, \code{board\_versions} y \code{purged\_boards} en \code{CanvasDB}.
+  \item \textbf{Un módulo, varios procesos}: \code{notifications-module} se compila en dos ejecutables independientes (API y \textit{worker}) que comparten el dominio de notificaciones.
+  \item \textbf{Patrones}: descomposición por \emph{bounded context} del dominio, \emph{Database per Service}, \emph{Transactional Outbox} y separación puerto/adaptador (\code{Transport}, clientes HTTP internos).
 \end{itemize}
-
-\begin{pendiente}{David y Estefan (descomposición)}
-Completar el árbol con los nombres reales de los submódulos de cada servicio al cierre del 1 de
-noviembre y verificar la columna \emph{Depende de}.
-\end{pendiente}

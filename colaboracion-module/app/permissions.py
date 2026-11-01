@@ -1,26 +1,7 @@
-"""VERIFICACIÓN DE PERMISOS — la pieza que usan las otras 3 personas.
+"""VERIFICACIÓN DE PERMISOS — autoridad única de acceso a tableros.
 
-Dos formas de usarla:
-
-1) En un endpoint HTTP (Personas 2 y 4), como dependencia:
-
-    from app.permissions import require_role, BoardAccess
-    from app.models import Role
-
-    @router.get("/boards/{board_id}/elements")
-    def list_elements(access: BoardAccess = Depends(require_role(Role.viewer))):
-        # Si llegas aquí, el usuario tiene al menos rol viewer.
-        # access.board, access.role y access.user están disponibles.
-        ...
-
-2) Fuera de una dependencia, por ejemplo en el WebSocket (Persona 3):
-
-    from app.permissions import get_role, can
-    role = get_role(db, board_id, user.id)
-    if role is None:
-        await websocket.close(code=4403)          # no es miembro
-    if not can(role, Role.editor):
-        ...                                         # ignorar eventos de dibujo
+Un tablero con `status != "active"` (`deleting` o `deleted`) se comporta como
+inexistente (404) para bloquear cualquier acceso, dibujo, chat o invitación.
 """
 
 from dataclasses import dataclass
@@ -31,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from .auth import CurrentUser, get_current_user
 from .database import get_db
-from .models import ROLE_RANK, Board, BoardMember, Role
+from .models import ROLE_RANK, Board, BoardMember, BoardStatus, Role
 
 
 @dataclass
@@ -41,8 +22,19 @@ class BoardAccess:
     user: CurrentUser
 
 
+def get_active_board(db: Session, board_id: str) -> Board | None:
+    """Devuelve el tablero solo si existe y su estado es 'active'."""
+    board = db.get(Board, board_id)
+    if board is None or board.status != BoardStatus.active.value:
+        return None
+    return board
+
+
 def get_role(db: Session, board_id: str, user_id: str) -> Role | None:
-    """Rol del usuario en el tablero, o None si no es miembro."""
+    """Rol del usuario en el tablero activo, o None si no es miembro / tablero inactivo."""
+    board = get_active_board(db, board_id)
+    if board is None:
+        return None
     return db.scalar(
         select(BoardMember.role).where(
             BoardMember.board_id == board_id, BoardMember.user_id == user_id
@@ -58,7 +50,7 @@ def can(role: Role | None, minimum: Role) -> bool:
 def require_role(minimum: Role):
     """Fábrica de dependencias: exige un rol mínimo sobre {board_id}.
 
-    - 404 si el tablero no existe o el usuario no es miembro
+    - 404 si el tablero no existe, está desactivado/borrado o el usuario no es miembro
       (no revelamos que existe un tablero ajeno).
     - 403 si es miembro pero su rol no alcanza.
     """
@@ -68,7 +60,7 @@ def require_role(minimum: Role):
         db: Session = Depends(get_db),
         user: CurrentUser = Depends(get_current_user),
     ) -> BoardAccess:
-        board = db.get(Board, board_id)
+        board = get_active_board(db, board_id)
         role = get_role(db, board_id, user.id) if board else None
         if board is None or role is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Tablero no encontrado")
