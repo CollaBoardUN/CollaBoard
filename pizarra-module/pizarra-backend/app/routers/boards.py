@@ -112,11 +112,16 @@ def rename_board(
 
 @router.delete("/{board_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_board(
+    board_id: str,
     access: BoardAccess = Depends(require_role(Role.owner)),
     db: Session = Depends(get_db),
 ):
-    db.delete(db.merge(access.board))
-    db.commit()
+    from ..persistence.store import purge_board
+
+    purge_board(db, board_id)
+    if hasattr(access.board, "_sa_instance_state"):
+        db.delete(db.merge(access.board))
+        db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

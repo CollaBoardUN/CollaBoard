@@ -4,13 +4,13 @@
  * Panel de chat del tablero: historial paginado, envío idempotente y recepción
  * en vivo. Permanece montado aunque esté cerrado para contar los no leídos.
  */
-import { MessageSquare, RotateCcw, Send, X } from "lucide-react";
+import { CheckCheck, MessageSquare, RotateCcw, Send, X } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { useStore } from "zustand";
 
 import { ChatController } from "@/core/chat/ChatController";
 import { createChatStore, type LiveStatus, type PendingMessage } from "@/core/chat/chatStore";
-import { CHAT_MAX_LENGTH, type ChatMessage, type ChatPage } from "@/core/domain/chat";
+import { CHAT_MAX_LENGTH, compareMessages, type ChatMessage, type ChatPage } from "@/core/domain/chat";
 import { APP_TIME_ZONE, initials } from "@/core/lib/format";
 import { inkFor } from "@/core/lib/ink";
 import { toast } from "@/core/stores/toastStore";
@@ -53,6 +53,7 @@ export function ChatPanel({ boardId, open, onClose, onUnreadChange, initialPage 
   const [store] = useState(() => createChatStore(initialPage));
   const [controller] = useState(() => new ChatController({ boardId, apis, transport, store }));
   const messages = useStore(store, (s) => s.messages);
+  const receipts = useStore(store, (s) => s.receipts);
   const pending = useStore(store, (s) => s.pending);
   const history = useStore(store, (s) => s.history);
   const historyError = useStore(store, (s) => s.historyError);
@@ -96,6 +97,28 @@ export function ChatPanel({ boardId, open, onClose, onUnreadChange, initialPage 
     const list = listRef.current;
     if (list && stickToBottom.current) list.scrollTop = list.scrollHeight;
   }, [messages.length, pending.length, open]);
+
+  useEffect(() => {
+    function report() {
+      const active = open && document.visibilityState === "visible" && document.hasFocus() && stickToBottom.current;
+      controller.setViewing(active, active ? messages.at(-1)?.id : undefined);
+    }
+    report();
+    const timer = setInterval(report, 2_000);
+    window.addEventListener("focus", report);
+    window.addEventListener("blur", report);
+    document.addEventListener("visibilitychange", report);
+    const list = listRef.current;
+    list?.addEventListener("scroll", report);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", report);
+      window.removeEventListener("blur", report);
+      document.removeEventListener("visibilitychange", report);
+      list?.removeEventListener("scroll", report);
+      controller.setViewing(false);
+    };
+  }, [controller, open, messages]);
 
   function onScroll() {
     const list = listRef.current;
@@ -176,6 +199,8 @@ export function ChatPanel({ boardId, open, onClose, onUnreadChange, initialPage 
             key={message.id}
             message={message}
             mine={message.sender_id === me.id}
+            readers={receipts.filter((r) => r.user_id !== me.id && compareMessages(
+              { created_at: r.message_created_at, id: r.message_id } as ChatMessage, message) >= 0).map((r) => r.user_name)}
             continued={index > 0 && messages[index - 1].sender_id === message.sender_id}
           />
         ))}
@@ -216,7 +241,7 @@ export function ChatPanel({ boardId, open, onClose, onUnreadChange, initialPage 
   );
 }
 
-function MessageRow({ message, mine, continued }: { message: ChatMessage; mine: boolean; continued: boolean }) {
+function MessageRow({ message, mine, continued, readers }: { message: ChatMessage; mine: boolean; continued: boolean; readers: string[] }) {
   const color = inkFor(message.sender_id);
   return (
     <li className={`chat-msg${mine ? " chat-mine" : ""}${continued ? " chat-continued" : ""}`}>
@@ -235,6 +260,9 @@ function MessageRow({ message, mine, continued }: { message: ChatMessage; mine: 
           </div>
         )}
         <p>{message.text}</p>
+        {mine && <span className={readers.length ? "chat-read chat-read-seen" : "chat-read"} title={readers.length ? `Visto por ${readers.join(", ")}` : "El mensaje fue enviado"}>
+          <CheckCheck size={13} aria-hidden="true" />{readers.length ? `Visto por ${readers.join(", ")}` : "Enviado"}
+        </span>}
       </div>
     </li>
   );

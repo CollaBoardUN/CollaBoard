@@ -198,12 +198,18 @@ func (a *api) respondSession(w http.ResponseWriter, status int, u users.User) {
 	writeJSON(w, status, session{AccessToken: token, TokenType: "bearer", User: u})
 }
 func (a *api) me(w http.ResponseWriter, r *http.Request) {
+	rawToken := ""
 	auth := strings.Fields(r.Header.Get("Authorization"))
-	if len(auth) != 2 || !strings.EqualFold(auth[0], "Bearer") {
+	if len(auth) == 2 && strings.EqualFold(auth[0], "Bearer") {
+		rawToken = auth[1]
+	} else if c, err := r.Cookie("cb_session"); err == nil && c.Value != "" {
+		rawToken = c.Value
+	}
+	if rawToken == "" {
 		unauthorized(w)
 		return
 	}
-	claims, err := a.tokens.Verify(auth[1])
+	claims, err := a.tokens.Verify(rawToken)
 	if err != nil {
 		unauthorized(w)
 		return

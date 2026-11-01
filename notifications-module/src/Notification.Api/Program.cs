@@ -112,4 +112,32 @@ app.MapPatch("/api/notifications/{id}/read", async (ClaimsPrincipal user, Notifi
     catch { return Error(503, "NotificationDB no disponible"); }
 }).RequireAuthorization();
 
+app.MapPatch("/api/notifications/read-all", async (ClaimsPrincipal user, NotificationDatabase db, CancellationToken ct) =>
+{
+    var subject = user.FindFirstValue("sub");
+    if (string.IsNullOrWhiteSpace(subject)) return Error(401, "No autenticado");
+    try { return Results.Ok(new { updated = await db.UpdateInboxAsync(subject, false, null, ct) }); }
+    catch { return Error(503, "NotificationDB no disponible"); }
+}).RequireAuthorization();
+
+app.MapDelete("/api/notifications", async (ClaimsPrincipal user, NotificationDatabase db, CancellationToken ct) =>
+{
+    var subject = user.FindFirstValue("sub");
+    if (string.IsNullOrWhiteSpace(subject)) return Error(401, "No autenticado");
+    try { await db.UpdateInboxAsync(subject, true, null, ct); return Results.NoContent(); }
+    catch { return Error(503, "NotificationDB no disponible"); }
+}).RequireAuthorization();
+
+app.MapDelete("/api/notifications/{id}", async (ClaimsPrincipal user, NotificationDatabase db, string id, CancellationToken ct) =>
+{
+    var subject = user.FindFirstValue("sub");
+    if (string.IsNullOrWhiteSpace(subject)) return Error(401, "No autenticado");
+    if (!Guid.TryParse(id, out var uuid)) return Error(404, "Notificación no encontrada");
+    try {
+        var count = await db.UpdateInboxAsync(subject, true, uuid, ct);
+        return count == 0 ? Error(404, "Notificación no encontrada") : Results.NoContent();
+    }
+    catch { return Error(503, "NotificationDB no disponible"); }
+}).RequireAuthorization();
+
 app.Run();

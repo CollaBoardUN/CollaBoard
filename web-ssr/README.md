@@ -34,7 +34,7 @@ Electron puede reutilizarlos tal cual.
 Desde la raíz del repositorio:
 
 ```bash
-docker compose -f docker-compose.yml -f web-ssr/compose.dev.yml up --build -d
+docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml up --build -d
 ```
 
 Abre <http://localhost:8088>. El override agrega `web-ssr`, los mocks y un gateway de

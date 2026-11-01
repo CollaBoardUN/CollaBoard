@@ -52,6 +52,7 @@ public sealed class NotificationDatabase
             read_at TIMESTAMPTZ,
             CONSTRAINT uq_notification_event_recipient UNIQUE (event_id, recipient_id)
         );
+        ALTER TABLE notifications ADD COLUMN IF NOT EXISTS dismissed_at TIMESTAMPTZ;
         CREATE INDEX IF NOT EXISTS idx_notifications_inbox
             ON notifications(recipient_id, created_at DESC);
         CREATE INDEX IF NOT EXISTS idx_notifications_unread
@@ -101,7 +102,7 @@ public sealed class NotificationDatabase
         await using (var cmd = new NpgsqlCommand("""
             SELECT id::text, type, board_id, actor_id, payload::text, created_at, read_at
               FROM notifications
-             WHERE recipient_id = @user
+             WHERE recipient_id = @user AND dismissed_at IS NULL
              ORDER BY created_at DESC, id DESC LIMIT @limit
             """, db))
         {
@@ -111,7 +112,7 @@ public sealed class NotificationDatabase
             while (await reader.ReadAsync(ct)) items.Add(ReadNotification(reader));
         }
         await using var count = new NpgsqlCommand(
-            "SELECT count(*)::int FROM notifications WHERE recipient_id=@user AND read_at IS NULL", db);
+            "SELECT count(*)::int FROM notifications WHERE recipient_id=@user AND dismissed_at IS NULL AND read_at IS NULL", db);
         count.Parameters.AddWithValue("user", userId);
         return new InboxResponse(items, (int)(await count.ExecuteScalarAsync(ct) ?? 0));
     }
@@ -121,13 +122,26 @@ public sealed class NotificationDatabase
         await using var db = await OpenAsync(ct);
         await using var cmd = new NpgsqlCommand("""
             UPDATE notifications SET read_at=COALESCE(read_at,now())
-             WHERE recipient_id=@user AND id=@id
+             WHERE recipient_id=@user AND dismissed_at IS NULL AND id=@id
             RETURNING id::text, type, board_id, actor_id, payload::text, created_at, read_at
             """, db);
         cmd.Parameters.AddWithValue("user", userId);
         cmd.Parameters.AddWithValue("id", id);
         await using var reader = await cmd.ExecuteReaderAsync(ct);
         return await reader.ReadAsync(ct) ? ReadNotification(reader) : null;
+    }
+
+    public async Task<int> UpdateInboxAsync(string userId, bool dismiss, Guid? id, CancellationToken ct)
+    {
+        await using var db = await OpenAsync(ct);
+        // Keep the unique event/recipient row so redeliveries cannot resurrect deleted notices.
+        var assignment = dismiss ? "dismissed_at=now()" : "read_at=COALESCE(read_at,now())";
+        await using var cmd = new NpgsqlCommand(
+            $"UPDATE notifications SET {assignment} WHERE recipient_id=@user AND dismissed_at IS NULL"
+            + (id.HasValue ? " AND id=@id" : ""), db);
+        cmd.Parameters.AddWithValue("user", userId);
+        if (id.HasValue) cmd.Parameters.AddWithValue("id", id.Value);
+        return await cmd.ExecuteNonQueryAsync(ct);
     }
 
     private static NotificationItem ReadNotification(NpgsqlDataReader r)

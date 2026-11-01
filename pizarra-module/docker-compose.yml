@@ -27,6 +27,7 @@ services:
     container_name: pizarra-backend
     restart: unless-stopped
     environment:
+      CANVAS_DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
       DATABASE_URL: postgresql+psycopg://postgres:postgres@pizarra-db:5432/pizarra
       JWT_SECRET: ${JWT_SECRET:-clave-de-desarrollo-cambiala-en-produccion-32b}
       JWT_ALGORITHM: HS256

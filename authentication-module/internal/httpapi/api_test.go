@@ -87,6 +87,10 @@ func TestRegisterLoginAndMe(t *testing.T) {
 	if me.Code != 200 || !strings.Contains(me.Body.String(), "Ana Gómez") {
 		t.Fatalf("me %d %s", me.Code, me.Body.String())
 	}
+	meCookie := endpoint(app, "GET", "/auth/me", "", map[string]string{"Cookie": "cb_session=" + output.AccessToken})
+	if meCookie.Code != 200 || !strings.Contains(meCookie.Body.String(), "Ana Gómez") {
+		t.Fatalf("me cookie %d %s", meCookie.Code, meCookie.Body.String())
+	}
 	bad := endpoint(app, "POST", "/auth/login", `{"email":"ana@example.com","password":"mal"}`, nil)
 	if bad.Code != 401 {
 		t.Fatalf("password mala status %d", bad.Code)

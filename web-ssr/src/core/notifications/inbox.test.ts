@@ -71,3 +71,20 @@ describe("bandeja", () => {
     expect(store.getState().items).toHaveLength(1);
   });
 });
+
+
+it("acciones masivas usan endpoints propios y recargan el total, no solo la página visible", async () => {
+  let items = [note("n1")];
+  let unread = 42;
+  const { controller, store } = setup({
+    "GET /api/notifications": () => ({ body: { items, unread_count: unread } }),
+    "PATCH /api/notifications/read-all": () => { items = items.map((n) => ({ ...n, read_at: "now" })); unread = 0; return { body: { updated: 42 } }; },
+    "DELETE /api/notifications": () => { items = []; unread = 0; return { status: 204 }; },
+  });
+  await controller.refresh();
+  await controller.markAllRead();
+  expect(store.getState().unread).toBe(0);
+  expect(store.getState().items[0].read_at).toBe("now");
+  await controller.removeAll();
+  expect(store.getState().items).toEqual([]);
+});

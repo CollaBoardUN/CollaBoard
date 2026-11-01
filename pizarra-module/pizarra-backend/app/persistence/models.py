@@ -1,19 +1,16 @@
-"""Tablas de la Persona 4: estado actual de cada tablero y sus versiones.
+"""Modelos de CanvasDB: estado actual de cada tablero e historial de versiones.
 
-- `board_states`: UNA fila por tablero con los elementos actuales (lo que el
-  autosave mantiene al día y lo que se carga cuando alguien se une).
-- `board_versions`: historial. Cada fila es una foto completa del tablero.
-
-Los elementos se guardan como una lista JSON con el mismo formato que viaja por
-el WebSocket (`CanvasElement`). El orden de la lista es el z-order.
+Completamente desacoplado de BoardDB (sin Foreign Keys ni relaciones directas a boards).
+Almacenamiento nativo en PostgreSQL usando JSONB para snapshots y elementos del canvas.
 """
 
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, Index, Integer, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.types import JSON
 
 from ..database import Base
 
@@ -34,20 +31,25 @@ def _new_id() -> str:
 class BoardState(Base):
     __tablename__ = "board_states"
 
-    board_id: Mapped[str] = mapped_column(
-        ForeignKey("boards.id", ondelete="CASCADE"), primary_key=True
-    )
+    board_id: Mapped[str] = mapped_column(String(36), primary_key=True, index=True)
     elements: Mapped[list] = mapped_column(JsonType, default=list)
-    # Último `seq` de la sala al guardar (para que siga creciendo tras un reinicio).
+    # Último `seq` de la sala al guardar (para garantizar incremento y continuidad).
     seq: Mapped[int] = mapped_column(Integer, default=0)
     element_count: Mapped[int] = mapped_column(Integer, default=0)
-    # SHA-256 del JSON canónico: sirve para no guardar ni versionar lo que no cambió.
-    content_hash: Mapped[str] = mapped_column(String(64))
+    # SHA-256 del JSON canónico para integridad y control de cambios.
+    state_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     thumbnail_svg: Mapped[str | None] = mapped_column(Text, nullable=True)
     thumbnail_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     saved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    board = relationship("Board", back_populates="state")
+    @property
+    def content_hash(self) -> str:
+        return self.state_hash
+
+    @content_hash.setter
+    def content_hash(self, value: str) -> None:
+        self.state_hash = value
 
 
 class BoardVersion(Base):
@@ -58,20 +60,33 @@ class BoardVersion(Base):
     )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_id)
-    board_id: Mapped[str] = mapped_column(ForeignKey("boards.id", ondelete="CASCADE"))
-    # Numeración por tablero: v1, v2, v3… (es lo que ve el usuario).
-    number: Mapped[int] = mapped_column(Integer)
-    # "auto" (periódica), "manual" (la pidió una persona) o "restore" (copia de
-    # seguridad previa a restaurar otra versión).
-    kind: Mapped[str] = mapped_column(String(16))
+    board_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
+    # Numeración por tablero: v1, v2, v3…
+    number: Mapped[int] = mapped_column(Integer, nullable=False)
+    kind: Mapped[str] = mapped_column(String(16), nullable=False)
     name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     created_by: Mapped[str | None] = mapped_column(String(64), nullable=True)
     created_by_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     seq: Mapped[int] = mapped_column(Integer, default=0)
     element_count: Mapped[int] = mapped_column(Integer, default=0)
-    content_hash: Mapped[str] = mapped_column(String(64))
-    # `deferred`: al listar o al borrar un tablero no se cargan los JSON pesados.
+    state_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    # `deferred`: al listar no se cargan los JSON pesados
     elements: Mapped[list] = mapped_column(JsonType, deferred=True)
 
-    board = relationship("Board", back_populates="versions")
+    @property
+    def content_hash(self) -> str:
+        return self.state_hash
+
+    @content_hash.setter
+    def content_hash(self, value: str) -> None:
+        self.state_hash = value
+
+
+class PurgedBoard(Base):
+    """Registro de tableros purgados para bloquear autosaves tardíos en CanvasDB."""
+
+    __tablename__ = "purged_boards"
+
+    board_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    purged_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)

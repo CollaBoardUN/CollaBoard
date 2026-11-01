@@ -1,0 +1,16 @@
+# Errores generados por el gateway, en JSON con `detail` (como las APIs).
+error_page 429 = @too_many_requests;
+error_page 502 504 = @upstream_unavailable;
+
+location @too_many_requests {
+  default_type application/json;
+  add_header Retry-After 1 always;
+  add_header X-Request-ID $collaboard_request_id always;
+  return 429 '{"detail":"Demasiadas solicitudes. Intenta de nuevo en un momento."}';
+}
+
+location @upstream_unavailable {
+  default_type application/json;
+  add_header X-Request-ID $collaboard_request_id always;
+  return 502 '{"detail":"Servicio temporalmente no disponible."}';
+}

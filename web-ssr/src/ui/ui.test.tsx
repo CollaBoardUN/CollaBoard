@@ -90,7 +90,7 @@ describe("NotificationBell", () => {
     expect(screen.getByText("Beto se unió a Ideas del sprint")).toBeInTheDocument();
   });
 
-  it("al abrir una notificación la marca como leída y lleva al tablero", async () => {
+  it("marca como leída sin cerrar la bandeja y ofrece abrir el tablero", async () => {
     const user = userEvent.setup();
     const navigation = fakeNavigation();
     const markRead = vi.fn(() => ({ body: notification("n1", { read_at: "2026-10-25T16:00:00Z" }) }));
@@ -103,10 +103,33 @@ describe("NotificationBell", () => {
       navigation,
     });
     await user.click(screen.getByRole("button", { name: /Notificaciones/ }));
-    await user.click(screen.getByRole("button", { name: /Beto se unió/ }));
-    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith("/boards/b1"));
+    await user.click(screen.getByRole("button", { name: /^Beto se unió/ }));
+    await waitFor(() => expect(markRead).toHaveBeenCalledOnce());
+    expect(screen.getByRole("region", { name: "Bandeja de notificaciones" })).toBeInTheDocument();
+    expect(navigation.push).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: /Abrir tablero de/ }));
+    expect(navigation.push).toHaveBeenCalledWith("/boards/b1");
     expect(markRead).toHaveBeenCalledOnce();
     expect(screen.queryByTestId("inbox-unread")).not.toBeInTheDocument();
+  });
+
+  it("lee todas y borra con confirmación sin cerrar el panel", async () => {
+    const user = userEvent.setup();
+    let items = [notification("n1"), notification("n2")];
+    const { transport } = fakeTransport({
+      "GET /api/notifications": () => ({ body: { items, unread_count: items.filter((n) => !n.read_at).length } }),
+      "PATCH /api/notifications/read-all": () => { items = items.map((n) => ({ ...n, read_at: "now" })); return { body: { updated: 2 } }; },
+      "DELETE /api/notifications": () => { items = []; return { status: 204 }; },
+    });
+    renderWithProviders(<NotificationBell initial={{ items, unread_count: 2 }} />, { transport });
+    await user.click(screen.getByRole("button", { name: /Notificaciones, 2/ }));
+    await user.click(screen.getByRole("button", { name: "Leer todas" }));
+    await waitFor(() => expect(screen.queryByTestId("inbox-unread")).not.toBeInTheDocument());
+    expect(screen.getByRole("region", { name: "Bandeja de notificaciones" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Borrar todas" }));
+    expect(items).toHaveLength(2);
+    await user.click(screen.getByRole("button", { name: "Confirmar borrado" }));
+    expect(await screen.findByText("No tienes notificaciones")).toBeInTheDocument();
   });
 
   it("si la bandeja no responde lo dice sin romper la página", async () => {

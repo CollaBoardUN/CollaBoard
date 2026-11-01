@@ -11,10 +11,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import AUTH_DEV_MODE, FRONTEND_URL
+from .internal_client import close_http_client
 from .persistence.autosave import autosaver
 from .persistence.store import load_state_async
 from .realtime.rooms import manager
-from .routers import boards, dev_auth, invites, versions, ws
+from .routers import boards, dev_auth, internal_canvas, invites, versions, ws
 
 # Las tablas se crean con migraciones:  alembic upgrade head
 
@@ -29,6 +30,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         yield
     finally:
         await autosaver.flush_all()  # no perder lo que aún no se había guardado
+        await close_http_client()
 
 
 app = FastAPI(
@@ -50,6 +52,7 @@ app.include_router(boards.router)
 app.include_router(invites.router)
 app.include_router(versions.router)
 app.include_router(ws.router)
+app.include_router(internal_canvas.router)
 
 if AUTH_DEV_MODE:
     app.include_router(dev_auth.router)

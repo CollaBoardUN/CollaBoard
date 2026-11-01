@@ -1,0 +1,100 @@
+# Rutas públicas del gateway (sección 4 del plan P2). Se incluye en el servidor
+# público (:80) y en el interno (:8081, SSR -> gateway), sin duplicar rutas.
+# Cada API valida su JWT: el gateway NO decide permisos de negocio.
+
+set $web_upstream           ${WEB_SSR_UPSTREAM};
+set $auth_upstream          ${AUTH_API_UPSTREAM};
+set $collab_upstream        ${COLLABORATION_API_UPSTREAM};
+set $pizarra_upstream       ${PIZARRA_API_UPSTREAM};
+set $chat_upstream          ${CHAT_API_UPSTREAM};
+set $pixels_upstream        ${PIXELS_API_UPSTREAM};
+set $notification_upstream  ${NOTIFICATION_API_UPSTREAM};
+
+# /internal/* jamás se publica, en ningún prefijo. Las expresiones regulares
+# ganan a los prefijos simples, por eso este bloque va primero y sin ^~.
+location ~* (^|/)internal(/|$) {
+  default_type application/json;
+  return 404 '{"detail":"No encontrado"}';
+}
+
+# --- Auth (Go): /api/auth/* -> ${AUTH_API_PATH_PREFIX}/*
+location /api/auth/ {
+  limit_req zone=auth burst=${RATE_LIMIT_AUTH_BURST} nodelay;
+  rewrite ^/api/auth/(.*)$ ${AUTH_API_PATH_PREFIX}/$1 break;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$auth_upstream;
+}
+
+# --- Colaboración (Python): /api/boards[/*] -> ${COLLABORATION_BOARDS_PATH}[/*]
+#     y /api/invites/* -> ${COLLABORATION_INVITES_PATH}/*
+location = /api/boards {
+  limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  rewrite ^ ${COLLABORATION_BOARDS_PATH} break;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$collab_upstream;
+}
+location /api/boards/ {
+  limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  rewrite ^/api/boards/(.*)$ ${COLLABORATION_BOARDS_PATH}/$1 break;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$collab_upstream;
+}
+location /api/invites/ {
+  limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  rewrite ^/api/invites/(.*)$ ${COLLABORATION_INVITES_PATH}/$1 break;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$collab_upstream;
+}
+
+# --- Pizarra (Python), REESCRITURA a las rutas internas existentes:
+#     /api/canvas/boards/{id}/state           -> ${PIZARRA_BOARDS_PATH}/{id}/state
+#     /api/canvas/boards/{id}/versions[/...]  -> ${PIZARRA_BOARDS_PATH}/{id}/versions[/...]
+# Las capturas se restringen a [A-Za-z0-9_-] (ids UUID): impide inyectar
+# saltos de línea o rutas ajenas en la URL reescrita.
+location ~ "^/api/canvas/boards/(?<canvas_board>[A-Za-z0-9_-]{1,64})/(?<canvas_rest>state|versions(?:/[A-Za-z0-9_-]{1,64}(?:/restore)?)?)$" {
+  limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  rewrite ^ ${PIZARRA_BOARDS_PATH}/$canvas_board/$canvas_rest break;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$pizarra_upstream;
+}
+
+# --- Pizarra: WebSocket de dibujo (protocolo seq/ack/saved intacto)
+location ~ "^/ws/boards/(?<ws_board>[A-Za-z0-9_-]{1,64})$" {
+  limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  set $args $pizarra_ws_args;
+  rewrite ^ ${PIZARRA_WS_PATH}/$ws_board break;
+  include /etc/nginx/snippets/proxy-ws.conf;
+  proxy_pass http://$pizarra_upstream;
+}
+
+# --- Chat (Java): rutas idénticas hacia el servicio. Cookie y Authorization intactas.
+location /api/chat/ {
+  limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$chat_upstream;
+}
+location ~ "^/ws/chat/boards/[A-Za-z0-9_-]{1,64}$" {
+  limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  include /etc/nginx/snippets/proxy-ws.conf;
+  proxy_pass http://$chat_upstream;
+}
+
+# --- Pixels (Python)
+location /api/pixels/ {
+  limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$pixels_upstream;
+}
+location = /ws/pixels {
+  limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  include /etc/nginx/snippets/proxy-ws.conf;
+  proxy_pass http://$pixels_upstream;
+}
+
+# --- NotificationAPI (C#): /api/notifications[/{id}/read] -> ${NOTIFICATION_API_PATH_PREFIX}[...]
+location ~ "^/api/notifications(?:/read-all|/[A-Za-z0-9_-]{1,64}(?:/read)?)?$" {
+  limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  rewrite ^/api/notifications(.*)$ ${NOTIFICATION_API_PATH_PREFIX}$1 break;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$notification_upstream;
+}

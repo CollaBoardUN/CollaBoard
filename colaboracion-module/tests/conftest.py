@@ -10,10 +10,15 @@ import tempfile
 # Por defecto SQLite. Para probar contra PostgreSQL (como hace la CI):
 #   TEST_DATABASE_URL=postgresql+psycopg://... pytest
 _db_file = os.path.join(tempfile.mkdtemp(), "test.db")
-os.environ["DATABASE_URL"] = os.getenv("TEST_DATABASE_URL", f"sqlite:///{_db_file}")
+os.environ["BOARD_DATABASE_URL"] = os.getenv("TEST_DATABASE_URL", f"sqlite:///{_db_file}")
+os.environ["DATABASE_URL"] = os.environ["BOARD_DATABASE_URL"]
 os.environ["JWT_SECRET"] = "secreto-de-pruebas-con-longitud-suficiente-32b"
+os.environ["JWT_ISSUER"] = "collaboard-auth"
 os.environ["AUTH_DEV_MODE"] = "false"
 os.environ["FRONTEND_URL"] = "http://front.test"
+os.environ["ALLOWED_ORIGINS"] = "http://front.test,http://localhost:8088"
+os.environ["INTERNAL_SERVICE_TOKEN"] = "token-interno-de-pruebas-32-bytes"
+os.environ["OUTBOX_ENABLED"] = "false"
 
 import jwt  # noqa: E402
 import pytest  # noqa: E402
@@ -36,15 +41,29 @@ def client():
         yield c
 
 
-def token_for(user_id: str, name: str | None = None) -> str:
-    payload = {"sub": user_id}
+def token_for(
+    user_id: str,
+    name: str | None = None,
+    *,
+    issuer: str | None = "collaboard-auth",
+) -> str:
+    payload: dict[str, object] = {"sub": user_id}
     if name:
         payload["name"] = name
+    if issuer is not None:
+        payload["iss"] = issuer
     return jwt.encode(payload, os.environ["JWT_SECRET"], algorithm="HS256")
 
 
-def auth(user_id: str, name: str | None = None) -> dict:
+def auth(user_id: str, name: str | None = None) -> dict[str, str]:
     return {"Authorization": f"Bearer {token_for(user_id, name)}"}
+
+
+def service_headers(user_id: str | None = None, name: str | None = None) -> dict[str, str]:
+    headers = {"X-Service-Token": os.environ["INTERNAL_SERVICE_TOKEN"]}
+    if user_id is not None:
+        headers["Authorization"] = f"Bearer {token_for(user_id, name)}"
+    return headers
 
 
 @pytest.fixture

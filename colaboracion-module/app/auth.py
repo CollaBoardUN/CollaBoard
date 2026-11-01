@@ -1,48 +1,64 @@
 """ADAPTADOR DE AUTH — el único punto de contacto con el módulo de login.
 
-Tu compañero de auth se encarga del registro, login y de emitir el token JWT.
-Aquí solo LEEMOS ese token para saber quién hace la petición.
+El servicio de autenticación en Go emite un JWT HS256 con `sub` (id de usuario),
+`name`, `email`, `iss` ("collaboard-auth") y `exp`.
 
-Lo que hay que acordar con él (y cambiar aquí si es distinto):
-  1. La clave secreta y el algoritmo (JWT_SECRET / JWT_ALGORITHM en .env).
-  2. En qué campo del token viene el id del usuario. Aquí asumimos "sub",
-     que es el estándar.
-  3. (Opcional) Si el token trae "name" o "email", lo usamos para mostrar
-     el nombre en la lista de miembros.
-
-Si tu compañero ya tiene su propia función `get_current_user`, puedes
-borrar la de aquí e importar la suya: lo único que necesitan los demás
-archivos es un objeto con `.id` y `.display_name`.
+Soportamos dos transportes de sesión (plan P2, sección 4):
+  1. `Authorization: Bearer <JWT>` (cliente local Electron, BFF de Next.js y llamadas internas).
+  2. Cookie HttpOnly `cb_session` (navegador directo / WebSocket). Cuando se autentica por
+     cookie en operaciones que modifican estado (POST, PATCH, PUT, DELETE), se valida la
+     cabecera `Origin` contra `ALLOWED_ORIGINS` para mitigar CSRF.
 """
 
 from dataclasses import dataclass
 
 import jwt
-from fastapi import Depends, Header, HTTPException, status
+from fastapi import Cookie, Depends, Header, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from .config import AUTH_DEV_MODE, JWT_ALGORITHM, JWT_SECRET
+from .config import (
+    ALLOWED_ORIGINS,
+    AUTH_DEV_MODE,
+    JWT_ALGORITHM,
+    JWT_ISSUER,
+    JWT_REQUIRE_EXP,
+    JWT_SECRET,
+    SESSION_COOKIE_NAME,
+)
 
 _bearer = HTTPBearer(auto_error=False)
+_SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 
 
 @dataclass
 class CurrentUser:
     id: str
     display_name: str | None = None
+    via_cookie: bool = False
 
 
 def decode_token(token: str) -> CurrentUser:
     """Valida el JWT y devuelve el usuario. Sirve también para el WebSocket."""
+    options = {"require": ["exp", "sub"]} if JWT_REQUIRE_EXP else {"require": ["sub"]}
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(
+            token,
+            JWT_SECRET,
+            algorithms=[JWT_ALGORITHM],
+            options=options,
+        )
     except jwt.ExpiredSignatureError:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "El token expiró") from None
     except jwt.InvalidTokenError:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token inválido") from None
 
+    # Si el token declara issuer, debe coincidir con el de Auth (Go).
+    iss = payload.get("iss")
+    if iss is not None and JWT_ISSUER and iss != JWT_ISSUER:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Emisor de token inválido")
+
     user_id = payload.get("sub")
-    if not user_id:
+    if not user_id or not str(user_id).strip():
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "El token no trae 'sub'")
     return CurrentUser(
         id=str(user_id),
@@ -50,13 +66,34 @@ def decode_token(token: str) -> CurrentUser:
     )
 
 
+def _validate_cookie_origin(request: Request) -> None:
+    """Valida Origin en peticiones mutantes autenticadas mediante cookie."""
+    if request.method.upper() in _SAFE_METHODS:
+        return
+    origin = (request.headers.get("origin") or "").strip().rstrip("/")
+    if not origin or origin not in ALLOWED_ORIGINS:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "Origen no permitido para sesión con cookie",
+        )
+
+
 def get_current_user(
+    request: Request,
     credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
+    cb_session: str | None = Cookie(default=None, alias=SESSION_COOKIE_NAME),
     x_user_id: str | None = Header(default=None, include_in_schema=AUTH_DEV_MODE),
 ) -> CurrentUser:
     """Dependencia de FastAPI: devuelve el usuario autenticado o error 401."""
-    if credentials is not None:
+    if credentials is not None and credentials.credentials:
         return decode_token(credentials.credentials)
+
+    cookie_token = cb_session or request.cookies.get(SESSION_COOKIE_NAME)
+    if cookie_token:
+        _validate_cookie_origin(request)
+        user = decode_token(cookie_token)
+        user.via_cookie = True
+        return user
 
     # Atajo para desarrollo: sin login, mandando el header "X-User-Id: ana".
     if AUTH_DEV_MODE and x_user_id:

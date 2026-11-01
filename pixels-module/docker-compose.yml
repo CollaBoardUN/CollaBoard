@@ -27,6 +27,7 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - PIXELS_MONGO_URI=mongodb://nosql-db:27017
       - MONGODB_URL=mongodb://nosql-db:27017
       - DATABASE_NAME=collaboard_pixels
       - CANVAS_WIDTH=200
