@@ -39,6 +39,9 @@ queda detenido. Las bases anteriores y los respaldos locales se conservan.
 - Pizarra: 111 pruebas SQLite; historial: 16 de ellas.
 - Web SSR: lint, tipos y 142 pruebas.
 - Gateway: 43 comprobaciones.
+- Pixels Rust: 5 pruebas del motor.
+- RabbitMQ: publicación, consumo, permisos mínimos, reentrega y DLQ.
+- WebSockets reales de Pizarra, Chat y Pixels: comprobaciones completas.
 - Recorrido web completo en servicios reales: 3/3, también en el proyecto final
   `collaboard` y el puerto 8088.
 - Notificaciones reales: aceptación, deduplicación, entrega por worker, privacidad
@@ -53,7 +56,8 @@ Los registros de esta revisión están en `output/` (sin versionar).
 
 El workflow usa Ubuntu 24.04 y acciones con runtime Node 24, prueba Pixels como
 Rust y compila ambos ejecutables C#. El job completo levanta los servicios reales
-con bases separadas y exige que pasen las suites de los módulos.
+con bases separadas y exige que pasen las suites de los módulos. El trabajador
+se pausa durante la prueba del broker para evitar consumidores competidores.
 La ejecución remota de Actions requiere publicar la rama/PR; los fallos históricos
 permanecen en GitHub y no cambian al corregir el código local.
 

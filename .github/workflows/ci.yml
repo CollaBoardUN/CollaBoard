@@ -230,8 +230,13 @@ jobs:
           node-version: 22
       - name: Gateway - WebSocket de Pizarra, Chat y Pixels
         run: node scripts/ws_check.mjs http://localhost:8088
+      - name: Detener el consumidor mientras se comprueba el contrato del broker
+        run: docker compose stop message-worker
       - name: RabbitMQ - publicar/consumir, mínimo privilegio y DLQ
         run: docker compose --profile tools run --rm rabbit-smoke
+      - name: Reiniciar el consumidor real
+        if: always()
+        run: docker compose start message-worker
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
