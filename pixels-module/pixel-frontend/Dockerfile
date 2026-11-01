@@ -10,9 +10,11 @@ RUN npm install
 # Build arguments for backend connection
 ARG VITE_BACKEND_HTTP_URL=http://localhost:8000
 ARG VITE_BACKEND_WS_URL=ws://localhost:8000/ws/pixels
+ARG VITE_PIZARRA_URL=http://localhost:5173
 
 ENV VITE_BACKEND_HTTP_URL=$VITE_BACKEND_HTTP_URL \
-    VITE_BACKEND_WS_URL=$VITE_BACKEND_WS_URL
+    VITE_BACKEND_WS_URL=$VITE_BACKEND_WS_URL \
+    VITE_PIZARRA_URL=$VITE_PIZARRA_URL
 
 # Copy source code and build
 COPY . .

@@ -334,6 +334,7 @@ services:
       args:
         VITE_BACKEND_HTTP_URL: http://localhost:${GATEWAY_PORT:-8088}
         VITE_BACKEND_WS_URL: ws://localhost:${GATEWAY_PORT:-8088}/ws/pixels
+        VITE_PIZARRA_URL: ${PUBLIC_ORIGIN:-http://localhost:8088}
     ports:
       - "3000:80"
     depends_on:
