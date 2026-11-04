@@ -326,10 +326,9 @@ services:
         condition: service_healthy
     networks: [internal]
 
-  # Interfaz del lienzo de Pixels (P1). Perfil `pixels-ui`: http://localhost:3000
+  # Interfaz del lienzo de Pixels (Frontend SPA)
   pixels-ui:
     <<: [*restart, *logging]
-    profiles: ["pixels-ui"]
     build:
       context: ./pixels-module/pixel-frontend
       args:
