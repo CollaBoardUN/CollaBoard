@@ -22,7 +22,7 @@
 //  - Normalizaciones (cabeceras falsificadas): la petición legítima SÍ llega al
 //    servicio; se captura el tramo interno gateway -> servicio (HTTP plano) con
 //    tcpdump en el espacio de red del gateway y se comprueba que lo falsificado no está.
-import { execFileSync, spawn } from "node:child_process";
+import { execFile, execFileSync, spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import fs from "node:fs";
 import net from "node:net";
@@ -42,6 +42,8 @@ const SECURITY_HEADERS = ["content-security-policy", "x-content-type-options", "
 // Puertos de servicios, bases y broker que no deben estar abiertos en el host.
 const PROBE_PORTS = [3000, 5432, 5672, 8000, 8001, 8002, 8080, 8081, 8090, 15432, 15433, 15434, 15435, 15672, 27017];
 const SAFE_RID = /^[A-Za-z0-9._-]{8,64}$/;
+const execFileP = (cmd, args, opts) =>
+  new Promise((resolve, reject) => execFile(cmd, args, opts, (err, stdout, stderr) => (err ? reject(err) : resolve({ stdout, stderr }))));
 
 /**
  * Catálogo: id, categoría, táctica de Bass (11.2), petición exacta, resultado esperado en el P3,
@@ -104,10 +106,10 @@ export const CATALOGO = [
   // --- E. Lentitud y volumen
   { id: "E01", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "GET /login enviando una cabecera cada 2 s sin terminar nunca (slow headers)", esperado: "el gateway cierra la conexión en <= 15 s", verif: "tiempo" },
   { id: "E02", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "POST /api/boards con Content-Length: 1000, 10 bytes de cuerpo y luego nada (slow body)", esperado: "el gateway cierra en <= 15 s, sin upstream", verif: "log" },
-  { id: "E03", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "120 conexiones desde una IP (una cada 50 ms, bajo la tasa de limit_req), cada una POST /api/boards con el cuerpo pendiente", esperado: "las que superan el límite de conexiones por IP reciben 429 JSON al instante, sin upstream (error log: «limiting connections», sin «limiting requests»)", verif: "log" },
+  { id: "E03", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "120 conexiones desde una IP (una cada 50 ms, bajo la tasa de limit_req), cada una POST /api/boards con el cuerpo pendiente", esperado: "las que superan el límite de conexiones por IP reciben 429 JSON al instante, sin upstream (error log: «limiting connections» de la zona conn y ningún «limiting requests» de la zona api)", verif: "log" },
   { id: "E04", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "300 GET /login en ráfaga (30 en paralelo)", esperado: "429 JSON con las cabeceras de seguridad, sin upstream", verif: "log" },
   { id: "E05", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "GET del estático más grande de la web sin leer la respuesta (SO_RCVBUF=1 KiB, 25 s), desde un contenedor en la red edge (slow read)", esperado: "el gateway corta el envío (send_timeout): cuerpo truncado y conexión cerrada por el gateway", verif: "tiempo" },
-  { id: "E06", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "40 WebSocket a /ws/pixels abiertos a la vez desde una IP (uno cada 50 ms)", esperado: "los que superan el límite de WebSocket por IP reciben 429 JSON, sin upstream (error log: zona conn_ws)", verif: "log" },
+  { id: "E06", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "40 WebSocket a /ws/pixels abiertos a la vez desde una IP (uno cada 50 ms)", esperado: "los que superan el límite de WebSocket por IP reciben 429 JSON, sin upstream (error log: «limiting connections» de la zona conn_ws y ningún «limiting requests» de la zona api)", verif: "log" },
 
   // --- F. Exposición
   { id: "F01", cat: "Exposición", tactica: "Limit exposure", peticion: "GET /s2-no-existe", esperado: "404 JSON del gateway, sin upstream", verif: "log" },
@@ -589,7 +591,8 @@ function makeRunners(ctx) {
         "print(json.dumps({'fin':end,'status_line':head.split(b'\\r\\n')[0].decode('latin1'),'cuerpo':len(body)}))",
       ].join("\n");
       const t0 = Date.now();
-      const out = execFileSync(
+      // Asíncrono: execFileSync bloquearía el event loop y falsearía E01/E02, que corren en paralelo.
+      const { stdout: out } = await execFileP(
         "docker",
         ["run", "--rm", "--network", edge, "python:3.12-slim", "python", "-c", py, "gateway", String(T.https ? 443 : 80), T.https ? "1" : "0", T.host, best.path, rid(id), String(o.slowWait)],
         { encoding: "utf8", timeout: (o.slowWait + 60) * 1000 },
@@ -777,7 +780,8 @@ function checkUpstream(entries, { access: lines, errors }) {
     if (connZone) {
       const inWindow = errors.filter((x) => x.time >= Math.floor(e.t0 / 1000) * 1000 && x.time <= e.t1 + 1000);
       const byConn = inWindow.filter((x) => x.kind === "limiting connections" && x.zone === connZone).length;
-      const byRate = inWindow.filter((x) => x.kind === "limiting requests").length;
+      // Solo la zona de limit_req de las rutas probadas (/api/boards y /ws/pixels: zona api).
+      const byRate = inWindow.filter((x) => x.kind === "limiting requests" && x.zone === "api").length;
       e.detail += ` · error log: ${byConn} «limiting connections» (zona ${connZone}), ${byRate} «limiting requests»`;
       if (byRate > 0 || (e.ok && byConn === 0)) e.ok = false;
     }
@@ -932,7 +936,13 @@ async function main() {
   }
 
   await Promise.all(byId(slowIds).map(run));
-  for (const meta of byId(lastIds)) await run(meta);
+  // En este orden (no el del catálogo) y separados: las ventanas del error log no se solapan.
+  for (const id of lastIds) {
+    const meta = selected.find((c) => c.id === id);
+    if (!meta) continue;
+    await run(meta);
+    await sleep(2000);
+  }
 
   const finished = Date.now();
   if (o.docker) {
