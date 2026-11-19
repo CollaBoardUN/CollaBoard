@@ -351,8 +351,8 @@ services:
         VITE_BACKEND_HTTP_URL: https://localhost:${GATEWAY_TLS_PORT:-8443}
         VITE_BACKEND_WS_URL: wss://localhost:${GATEWAY_TLS_PORT:-8443}/ws/pixels
         VITE_PIZARRA_URL: ${PUBLIC_ORIGIN:-https://localhost:8443}
-    ports:
-      - "3000:80"
+        # P3 · S2: se sirve solo detrás del gateway (https://localhost:8443/pixels/), sin puerto propio.
+        VITE_BASE_PATH: /pixels/
     depends_on:
       - gateway
     networks: [edge]
