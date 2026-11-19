@@ -1,6 +1,14 @@
-# Rutas públicas del gateway (sección 4 del plan P2). Se incluye en el servidor
-# público (:80) y en el interno (:8081, SSR -> gateway), sin duplicar rutas.
+# Rutas públicas de las APIs (sección 4 del plan P2). Se incluye en el servidor público
+# (:443) y en el interno (:8081, SSR -> gateway), sin duplicar rutas.
 # Cada API valida su JWT: el gateway NO decide permisos de negocio.
+#
+# P3 · S2 Reverse Proxy (ADR 0012), lista blanca:
+#  - Cada location acepta solo la forma real de sus rutas: segmentos [A-Za-z0-9_-] (los id
+#    son UUID o tokens url-safe). Una ruta que no encaja cae en `location /` -> 404 JSON del
+#    gateway, sin llegar al servicio (p. ej. /api/chat/%2569nternal: el % no es válido).
+#  - limit_except: métodos que expone cada servicio (otro -> 405 JSON con Allow). $gw_allow
+#    lleva esa misma lista para la cabecera Allow (GET implica HEAD).
+#  - client_max_body_size por ruta: el general (CLIENT_MAX_BODY_SIZE) solo donde hace falta.
 
 set $web_upstream           ${WEB_SSR_UPSTREAM};
 set $auth_upstream          ${AUTH_API_UPSTREAM};
@@ -11,16 +19,20 @@ set $pixels_upstream        ${PIXELS_API_UPSTREAM};
 set $notification_upstream  ${NOTIFICATION_API_UPSTREAM};
 
 # /internal/* jamás se publica, en ningún prefijo. Las expresiones regulares
-# ganan a los prefijos simples, por eso este bloque va primero y sin ^~.
+# se evalúan en orden, por eso este bloque va primero (y nadie usa ^~).
 location ~* (^|/)internal(/|$) {
   default_type application/json;
   return 404 '{"detail":"No encontrado"}';
 }
 
-# --- Auth (Go): /api/auth/* -> ${AUTH_API_PATH_PREFIX}/*
-location /api/auth/ {
+# --- Auth (Go): /api/auth/<acción> -> ${AUTH_API_PATH_PREFIX}/<acción>
+#     (register, login, me; S4 añadirá refresh y logout con la misma forma).
+location ~ "^/api/auth/(?<auth_action>[a-z][a-z0-9-]{0,31})$" {
   limit_req zone=auth burst=${RATE_LIMIT_AUTH_BURST} nodelay;
-  rewrite ^/api/auth/(.*)$ ${AUTH_API_PATH_PREFIX}/$1 break;
+  limit_except GET POST { deny all; }
+  set $gw_allow "GET, HEAD, POST";
+  client_max_body_size ${CLIENT_MAX_BODY_SIZE_AUTH};
+  rewrite ^ ${AUTH_API_PATH_PREFIX}/$auth_action break;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$auth_upstream;
 }
@@ -29,19 +41,27 @@ location /api/auth/ {
 #     y /api/invites/* -> ${COLLABORATION_INVITES_PATH}/*
 location = /api/boards {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  limit_except GET POST { deny all; }
+  set $gw_allow "GET, HEAD, POST";
   rewrite ^ ${COLLABORATION_BOARDS_PATH} break;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$collab_upstream;
 }
-location /api/boards/ {
+#     /{id}, /{id}/members[/{user}], /{id}/invite, /{id}/invites[/{invite}]
+location ~ "^/api/boards/(?<boards_rest>[A-Za-z0-9_-]{1,64}(?:/[a-z]{1,16}(?:/[A-Za-z0-9_-]{1,64})?)?)$" {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
-  rewrite ^/api/boards/(.*)$ ${COLLABORATION_BOARDS_PATH}/$1 break;
+  limit_except GET POST PATCH DELETE { deny all; }
+  set $gw_allow "GET, HEAD, POST, PATCH, DELETE";
+  rewrite ^ ${COLLABORATION_BOARDS_PATH}/$boards_rest break;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$collab_upstream;
 }
-location /api/invites/ {
+#     /{token}, /{token}/accept (token url-safe de 43 caracteres)
+location ~ "^/api/invites/(?<invites_rest>[A-Za-z0-9_-]{1,128}(?:/accept)?)$" {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
-  rewrite ^/api/invites/(.*)$ ${COLLABORATION_INVITES_PATH}/$1 break;
+  limit_except GET POST { deny all; }
+  set $gw_allow "GET, HEAD, POST";
+  rewrite ^ ${COLLABORATION_INVITES_PATH}/$invites_rest break;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$collab_upstream;
 }
@@ -53,6 +73,8 @@ location /api/invites/ {
 # saltos de línea o rutas ajenas en la URL reescrita.
 location ~ "^/api/canvas/boards/(?<canvas_board>[A-Za-z0-9_-]{1,64})/(?<canvas_rest>state|versions(?:/[A-Za-z0-9_-]{1,64}(?:/restore)?)?)$" {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  limit_except GET POST PATCH DELETE { deny all; }
+  set $gw_allow "GET, HEAD, POST, PATCH, DELETE";
   rewrite ^ ${PIZARRA_BOARDS_PATH}/$canvas_board/$canvas_rest break;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$pizarra_upstream;
@@ -61,6 +83,10 @@ location ~ "^/api/canvas/boards/(?<canvas_board>[A-Za-z0-9_-]{1,64})/(?<canvas_r
 # --- Pizarra: WebSocket de dibujo (protocolo seq/ack/saved intacto)
 location ~ "^/ws/boards/(?<ws_board>[A-Za-z0-9_-]{1,64})$" {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  limit_conn conn_ws ${LIMIT_CONN_WS_PER_IP};
+  limit_except GET { deny all; }
+  set $gw_allow "GET, HEAD";
+  client_max_body_size 1k;
   set $args $pizarra_ws_args;
   rewrite ^ ${PIZARRA_WS_PATH}/$ws_board break;
   include /etc/nginx/snippets/proxy-ws.conf;
@@ -68,25 +94,40 @@ location ~ "^/ws/boards/(?<ws_board>[A-Za-z0-9_-]{1,64})$" {
 }
 
 # --- Chat (Java): rutas idénticas hacia el servicio. Cookie y Authorization intactas.
-location /api/chat/ {
+#     Mensajes de hasta 2000 caracteres (ChatService): 16 KiB de cuerpo sobran.
+location ~ "^/api/chat/boards/[A-Za-z0-9_-]{1,64}/messages$" {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  limit_except GET POST { deny all; }
+  set $gw_allow "GET, HEAD, POST";
+  client_max_body_size 16k;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$chat_upstream;
 }
 location ~ "^/ws/chat/boards/[A-Za-z0-9_-]{1,64}$" {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  limit_conn conn_ws ${LIMIT_CONN_WS_PER_IP};
+  limit_except GET { deny all; }
+  set $gw_allow "GET, HEAD";
+  client_max_body_size 1k;
   include /etc/nginx/snippets/proxy-ws.conf;
   proxy_pass http://$chat_upstream;
 }
 
-# --- Pixels (Python)
-location /api/pixels/ {
+# --- Pixels (Rust): las cinco rutas REST que expone el servicio y su WebSocket.
+location ~ "^/api/pixels/(?:canvas|board|place|stats|activity)$" {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  limit_except GET POST { deny all; }
+  set $gw_allow "GET, HEAD, POST";
+  client_max_body_size 16k;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$pixels_upstream;
 }
 location = /ws/pixels {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  limit_conn conn_ws ${LIMIT_CONN_WS_PER_IP};
+  limit_except GET { deny all; }
+  set $gw_allow "GET, HEAD";
+  client_max_body_size 1k;
   include /etc/nginx/snippets/proxy-ws.conf;
   proxy_pass http://$pixels_upstream;
 }
@@ -94,6 +135,9 @@ location = /ws/pixels {
 # --- NotificationAPI (C#): /api/notifications[/{id}/read] -> ${NOTIFICATION_API_PATH_PREFIX}[...]
 location ~ "^/api/notifications(?:/read-all|/[A-Za-z0-9_-]{1,64}(?:/read)?)?$" {
   limit_req zone=api burst=${RATE_LIMIT_API_BURST} nodelay;
+  limit_except GET PATCH DELETE { deny all; }
+  set $gw_allow "GET, HEAD, PATCH, DELETE";
+  client_max_body_size 16k;
   rewrite ^/api/notifications(.*)$ ${NOTIFICATION_API_PATH_PREFIX}$1 break;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$notification_upstream;

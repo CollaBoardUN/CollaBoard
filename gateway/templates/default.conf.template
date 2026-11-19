@@ -16,6 +16,9 @@ server {
   client_max_body_size ${CLIENT_MAX_BODY_SIZE};
 
   include /etc/nginx/conf.d/snippets/tls.conf;
+  # P3 · S2 Reverse Proxy: Host, límites por IP y cabeceras de seguridad (ADR 0012).
+  include /etc/nginx/conf.d/snippets/hardening.conf;
+  include /etc/nginx/conf.d/snippets/security-headers.conf;
 
   set $rl_key $binary_remote_addr;
   add_header X-Request-ID $collaboard_request_id always;
@@ -28,11 +31,13 @@ server {
   }
 
   include /etc/nginx/conf.d/snippets/api-routes.conf;
+  # P3 · S2: páginas, BFF, estáticos de la web y UI de Pixels (lista blanca).
+  include /etc/nginx/conf.d/snippets/web-routes.conf;
 
-  # Todo lo demás: páginas de la web SSR (y su BFF en /bff/*).
+  # P3 · S2: lo no declarado en api-routes ni en web-routes -> 404 JSON del gateway,
+  # sin llegar a ningún servicio (en el P2 todo esto iba a la web SSR; ADR 0012).
   location / {
-    include /etc/nginx/snippets/proxy-common.conf;
-    proxy_pass http://$web_upstream;
+    return 404;
   }
 }
 
@@ -40,6 +45,11 @@ server {
   listen 80 default_server;
   server_name _;
   access_log /dev/stdout collaboard;
+  # P3 · S2: el Host se valida antes de redirigir (así $host no puede ser ajeno),
+  # errores en JSON y mismas cabeceras de seguridad que en :443 (ADR 0012).
+  include /etc/nginx/conf.d/snippets/hardening.conf;
+  include /etc/nginx/conf.d/snippets/security-headers.conf;
+  include /etc/nginx/conf.d/snippets/error-pages.conf;
   add_header X-Request-ID $collaboard_request_id always;
 
   location = /healthz {

@@ -46,6 +46,12 @@ services:
       GATEWAY_TLS_PORT: ${GATEWAY_TLS_PORT:-8443}
       TLS_HSTS_MAX_AGE: ${TLS_HSTS_MAX_AGE:-300}
       TLS_EXTRA_SAN: ${TLS_EXTRA_SAN:-}
+      # Reverse Proxy endurecido (P3 · S2): Host aceptados y límites nuevos por IP (ADR 0012).
+      GATEWAY_ALLOWED_HOSTS: ${GATEWAY_ALLOWED_HOSTS:-localhost,127.0.0.1,gateway}
+      RATE_LIMIT_WEB: ${RATE_LIMIT_WEB:-20r/s}
+      RATE_LIMIT_WEB_BURST: ${RATE_LIMIT_WEB_BURST:-100}
+      LIMIT_CONN_PER_IP: ${LIMIT_CONN_PER_IP:-60}
+      LIMIT_CONN_WS_PER_IP: ${LIMIT_CONN_WS_PER_IP:-30}
     ports:
       - "${GATEWAY_PORT:-8088}:80"
       - "${GATEWAY_TLS_PORT:-8443}:443"

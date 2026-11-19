@@ -21,6 +21,7 @@ x-gateway: &gateway
     CHAT_API_UPSTREAM: echo:4000
     PIXELS_API_UPSTREAM: echo:4000
     NOTIFICATION_API_UPSTREAM: echo:4000
+    PIXELS_UI_UPSTREAM: echo:4000
 
 services:
   echo:
