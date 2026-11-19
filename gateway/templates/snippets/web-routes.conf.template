@@ -13,7 +13,6 @@ set $pixels_ui_upstream ${PIXELS_UI_UPSTREAM};
 location ~ "^/(?:login|register|boards/[A-Za-z0-9_-]{1,64}|join/[A-Za-z0-9_-]{1,128})?$" {
   limit_req zone=web burst=${RATE_LIMIT_WEB_BURST} nodelay;
   limit_except GET POST { deny all; }
-  set $gw_allow "GET, HEAD, POST";
   client_max_body_size 64k;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$web_upstream;
@@ -23,7 +22,6 @@ location ~ "^/(?:login|register|boards/[A-Za-z0-9_-]{1,64}|join/[A-Za-z0-9_-]{1,
 location = /session/expired {
   limit_req zone=web burst=${RATE_LIMIT_WEB_BURST} nodelay;
   limit_except GET { deny all; }
-  set $gw_allow "GET, HEAD";
   client_max_body_size 1k;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$web_upstream;
@@ -34,7 +32,6 @@ location = /session/expired {
 location ~ "^/bff/api/[A-Za-z0-9_/-]{1,256}$" {
   limit_req zone=web burst=${RATE_LIMIT_WEB_BURST} nodelay;
   limit_except GET POST PUT PATCH DELETE { deny all; }
-  set $gw_allow "GET, HEAD, POST, PUT, PATCH, DELETE";
   client_max_body_size 256k;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$web_upstream;
@@ -43,14 +40,12 @@ location ~ "^/bff/api/[A-Za-z0-9_/-]{1,256}$" {
 # --- Estáticos de Next (con hash en el nombre). Sin limit_req: una página pide decenas.
 location ~ "^/_next/static/[A-Za-z0-9_./~-]{1,256}$" {
   limit_except GET { deny all; }
-  set $gw_allow "GET, HEAD";
   client_max_body_size 1k;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$web_upstream;
 }
 location ~ "^/(?:favicon|collaboard-logo)\.svg$" {
   limit_except GET { deny all; }
-  set $gw_allow "GET, HEAD";
   client_max_body_size 1k;
   include /etc/nginx/snippets/proxy-common.conf;
   proxy_pass http://$web_upstream;
@@ -65,7 +60,6 @@ location = /pixels {
 }
 location ~ "^/pixels/(?<pixels_ui_path>[A-Za-z0-9_./-]{0,256})$" {
   limit_except GET { deny all; }
-  set $gw_allow "GET, HEAD";
   client_max_body_size 1k;
   rewrite ^ /$pixels_ui_path break;
   include /etc/nginx/snippets/proxy-common.conf;

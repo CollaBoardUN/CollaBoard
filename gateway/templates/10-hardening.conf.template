@@ -44,10 +44,21 @@ map "$status:$upstream_http_retry_after" $gw_retry_after {
   "429:"  1;
   default "";
 }
-# Allow en los 405 del gateway: cada location fija $gw_allow con sus métodos. El valor
-# de un map se evalúa solo en la rama elegida: $gw_allow se lee únicamente en los 405.
+# Allow en los 405 del gateway: los métodos de cada familia de rutas, IGUALES a su
+# limit_except (api-routes.conf y web-routes.conf; el contrato lo comprueba). No puede
+# fijarse con `set` en la location: con un método denegado, limit_except cambia a su
+# configuración interna antes del rewrite y el `set` no se ejecuta. Por lo mismo, $uri es
+# aquí la ruta original (el rewrite de la location tampoco corre).
+map $uri $gw_allow_by_route {
+  "~^/api/(?:boards/|canvas/)"                       "GET, HEAD, POST, PATCH, DELETE";
+  "~^/api/notifications"                             "GET, HEAD, PATCH, DELETE";
+  "~^/bff/"                                          "GET, HEAD, POST, PUT, PATCH, DELETE";
+  "~^/(?:ws/|_next/static/|pixels/|session/|favicon\.svg$|collaboard-logo\.svg$)" "GET, HEAD";
+  default                                            "GET, HEAD, POST";
+}
+# El valor de un map se evalúa solo en la rama elegida: la tabla anterior se lee solo en los 405.
 map $status $gw_allow_header {
-  405     $gw_allow;
+  405     $gw_allow_by_route;
   default "";
 }
 

@@ -4,8 +4,6 @@
 
 # Clave de los límites por IP (la misma que limit_req en el P2; ver ADR 0006).
 set $rl_key $binary_remote_addr;
-# Métodos permitidos de la location; cada location de rutas lo fija (cabecera Allow del 405).
-set $gw_allow "";
 
 # Validate input: un Host fuera de GATEWAY_ALLOWED_HOSTS no llega a ninguna location
 # (ni a la redirección de :80 ni a un servicio): 421 JSON.
