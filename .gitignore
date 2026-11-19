@@ -16,6 +16,10 @@ coverage/
 .env
 .env.*
 !.env.example
+# Certificados TLS y sus llaves: los genera el gateway al arrancar (P3 · S1 Secure Channel).
+gateway/certs/
+gateway/tests/certs/
+rendimiento/tls/certs/
 
 # Editores y sistema
 .vscode/*

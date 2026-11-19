@@ -1,0 +1,60 @@
+4	TLSv1.2	Client Hello (SNI=localhost)
+6	TLSv1.3	Server Hello, Change Cipher Spec, Encrypted Extensions, Certificate, Certificate Verify, Finished
+17	TLSv1.2	Client Hello (SNI=localhost)
+19	TLSv1.3	Server Hello, Change Cipher Spec, Encrypted Extensions, Certificate, Certificate Verify, Finished
+25	HTTP2	HEADERS[1]: GET /
+35	HTTP2	HEADERS[3]: GET /login
+151	HTTP2	HEADERS[31]: GET /?_rsc=_H_fFy2_Q06N8BA7
+153	HTTP2	HEADERS[33]: GET /register?next=%2F&_rsc=_H_fFy2_Q06N8BA7
+157	HTTP2	HEADERS[35]: GET /login
+163	HTTP2	HEADERS[37]: GET /register?next=%2F&_rsc=sW2A7HEmFQnSVIMx
+165	HTTP2	HEADERS[39]: GET /login?_rsc=_H_fFy2_Q06N8BA7
+181	HTTP2	HEADERS[41]: GET /register?_rsc=_H_fFy2_Q06N8BA7
+187	HTTP2	HEADERS[43]: GET /register?next=%2F&_rsc=24ANZmzXrKla8zJg
+205	HTTP2	HEADERS[47]: GET /login?next=%2F&_rsc=nqYP1k-cQeRiHB3h
+217	HTTP2	HEADERS[49]: POST /register?next=%2F
+259	HTTP2	HEADERS[59]: GET /bff/api/notifications?limit=20
+267	HTTP2	HEADERS[61]: POST /
+289	HTTP2	HEADERS[63]: POST /login
+307	HTTP2	HEADERS[65]: GET /bff/api/notifications?limit=20
+311	HTTP2	HEADERS[67]: POST /bff/api/boards
+319	HTTP2	HEADERS[69]: GET /boards/d2f8a6ea-0da8-4d49-b844-d8add50fd07b?_rsc=2Md0sTUZcnjCijMr
+367	HTTP2	HEADERS[79]: GET /bff/api/notifications?limit=20
+376	TLSv1.2	Client Hello (SNI=localhost)
+382	TLSv1.3	Server Hello, Change Cipher Spec, Encrypted Extensions, Finished
+407	TLSv1.2	Client Hello (SNI=localhost)
+409	TLSv1.3	Server Hello, Change Cipher Spec, Encrypted Extensions, Finished
+420	TLSv1.2	Client Hello (SNI=localhost)
+422	TLSv1.3	Server Hello, Change Cipher Spec, Encrypted Extensions, Certificate, Certificate Verify, Finished
+426	HTTP	GET /ws/chat/boards/d2f8a6ea-0da8-4d49-b844-d8add50fd07b HTTP/1.1 
+435	TLSv1.2	Client Hello (SNI=localhost)
+437	WebSocket	WebSocket Text [FIN] [MASKED]
+439	WebSocket	WebSocket Text [FIN] [MASKED]
+441	HTTP2	HEADERS[81]: GET /bff/api/chat/boards/d2f8a6ea-0da8-4d49-b844-d8add50fd07b/messages?limit=30
+443	TLSv1.3	Server Hello, Change Cipher Spec, Encrypted Extensions, Finished
+447	HTTP	GET /ws/boards/d2f8a6ea-0da8-4d49-b844-d8add50fd07b HTTP/1.1 
+453	WebSocket	WebSocket Text [FIN] 
+455	WebSocket	WebSocket Text [FIN] 
+459	WebSocket	WebSocket Text [FIN] [MASKED]
+461	WebSocket	WebSocket Text [FIN] [MASKED]
+463	WebSocket	WebSocket Text [FIN] [MASKED]
+465	WebSocket	WebSocket Text [FIN] [MASKED]
+467	WebSocket	WebSocket Text [FIN] [MASKED]
+469	WebSocket	WebSocket Text [FIN] [MASKED]
+471	WebSocket	WebSocket Text [FIN] [MASKED]
+473	WebSocket	WebSocket Text [FIN] [MASKED]
+475	WebSocket	WebSocket Text [FIN] [MASKED]
+477	WebSocket	WebSocket Text [FIN] 
+479	WebSocket	WebSocket Text [FIN] [MASKED]
+481	WebSocket	WebSocket Text [FIN] [MASKED]
+483	WebSocket	WebSocket Text [FIN] [MASKED]
+485	HTTP2	HEADERS[83]: POST /bff/api/chat/boards/d2f8a6ea-0da8-4d49-b844-d8add50fd07b/messages
+491	WebSocket	WebSocket Text [FIN] [MASKED]
+493	WebSocket	WebSocket Text [FIN] 
+497	WebSocket	WebSocket Text [FIN] [MASKED]
+499	WebSocket	WebSocket Text [FIN] [MASKED]
+501	WebSocket	WebSocket Text [FIN] 
+503	HTTP2	HEADERS[85]: GET /bff/api/notifications?limit=20
+507	HTTP2	HEADERS[87]: GET /bff/api/notifications?limit=20
+511	WebSocket	WebSocket Connection Close [FIN] [MASKED]
+516	WebSocket	WebSocket Connection Close [FIN] [MASKED]

@@ -1,0 +1,13 @@
+S1 · Secure Channel contra http://localhost:8088
+
+FAIL HTTP plano solo redirige a HTTPS — la entrada pública es http://localhost:8088
+FAIL el sistema ofrece HTTPS — la entrada pública es http://localhost:8088
+FAIL cabecera Strict-Transport-Security — ausente (HTTP 200)
+FAIL login por la web: cookie de sesión Secure; HttpOnly; SameSite — HttpOnly; SameSite=lax
+FAIL WebSocket Pixels por wss:// — ws:// → HTTP/1.1 101 Switching Protocols
+FAIL WebSocket Chat con cookie por wss:// — ws:// → HTTP/1.1 101 
+FAIL captura de red: 0 secretos legibles — correo: 3, contraseña: 3, JWT de sesión: 4, mensaje de chat: 2 (captura de 23499 bytes)
+
+Captura y resumen en docs\p3\evidencia\S1\antes
+
+7 comprobaciones fallaron

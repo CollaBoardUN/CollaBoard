@@ -1,0 +1,23 @@
+Capturando con Wireshark (dumpcap) en \Device\NPF_Loopback, puertos 8088 y 8088…
+===================================================================
+Protocol Hierarchy Statistics
+Filter: 
+
+null                                     frames:560 bytes:536344
+  ipv6                                   frames:560 bytes:536344
+    tcp                                  frames:560 bytes:536344
+      http                               frames:106 bytes:208772
+        data-text-lines                  frames:4 bytes:4976
+          tcp.segments                   frames:3 bytes:3781
+        media                            frames:35 bytes:152526
+          tcp.segments                   frames:35 bytes:152526
+        mime_multipart                   frames:2 bytes:1357
+          tcp.segments                   frames:2 bytes:1357
+        json                             frames:10 bytes:7820
+      websocket                          frames:27 bytes:3197
+        data-text-lines                  frames:24 bytes:2985
+=================================================================== 
+
+FAIL sin llaves (atacante): correo: 28, contraseña: 42, JWT de sesión: 131, mensaje de chat: 41
+
+Evidencia en docs\p3\evidencia\S1\wireshark\antes

@@ -1,15 +1,21 @@
-# Dos servidores sobre las mismas rutas de API:
-#  - :80   público (único puerto publicado al host). Sirve además la web SSR.
+# Tres servidores:
+#  - :443  público con TLS (P3 · S1 Secure Channel). Sirve las APIs y la web SSR.
+#  - :80   público solo para redirigir a HTTPS (301). Conserva /healthz para el
+#          healthcheck del contenedor.
 #  - :${GATEWAY_INTERNAL_PORT} interno, SOLO en la red `internal`: el servidor
 #    SSR/BFF lo usa para consultar las APIs. No tiene `location /`, así el SSR
 #    nunca vuelve a pedirse páginas a sí mismo (sin bucles), y no limita tasa:
-#    todas sus peticiones salen de una sola IP.
+#    todas sus peticiones salen de una sola IP. Va en HTTP dentro de la red
+#    aislada: el canal cifrado termina en el gateway (P3 · S1 Secure Channel).
 
 server {
-  listen 80 default_server;
+  listen 443 ssl default_server;
+  http2 on;
   server_name _;
   access_log /dev/stdout collaboard;
   client_max_body_size ${CLIENT_MAX_BODY_SIZE};
+
+  include /etc/nginx/conf.d/snippets/tls.conf;
 
   set $rl_key $binary_remote_addr;
   add_header X-Request-ID $collaboard_request_id always;
@@ -27,6 +33,26 @@ server {
   location / {
     include /etc/nginx/snippets/proxy-common.conf;
     proxy_pass http://$web_upstream;
+  }
+}
+
+server {
+  listen 80 default_server;
+  server_name _;
+  access_log /dev/stdout collaboard;
+  add_header X-Request-ID $collaboard_request_id always;
+
+  location = /healthz {
+    access_log off;
+    default_type text/plain;
+    return 200 "ok\n";
+  }
+
+  # HTTP plano no sirve contenido: cualquier petición se redirige a HTTPS antes
+  # de llegar a un servicio (las credenciales que el cliente ya envió en claro
+  # no se reenvían a ningún upstream).
+  location / {
+    return 301 https://$host:${GATEWAY_TLS_PORT}$request_uri;
   }
 }
 

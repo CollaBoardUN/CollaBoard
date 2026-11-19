@@ -1,0 +1,17 @@
+Capturando con Wireshark (dumpcap) en \Device\NPF_Loopback, puertos 8443 y 8088…
+===================================================================
+Protocol Hierarchy Statistics
+Filter: 
+
+null                                     frames:526 bytes:508118
+  ipv6                                   frames:526 bytes:508118
+    tcp                                  frames:526 bytes:508118
+      tls                                frames:242 bytes:489798
+        tcp.segments                     frames:29 bytes:275095
+          tls                            frames:25 bytes:262427
+=================================================================== 
+
+OK   sin llaves (atacante): correo: 0, contraseña: 0, JWT de sesión: 0, mensaje de chat: 0
+OK   con las llaves del navegador la misma captura sí contiene la sesión: correo: 16, contraseña: 24, JWT de sesión: 90, mensaje de chat: 36
+
+Evidencia en docs\p3\evidencia\S1\wireshark\despues

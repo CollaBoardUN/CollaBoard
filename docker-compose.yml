@@ -42,8 +42,17 @@ services:
       RATE_LIMIT_API_BURST: ${RATE_LIMIT_API_BURST:-60}
       RATE_LIMIT_AUTH: ${RATE_LIMIT_AUTH:-5r/s}
       RATE_LIMIT_AUTH_BURST: ${RATE_LIMIT_AUTH_BURST:-10}
+      # Canal seguro (P3 · S1 Secure Channel): puerto público HTTPS al que redirige :80.
+      GATEWAY_TLS_PORT: ${GATEWAY_TLS_PORT:-8443}
+      TLS_HSTS_MAX_AGE: ${TLS_HSTS_MAX_AGE:-300}
+      TLS_EXTRA_SAN: ${TLS_EXTRA_SAN:-}
     ports:
       - "${GATEWAY_PORT:-8088}:80"
+      - "${GATEWAY_TLS_PORT:-8443}:443"
+    volumes:
+      # Certificado de desarrollo (se crea al arrancar si no existe). ca.crt
+      # queda aquí para importarlo en el navegador; las llaves no se versionan.
+      - ./gateway/certs:/etc/nginx/certs
     depends_on:
       web-ssr:
         condition: service_healthy
@@ -67,7 +76,7 @@ services:
     environment:
       # Ruta/puerto interno del gateway distinto de la página: sin bucles SSR.
       GATEWAY_INTERNAL_URL: http://gateway:${GATEWAY_INTERNAL_PORT:-8081}
-      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-true}
       PUBLIC_PIXELS_URL: ${PUBLIC_PIXELS_URL:-}
       BFF_ALLOWED_ORIGINS: ${BFF_ALLOWED_ORIGINS:-}
     networks: [internal]
@@ -81,7 +90,7 @@ services:
       AUTH_DATABASE_URL: postgres://${USER_DB_USER}:${USER_DB_PASSWORD}@user-db:5432/${USER_DB_NAME}?sslmode=disable
       JWT_SECRET: ${JWT_SECRET:?Copia .env.example a .env}
       AUTH_PORT: "8001"
-      FRONTEND_URL: ${PUBLIC_ORIGIN:-http://localhost:8088}
+      FRONTEND_URL: ${PUBLIC_ORIGIN:-https://localhost:8443}
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8001/health"]
       interval: 5s
@@ -101,7 +110,7 @@ services:
       DATABASE_URL: postgresql+psycopg://${BOARD_DB_USER}:${BOARD_DB_PASSWORD}@board-db:5432/${BOARD_DB_NAME}
       JWT_SECRET: ${JWT_SECRET:?Copia .env.example a .env}
       JWT_ALGORITHM: HS256
-      FRONTEND_URL: ${PUBLIC_ORIGIN:-http://localhost:8088}
+      FRONTEND_URL: ${PUBLIC_ORIGIN:-https://localhost:8443}
       AUTH_DEV_MODE: "false"
       INTERNAL_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN}
       NOTIFICATIONS_URL: http://notification-api:8080
@@ -122,7 +131,7 @@ services:
       DATABASE_URL: postgresql+psycopg://${CANVAS_DB_USER}:${CANVAS_DB_PASSWORD}@canvas-db:5432/${CANVAS_DB_NAME}
       JWT_SECRET: ${JWT_SECRET:?Copia .env.example a .env}
       JWT_ALGORITHM: HS256
-      FRONTEND_URL: ${PUBLIC_ORIGIN:-http://localhost:8088}
+      FRONTEND_URL: ${PUBLIC_ORIGIN:-https://localhost:8443}
       AUTH_DEV_MODE: "false"
       COLABORACION_SERVICE_URL: http://collaboration-api:8000
       INTERNAL_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN}
@@ -148,7 +157,7 @@ services:
       NOTIFICATIONS_URL: http://notification-api:8080
       NOTIFICATIONS_POLL_MS: "500"
       NOTIFICATIONS_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN:?Copia .env.example a .env}
-      CHAT_ALLOWED_ORIGINS: ${CHAT_ALLOWED_ORIGINS:-http://localhost:8088,http://127.0.0.1:8088}
+      CHAT_ALLOWED_ORIGINS: ${CHAT_ALLOWED_ORIGINS:-https://localhost:8443,https://127.0.0.1:8443}
     depends_on:
       pixels-nosqldb:
         condition: service_healthy
@@ -332,9 +341,9 @@ services:
     build:
       context: ./pixels-module/pixel-frontend
       args:
-        VITE_BACKEND_HTTP_URL: http://localhost:${GATEWAY_PORT:-8088}
-        VITE_BACKEND_WS_URL: ws://localhost:${GATEWAY_PORT:-8088}/ws/pixels
-        VITE_PIZARRA_URL: ${PUBLIC_ORIGIN:-http://localhost:8088}
+        VITE_BACKEND_HTTP_URL: https://localhost:${GATEWAY_TLS_PORT:-8443}
+        VITE_BACKEND_WS_URL: wss://localhost:${GATEWAY_TLS_PORT:-8443}/ws/pixels
+        VITE_PIZARRA_URL: ${PUBLIC_ORIGIN:-https://localhost:8443}
     ports:
       - "3000:80"
     depends_on:

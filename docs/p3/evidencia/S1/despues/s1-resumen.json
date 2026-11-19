@@ -1,0 +1,11 @@
+{
+  "base": "https://localhost:8443",
+  "bytes_capturados": 35798,
+  "apariciones": {
+    "correo": 0,
+    "contraseña": 0,
+    "JWT de sesión": 0,
+    "mensaje de chat": 0
+  },
+  "fallos": []
+}

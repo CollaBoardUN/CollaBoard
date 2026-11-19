@@ -1,7 +1,9 @@
 # Banco de pruebas del gateway con un único upstream "eco" (ver contract.test.mjs):
 #   docker compose -f gateway/tests/compose.test.yml up -d --build --wait
-#   node --test gateway/tests/contract.test.mjs
+#   NODE_EXTRA_CA_CERTS=gateway/tests/certs/ca.crt node --test gateway/tests/contract.test.mjs
 #   docker compose -f gateway/tests/compose.test.yml down
+# Los gateways comparten el certificado de desarrollo de ./certs (lo crea el
+# primero que arranca); las pruebas confían en su CA con NODE_EXTRA_CA_CERTS.
 
 x-gateway: &gateway
   build:
@@ -9,6 +11,8 @@ x-gateway: &gateway
   depends_on:
     echo:
       condition: service_healthy
+  volumes:
+    - ./certs:/etc/nginx/certs
   environment: &upstreams
     WEB_SSR_UPSTREAM: echo:4000
     AUTH_API_UPSTREAM: echo:4000
@@ -34,7 +38,10 @@ services:
   # Configuración por defecto (token hacia Pizarra: on).
   gateway:
     <<: *gateway
-    ports: ["18088:80"]
+    environment:
+      <<: *upstreams
+      GATEWAY_TLS_PORT: "18443"
+    ports: ["18088:80", "18443:443"]
 
   # Sin traducción de credencial a ?token= (cuando Pizarra lea cabecera/cookie).
   gateway-notoken:
@@ -42,7 +49,7 @@ services:
     environment:
       <<: *upstreams
       PIZARRA_WS_TOKEN_QUERY: "off"
-    ports: ["18089:80"]
+    ports: ["18444:443"]
 
   # Límite de tasa estricto para comprobar el 429.
   gateway-limited:
@@ -51,7 +58,7 @@ services:
       <<: *upstreams
       RATE_LIMIT_AUTH: 1r/s
       RATE_LIMIT_AUTH_BURST: "2"
-    ports: ["18090:80"]
+    ports: ["18445:443"]
 
   # Chat inexistente: el gateway debe responder 502 JSON y seguir vivo.
   gateway-down:
@@ -59,4 +66,4 @@ services:
     environment:
       <<: *upstreams
       CHAT_API_UPSTREAM: servicio-que-no-existe:9
-    ports: ["18091:80"]
+    ports: ["18446:443"]

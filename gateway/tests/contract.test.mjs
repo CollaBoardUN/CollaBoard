@@ -1,14 +1,17 @@
 // Contrato del gateway contra un upstream "eco": comprueba EXACTAMENTE qué recibe cada
-// servicio (rutas reescritas, cabeceras sin tocar, token de Pizarra, X-Request-ID, bloqueos).
+// servicio (rutas reescritas, cabeceras sin tocar, token de Pizarra, X-Request-ID, bloqueos)
+// y el canal seguro (HTTP solo redirige, HSTS, versiones de TLS).
 //   docker compose -f gateway/tests/compose.test.yml up -d --build --wait
-//   node --test gateway/tests/contract.test.mjs        (Node >= 22)
+//   NODE_EXTRA_CA_CERTS=gateway/tests/certs/ca.crt node --test gateway/tests/contract.test.mjs   (Node >= 22)
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import tls from "node:tls";
 
-const GW = process.env.GATEWAY_URL || "http://localhost:18088";
-const NOTOKEN = process.env.GATEWAY_NOTOKEN_URL || "http://localhost:18089";
-const LIMITED = process.env.GATEWAY_LIMITED_URL || "http://localhost:18090";
-const DOWN = process.env.GATEWAY_DOWN_URL || "http://localhost:18091";
+const GW = process.env.GATEWAY_URL || "https://localhost:18443";
+const GW_HTTP = process.env.GATEWAY_HTTP_URL || "http://localhost:18088";
+const NOTOKEN = process.env.GATEWAY_NOTOKEN_URL || "https://localhost:18444";
+const LIMITED = process.env.GATEWAY_LIMITED_URL || "https://localhost:18445";
+const DOWN = process.env.GATEWAY_DOWN_URL || "https://localhost:18446";
 
 const JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1MSJ9.firma-de-prueba";
 
@@ -67,13 +70,13 @@ test("reescritura de rutas REST hacia cada servicio", async (t) => {
 });
 
 test("Authorization, Cookie y Origin llegan al servicio sin modificar", async () => {
-  const sent = { Authorization: `Bearer ${JWT}`, Cookie: `cb_session=${JWT}; otra=1`, Origin: "http://localhost:8088" };
+  const sent = { Authorization: `Bearer ${JWT}`, Cookie: `cb_session=${JWT}; otra=1`, Origin: "https://localhost:8443" };
   const { upstream } = await echo(GW, "/api/boards", { headers: sent });
   assert.equal(upstream.headers.authorization, sent.Authorization);
   assert.equal(upstream.headers.cookie, sent.Cookie);
   assert.equal(upstream.headers.origin, sent.Origin);
   assert.equal(upstream.headers["x-forwarded-host"], new URL(GW).host);
-  assert.equal(upstream.headers["x-forwarded-proto"], "http");
+  assert.equal(upstream.headers["x-forwarded-proto"], "https");
   assert.match(upstream.headers["x-forwarded-for"], /\d+\.\d+\.\d+\.\d+/);
 });
 
@@ -135,10 +138,10 @@ test("WS Pizarra: el JWT de Authorization o de la cookie (web) se añade SOLO co
   assert.equal(bearer.headers.authorization, `Bearer ${JWT}`);
   assert.equal(bearer.headers.upgrade?.toLowerCase(), "websocket");
 
-  const cookie = await wsSeen(GW, "/ws/boards/b1", { Cookie: `cb_session=${JWT}`, Origin: "http://localhost:8088" });
+  const cookie = await wsSeen(GW, "/ws/boards/b1", { Cookie: `cb_session=${JWT}`, Origin: "https://localhost:8443" });
   assert.equal(cookie.url, `/ws/boards/b1?token=${JWT}`);
   assert.equal(cookie.headers.cookie, `cb_session=${JWT}`);
-  assert.equal(cookie.headers.origin, "http://localhost:8088");
+  assert.equal(cookie.headers.origin, "https://localhost:8443");
 
   const anonymous = await wsSeen(GW, "/ws/boards/b1");
   assert.equal(anonymous.url, "/ws/boards/b1");
@@ -184,4 +187,50 @@ test("/healthz del gateway no depende de los servicios", async () => {
   const res = await fetch(DOWN + "/healthz");
   assert.equal(res.status, 200);
   assert.equal(await res.text(), "ok\n");
+});
+
+test("HTTP plano solo redirige a HTTPS (301) y no llega a ningún servicio", async (t) => {
+  for (const [method, path] of [["GET", "/"], ["GET", "/login?next=/boards"], ["POST", "/api/auth/login"], ["GET", "/ws/chat/boards/b1"]]) {
+    await t.test(`${method} ${path}`, async () => {
+      const res = await fetch(GW_HTTP + path, { method, redirect: "manual" });
+      assert.equal(res.status, 301);
+      assert.equal(res.headers.get("location"), `${GW}${path}`);
+      assert.equal(res.headers.get("x-powered-by"), null);
+    });
+  }
+  // El healthcheck del contenedor sigue en HTTP.
+  const health = await fetch(GW_HTTP + "/healthz");
+  assert.equal(health.status, 200);
+});
+
+test("HTTPS envía HSTS en respuestas propias y de los servicios", async () => {
+  for (const path of ["/healthz", "/api/boards", "/boards/b1"]) {
+    const res = await fetch(GW + path);
+    assert.match(res.headers.get("strict-transport-security") ?? "", /^max-age=\d+$/, path);
+  }
+});
+
+/** Intenta un handshake TLS con un rango de versiones; devuelve la versión negociada o el error. */
+function handshake(url, { minVersion, maxVersion }) {
+  const { hostname, port } = new URL(url);
+  return new Promise((resolve) => {
+    // SECLEVEL=0 deja que el CLIENTE ofrezca TLS 1.0/1.1: así el rechazo lo decide el gateway.
+    const socket = tls.connect({ host: hostname, port: Number(port), servername: hostname, minVersion, maxVersion, ciphers: "DEFAULT@SECLEVEL=0" }, () => {
+      resolve({ ok: true, protocol: socket.getProtocol(), authorized: socket.authorized });
+      socket.end();
+    });
+    socket.on("error", (err) => resolve({ ok: false, code: err.code }));
+  });
+}
+
+test("TLS: 1.3 por defecto, 1.2 admitido, 1.0 y 1.1 rechazados por el gateway", async () => {
+  const modern = await handshake(GW, { minVersion: "TLSv1.2", maxVersion: "TLSv1.3" });
+  assert.deepEqual([modern.ok, modern.protocol, modern.authorized], [true, "TLSv1.3", true]);
+  const v12 = await handshake(GW, { minVersion: "TLSv1.2", maxVersion: "TLSv1.2" });
+  assert.equal(v12.protocol, "TLSv1.2");
+  for (const version of ["TLSv1", "TLSv1.1"]) {
+    const old = await handshake(GW, { minVersion: version, maxVersion: version });
+    assert.equal(old.ok, false, `${version} no debe negociarse`);
+    assert.match(old.code ?? "", /PROTOCOL_VERSION|UNSUPPORTED_PROTOCOL|NO_PROTOCOLS/, `${version}: ${old.code}`);
+  }
 });

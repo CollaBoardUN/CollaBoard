@@ -6,7 +6,8 @@ Plataforma colaborativa modular en tiempo real donde varias personas crean, dibu
 
 ## 🚀 Prototipo 2 — arranque desde un clon limpio
 
-Todo el servidor corre en contenedores detrás de **un único gateway Nginx** (`http://localhost:8088`).
+Todo el servidor corre en contenedores detrás de **un único gateway Nginx** (`https://localhost:8443`;
+`http://localhost:8088` solo redirige a HTTPS, ver [HTTPS](#-https-p3--s1-secure-channel)).
 Vista de despliegue y decisiones: [docs/p2-despliegue.md](docs/p2-despliegue.md) · [docs/adr/](docs/adr/) ·
 pendientes con el equipo: [docs/p2-pendientes-coordinacion.md](docs/p2-pendientes-coordinacion.md).
 
@@ -34,7 +35,7 @@ docker compose up -d --build --wait
 
 | Qué | Dónde |
 |---|---|
-| Web SSR, API y WebSockets (mismo origen) | http://localhost:8088 |
+| Web SSR, API y WebSockets (mismo origen) | https://localhost:8443 (`http://localhost:8088` redirige) |
 | Consola de RabbitMQ (solo desde esta máquina) | http://localhost:15672 (`RABBITMQ_ADMIN_USER` / `RABBITMQ_ADMIN_PASSWORD` de `.env`) |
 | Interfaz de Pixels (opcional: `docker compose --profile pixels-ui up -d`) | http://localhost:3000 |
 | Bases de datos y brokers | no se publican; para depurar: `-f docker-compose.dev-ports.yml` |
@@ -42,12 +43,38 @@ docker compose up -d --build --wait
 **Verificar** (cada comando imprime `OK`/`FAIL` por comprobación):
 
 ```bash
-curl -s localhost:8088/healthz                                   # ok
-sh scripts/gateway_smoke.sh http://localhost:8088                # rutas, /internal/* bloqueado, X-Request-ID
-node scripts/ws_check.mjs http://localhost:8088                  # WebSocket de Pizarra, Chat y Pixels
+export CURL_CA_BUNDLE=gateway/certs/ca.crt NODE_EXTRA_CA_CERTS=gateway/certs/ca.crt   # confiar en la CA local
+curl -s https://localhost:8443/healthz                           # ok
+sh scripts/gateway_smoke.sh https://localhost:8443               # rutas, /internal/* bloqueado, X-Request-ID
+node scripts/ws_check.mjs https://localhost:8443                 # WebSocket (wss://) de Pizarra, Chat y Pixels
+python security-tests/s1_tls.py                                  # S1: redirección, TLS, HSTS, cookie Secure, WSS, captura
 docker compose --profile tools run --rm rabbit-smoke             # RabbitMQ: publicar/consumir, permisos, DLQ
-node --test gateway/tests/contract.test.mjs                      # contrato del gateway (ver gateway/tests/compose.test.yml)
+NODE_EXTRA_CA_CERTS=gateway/tests/certs/ca.crt node --test gateway/tests/contract.test.mjs   # contrato del gateway (ver gateway/tests/compose.test.yml)
 ```
+
+### 🔒 HTTPS (P3 · S1 Secure Channel)
+
+El TLS termina en el gateway (TLS 1.2 y 1.3, HTTP/2, HSTS). El puerto `8088` solo redirige
+(301) a `https://localhost:8443`; dentro de la red `internal` los servicios siguen en HTTP.
+
+- **Certificado de desarrollo:** al arrancar, el gateway crea `gateway/certs/` (no se versiona) con
+  una CA local y un certificado para `localhost`, `127.0.0.1` y `::1`. La CA solo puede firmar esos
+  nombres (`nameConstraints`) y su llave privada se descarta, así que confiar en ella no habilita
+  certificados para otros sitios. Para regenerarlo, borra `gateway/certs/` y reinicia el gateway.
+- **Confiar en la CA** (una vez, para ver el candado sin advertencias): importa `gateway/certs/ca.crt`
+  como entidad raíz: Windows `certutil -user -addstore Root gateway\certs\ca.crt`; macOS
+  `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain gateway/certs/ca.crt`;
+  Linux/Firefox: *Ajustes → Privacidad y seguridad → Certificados → Importar*.
+- **Desde otra máquina de la LAN:** `TLS_EXTRA_SAN=IP:<ip-del-servidor>` en `.env`, borra
+  `gateway/certs/` y reinicia el gateway; usa `PUBLIC_ORIGIN=https://<ip>:8443` y
+  `CHAT_ALLOWED_ORIGINS` con ese mismo origen.
+- **Producción:** monta el certificado real (`server.crt`, `server.key`) en `gateway/certs/` (el
+  script no lo reemplaza) y sube `TLS_HSTS_MAX_AGE` a `31536000`.
+- **Evidencia con Wireshark** (escenario S1): `python security-tests/s1_wireshark.py --headed --out <carpeta>`
+  captura con Wireshark en la interfaz de loopback mientras un navegador usa la web. Guía para abrir
+  las capturas en Wireshark: [docs/p3/evidencia/S1/wireshark/](docs/p3/evidencia/S1/wireshark/README.md).
+- Si tu `.env` viene del P2, copia de nuevo las variables de *Acceso público* de `.env.example`
+  (`PUBLIC_ORIGIN`, `CHAT_ALLOWED_ORIGINS`, `SESSION_COOKIE_SECURE`, `GATEWAY_TLS_PORT`).
 
 **Logs correlacionados:** cada petición lleva `X-Request-ID`; el gateway lo escribe en su log
 de acceso (`docker compose logs gateway | grep rid=`) y lo reenvía a los servicios.
