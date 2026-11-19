@@ -1,0 +1,11 @@
+| Origen | gateway:80 | gateway:8081 | web-ssr:3000 | auth-api:8001 | collaboration-api:8000 | pizarra-api:8000 | chat-api:8090 | pixels-api:8000 | notification-api:8080 | user-db:5432 | board-db:5432 | canvas-db:5432 | notification-db:5432 | pixels-nosqldb:27017 | rabbitmq:5672 | Internet (1.1.1.1:443) |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| `gateway` | — | — | OK (ALLOW) | OK (ALLOW) | OK (ALLOW) | OK (ALLOW) | OK (ALLOW) | OK (ALLOW) | OK (ALLOW) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | — |
+| `web-ssr` | — | OK (ALLOW) | — | — | — | — | — | — | — | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (SALIDA) |
+| `auth-api` | — | — | — | — | — | — | — | — | — | OK (ALLOW) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (SALIDA) |
+| `collaboration-api` | — | — | — | — | — | OK (ALLOW) | — | — | OK (ALLOW) | FAIL (EXPUESTO) | OK (ALLOW) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (SALIDA) |
+| `pizarra-api` | — | — | — | — | OK (ALLOW) | — | — | — | — | FAIL (EXPUESTO) | FAIL (EXPUESTO) | OK (ALLOW) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (SALIDA) |
+| `chat-api` | — | — | — | — | OK (ALLOW) | — | — | — | OK (ALLOW) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | OK (ALLOW) | FAIL (EXPUESTO) | FAIL (SALIDA) |
+| `pixels-api` | — | — | — | — | — | — | — | — | — | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | OK (ALLOW) | FAIL (EXPUESTO) | FAIL (SALIDA) |
+| `notification-api` | — | — | — | — | — | — | — | — | — | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | OK (ALLOW) | FAIL (EXPUESTO) | OK (ALLOW) | FAIL (SALIDA) |
+| `message-worker` | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | FAIL (EXPUESTO) | OK (ALLOW) | FAIL (EXPUESTO) | OK (ALLOW) | FAIL (SALIDA) |

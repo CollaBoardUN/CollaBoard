@@ -42,6 +42,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Iniciar worker de batch flush para persistencia desacoplada
     let _worker_handle = mongo.start_batch_worker(persistence_rx);
+    let _batch_ws_handle = if config.batch_interval_ms > 0 {
+        info!("Modo micro-batching WS activado: {} ms", config.batch_interval_ms);
+        Some(state.start_batch_broadcaster())
+    } else {
+        None
+    };
 
     // Configuración de CORS permisivo para desarrollo y frontend SPA
     let cors = CorsLayer::new()

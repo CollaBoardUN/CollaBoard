@@ -36,9 +36,9 @@ docker compose up -d --build --wait
 | Qué | Dónde |
 |---|---|
 | Web SSR, API y WebSockets (mismo origen) | https://localhost:8443 (`http://localhost:8088` redirige) |
-| Consola de RabbitMQ (solo desde esta máquina) | http://localhost:15672 (`RABBITMQ_ADMIN_USER` / `RABBITMQ_ADMIN_PASSWORD` de `.env`) |
-| Interfaz de Pixels (opcional: `docker compose --profile pixels-ui up -d`) | http://localhost:3000 |
-| Bases de datos y brokers | no se publican; para depurar: `-f docker-compose.dev-ports.yml` |
+| Consola de RabbitMQ y bases (solo depuración local) | `-f docker-compose.dev-ports.yml` → `http://127.0.0.1:15672`, PostgreSQL `15432..15435`, Mongo `27017` |
+| Interfaz de Pixels | http://localhost:3000 |
+| Redes internas (`app` y `net-*`) | aisladas con `internal: true` (sin puertos al host ni salida a Internet; ver [Segmentación](#-segmentación-de-redes-p3--s3-network-segmentation)) |
 
 **Verificar** (cada comando imprime `OK`/`FAIL` por comprobación):
 
@@ -48,6 +48,7 @@ curl -s https://localhost:8443/healthz                           # ok
 sh scripts/gateway_smoke.sh https://localhost:8443               # rutas, /internal/* bloqueado, X-Request-ID
 node scripts/ws_check.mjs https://localhost:8443                 # WebSocket (wss://) de Pizarra, Chat y Pixels
 python security-tests/s1_tls.py                                  # S1: redirección, TLS, HSTS, cookie Secure, WSS, captura
+python security-tests/s3_segmentacion.py                         # S3: matriz de conectividad por zonas y bloqueo de salida a Internet
 docker compose --profile tools run --rm rabbit-smoke             # RabbitMQ: publicar/consumir, permisos, DLQ
 NODE_EXTRA_CA_CERTS=gateway/tests/certs/ca.crt node --test gateway/tests/contract.test.mjs   # contrato del gateway (ver gateway/tests/compose.test.yml)
 ```
@@ -75,6 +76,16 @@ El TLS termina en el gateway (TLS 1.2 y 1.3, HTTP/2, HSTS). El puerto `8088` sol
   las capturas en Wireshark: [docs/p3/evidencia/S1/wireshark/](docs/p3/evidencia/S1/wireshark/README.md).
 - Si tu `.env` viene del P2, copia de nuevo las variables de *Acceso público* de `.env.example`
   (`PUBLIC_ORIGIN`, `CHAT_ALLOWED_ORIGINS`, `SESSION_COOKIE_SECURE`, `GATEWAY_TLS_PORT`).
+
+### 🧱 Segmentación de redes (P3 · S3 Network Segmentation)
+
+En lugar de una sola red plana `internal`, los contenedores se reparten en **8 redes** según lo que cada uno necesita ([ADR 0013](docs/adr/0013-segmentacion-de-redes-por-zonas.md)):
+- **`edge`**: única red con salida al host (`gateway` y `pixels-ui`).
+- **`app` (`internal: true`)**: solo `gateway`, `web-ssr` y las 6 APIs HTTP (sin bases de datos, sin RabbitMQ, sin `message-worker` y sin Internet).
+- **6 redes de datos y mensajería (`internal: true`)**: `net-user` (`auth-api` + `user-db`), `net-board` (`collaboration-api` + `board-db`), `net-canvas` (`pizarra-api` + `canvas-db`), `net-notif` (`notification-api` + `message-worker` + `notification-db`), `net-mongo` (`chat-api` + `pixels-api` + `pixels-nosqldb`) y `net-mq` (`notification-api` + `message-worker` + `rabbitmq`).
+- **Verificación de la matriz:** `python security-tests/s3_segmentacion.py` (o `sh scripts/segmentation_check.sh`) inyecta `nicolaka/netshoot` en el namespace de red de cada contenedor para probar todos los pares permitidos y prohibidos más la salida a Internet.
+- **Abrir puertos de bases o la consola de RabbitMQ (`15672`) en local:** como Docker no publica puertos desde redes `internal: true`, añade `-f docker-compose.dev-ports.yml` al levantar si necesitas entrar desde el host.
+- **Prueba de rendimiento de `pixels-api` (Rust) y costo de segmentación:** ver [rendimiento/pixels/README.md](rendimiento/pixels/README.md).
 
 **Logs correlacionados:** cada petición lleva `X-Request-ID`; el gateway lo escribe en su log
 de acceso (`docker compose logs gateway | grep rid=`) y lo reenvía a los servicios.

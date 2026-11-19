@@ -1,0 +1,480 @@
+{
+  "project": "collaboard",
+  "allowed": {
+    "ok": 22,
+    "total": 22
+  },
+  "denied_data": {
+    "blocked": 45,
+    "total": 45
+  },
+  "denied_worker_app": {
+    "blocked": 8,
+    "total": 8
+  },
+  "egress": {
+    "blocked": 14,
+    "total": 14
+  },
+  "networks": {
+    "app": {
+      "full_name": "collaboard_app",
+      "driver": "bridge",
+      "internal": true,
+      "containers": [
+        "collaboard-auth-api-1",
+        "collaboard-chat-api-1",
+        "collaboard-collaboration-api-1",
+        "collaboard-gateway-1",
+        "collaboard-notification-api-1",
+        "collaboard-pixels-api-1",
+        "collaboard-pizarra-api-1",
+        "collaboard-web-ssr-1"
+      ]
+    },
+    "edge": {
+      "full_name": "collaboard_edge",
+      "driver": "bridge",
+      "internal": false,
+      "containers": [
+        "collaboard-gateway-1",
+        "collaboard-pixels-ui-1"
+      ]
+    },
+    "internal": {
+      "full_name": "collaboard_internal",
+      "driver": "bridge",
+      "internal": false,
+      "containers": []
+    },
+    "net-board": {
+      "full_name": "collaboard_net-board",
+      "driver": "bridge",
+      "internal": true,
+      "containers": [
+        "collaboard-board-db-1",
+        "collaboard-collaboration-api-1"
+      ]
+    },
+    "net-canvas": {
+      "full_name": "collaboard_net-canvas",
+      "driver": "bridge",
+      "internal": true,
+      "containers": [
+        "collaboard-canvas-db-1",
+        "collaboard-pizarra-api-1"
+      ]
+    },
+    "net-mongo": {
+      "full_name": "collaboard_net-mongo",
+      "driver": "bridge",
+      "internal": true,
+      "containers": [
+        "collaboard-chat-api-1",
+        "collaboard-pixels-api-1",
+        "collaboard-pixels-nosqldb-1"
+      ]
+    },
+    "net-mq": {
+      "full_name": "collaboard_net-mq",
+      "driver": "bridge",
+      "internal": true,
+      "containers": [
+        "collaboard-message-worker-1",
+        "collaboard-notification-api-1",
+        "collaboard-rabbitmq-1"
+      ]
+    },
+    "net-notif": {
+      "full_name": "collaboard_net-notif",
+      "driver": "bridge",
+      "internal": true,
+      "containers": [
+        "collaboard-message-worker-1",
+        "collaboard-notification-api-1",
+        "collaboard-notification-db-1"
+      ]
+    },
+    "net-user": {
+      "full_name": "collaboard_net-user",
+      "driver": "bridge",
+      "internal": true,
+      "containers": [
+        "collaboard-auth-api-1",
+        "collaboard-user-db-1"
+      ]
+    }
+  },
+  "matrix": {
+    "gateway": {
+      "targets": {
+        "web-ssr:3000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "auth-api:8001": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "collaboration-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "pizarra-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "chat-api:8090": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "pixels-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "notification-api:8080": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "user-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": false,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": null
+    },
+    "web-ssr": {
+      "targets": {
+        "gateway:8081": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "user-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": false,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": false
+    },
+    "auth-api": {
+      "targets": {
+        "user-db:5432": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "board-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": false,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": false
+    },
+    "collaboration-api": {
+      "targets": {
+        "pizarra-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "notification-api:8080": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "user-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "canvas-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": false,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": false
+    },
+    "pizarra-api": {
+      "targets": {
+        "collaboration-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "user-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "notification-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": false,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": false
+    },
+    "chat-api": {
+      "targets": {
+        "collaboration-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "notification-api:8080": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "user-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "rabbitmq:5672": {
+          "open": false,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": false
+    },
+    "pixels-api": {
+      "targets": {
+        "user-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "rabbitmq:5672": {
+          "open": false,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": false
+    },
+    "notification-api": {
+      "targets": {
+        "user-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "pixels-nosqldb:27017": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "ALLOW"
+        }
+      },
+      "egress_open": false
+    },
+    "message-worker": {
+      "targets": {
+        "gateway:80": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "gateway:8081": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "web-ssr:3000": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "auth-api:8001": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "collaboration-api:8000": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "pizarra-api:8000": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "chat-api:8090": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "pixels-api:8000": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "user-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "pixels-nosqldb:27017": {
+          "open": false,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "ALLOW"
+        }
+      },
+      "egress_open": false
+    },
+    "user-db": {
+      "targets": {},
+      "egress_open": false
+    },
+    "board-db": {
+      "targets": {},
+      "egress_open": false
+    },
+    "canvas-db": {
+      "targets": {},
+      "egress_open": false
+    },
+    "notification-db": {
+      "targets": {},
+      "egress_open": false
+    },
+    "pixels-nosqldb": {
+      "targets": {},
+      "egress_open": false
+    },
+    "rabbitmq": {
+      "targets": {},
+      "egress_open": false
+    }
+  },
+  "fallos": []
+}

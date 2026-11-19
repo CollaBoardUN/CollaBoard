@@ -1,0 +1,29 @@
+# Banco de la prueba de rendimiento de pixels-api (P3 · S3 + Rust WS fan-out).
+# Limita recursos de gateway, pixels-api y pixels-nosqldb para reproducir
+# saturación controlada y desactiva el rate-limit del gateway (toda la carga sale de k6).
+#   docker compose -f docker-compose.yml -f notifications-module/compose.gateway.yml \
+#     -f rendimiento/pixels/compose.override.yml up -d --build --wait
+services:
+  gateway:
+    cpus: "1.0"
+    mem_limit: 256m
+    environment:
+      RATE_LIMIT_API: 100000r/s
+      RATE_LIMIT_API_BURST: "100000"
+      RATE_LIMIT_AUTH: 100000r/s
+      RATE_LIMIT_AUTH_BURST: "100000"
+      TLS_EXTRA_SAN: DNS:gateway
+    volumes:
+      - ./rendimiento/pixels/certs:/etc/nginx/certs
+
+  pixels-api:
+    cpus: "1.0"
+    mem_limit: 512m
+    environment:
+      PIXELS_BATCH_INTERVAL_MS: ${PIXELS_BATCH_INTERVAL_MS:-0}
+      COOLDOWN_SECONDS: "5.0"
+
+  pixels-nosqldb:
+    cpus: "1.0"
+    mem_limit: 512m
+

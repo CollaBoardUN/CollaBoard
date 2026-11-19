@@ -20,6 +20,7 @@ coverage/
 gateway/certs/
 gateway/tests/certs/
 rendimiento/tls/certs/
+rendimiento/pixels/certs/
 
 # Editores y sistema
 .vscode/*

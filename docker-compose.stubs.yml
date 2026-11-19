@@ -16,7 +16,7 @@ services:
       PORT: "8080"
       API_PREFIX: ${NOTIFICATION_API_PATH_PREFIX:-/api/notifications}
       STUB_SAMPLE: ${NOTIFICATION_STUB_SAMPLE:-false}
-    networks: [internal]
+    networks: [app, net-notif, net-mq]
     depends_on:
       notification-db:
         condition: service_healthy
@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
     environment:
       PORT: "8080"
-    networks: [internal]
+    networks: [net-notif, net-mq]
     depends_on:
       notification-db:
         condition: service_healthy

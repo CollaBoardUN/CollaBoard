@@ -1,0 +1,89 @@
+{
+  "app": {
+    "full_name": "collaboard_app",
+    "driver": "bridge",
+    "internal": true,
+    "containers": [
+      "collaboard-auth-api-1",
+      "collaboard-chat-api-1",
+      "collaboard-collaboration-api-1",
+      "collaboard-gateway-1",
+      "collaboard-notification-api-1",
+      "collaboard-pixels-api-1",
+      "collaboard-pizarra-api-1",
+      "collaboard-web-ssr-1"
+    ]
+  },
+  "edge": {
+    "full_name": "collaboard_edge",
+    "driver": "bridge",
+    "internal": false,
+    "containers": [
+      "collaboard-gateway-1",
+      "collaboard-pixels-ui-1"
+    ]
+  },
+  "internal": {
+    "full_name": "collaboard_internal",
+    "driver": "bridge",
+    "internal": false,
+    "containers": []
+  },
+  "net-board": {
+    "full_name": "collaboard_net-board",
+    "driver": "bridge",
+    "internal": true,
+    "containers": [
+      "collaboard-board-db-1",
+      "collaboard-collaboration-api-1"
+    ]
+  },
+  "net-canvas": {
+    "full_name": "collaboard_net-canvas",
+    "driver": "bridge",
+    "internal": true,
+    "containers": [
+      "collaboard-canvas-db-1",
+      "collaboard-pizarra-api-1"
+    ]
+  },
+  "net-mongo": {
+    "full_name": "collaboard_net-mongo",
+    "driver": "bridge",
+    "internal": true,
+    "containers": [
+      "collaboard-chat-api-1",
+      "collaboard-pixels-api-1",
+      "collaboard-pixels-nosqldb-1"
+    ]
+  },
+  "net-mq": {
+    "full_name": "collaboard_net-mq",
+    "driver": "bridge",
+    "internal": true,
+    "containers": [
+      "collaboard-message-worker-1",
+      "collaboard-notification-api-1",
+      "collaboard-rabbitmq-1"
+    ]
+  },
+  "net-notif": {
+    "full_name": "collaboard_net-notif",
+    "driver": "bridge",
+    "internal": true,
+    "containers": [
+      "collaboard-message-worker-1",
+      "collaboard-notification-api-1",
+      "collaboard-notification-db-1"
+    ]
+  },
+  "net-user": {
+    "full_name": "collaboard_net-user",
+    "driver": "bridge",
+    "internal": true,
+    "containers": [
+      "collaboard-auth-api-1",
+      "collaboard-user-db-1"
+    ]
+  }
+}

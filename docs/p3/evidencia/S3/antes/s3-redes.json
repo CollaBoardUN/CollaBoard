@@ -1,0 +1,33 @@
+{
+  "edge": {
+    "full_name": "collaboard_edge",
+    "driver": "bridge",
+    "internal": false,
+    "containers": [
+      "collaboard-gateway-1",
+      "collaboard-pixels-ui-1"
+    ]
+  },
+  "internal": {
+    "full_name": "collaboard_internal",
+    "driver": "bridge",
+    "internal": false,
+    "containers": [
+      "collaboard-auth-api-1",
+      "collaboard-board-db-1",
+      "collaboard-canvas-db-1",
+      "collaboard-chat-api-1",
+      "collaboard-collaboration-api-1",
+      "collaboard-gateway-1",
+      "collaboard-message-worker-1",
+      "collaboard-notification-api-1",
+      "collaboard-notification-db-1",
+      "collaboard-pixels-api-1",
+      "collaboard-pixels-nosqldb-1",
+      "collaboard-pizarra-api-1",
+      "collaboard-rabbitmq-1",
+      "collaboard-user-db-1",
+      "collaboard-web-ssr-1"
+    ]
+  }
+}

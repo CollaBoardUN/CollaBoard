@@ -238,6 +238,8 @@ jobs:
         run: node scripts/ws_check.mjs https://localhost:8443
       - name: Canal seguro (S1) - redirección, TLS, HSTS, cookie Secure, WSS y captura de red
         run: python3 security-tests/s1_tls.py
+      - name: Segmentación de red (S3) - matriz de conectividad por zonas y bloqueo de egreso
+        run: python3 security-tests/s3_segmentacion.py
       - name: Detener el consumidor mientras se comprueba el contrato del broker
         run: docker compose stop message-worker
       - name: RabbitMQ - publicar/consumir, mínimo privilegio y DLQ

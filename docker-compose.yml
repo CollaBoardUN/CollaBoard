@@ -66,7 +66,7 @@ services:
         condition: service_healthy
       pixels-api:
         condition: service_healthy
-    networks: [edge, internal]
+    networks: [edge, app]
 
   # ---------------------------------------------------------------- Presentación web
   web-ssr:
@@ -79,7 +79,7 @@ services:
       SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-true}
       PUBLIC_PIXELS_URL: ${PUBLIC_PIXELS_URL:-}
       BFF_ALLOWED_ORIGINS: ${BFF_ALLOWED_ORIGINS:-}
-    networks: [internal]
+    networks: [app]
 
   # ---------------------------------------------------------------- APIs de negocio
   auth-api:
@@ -100,7 +100,7 @@ services:
     depends_on:
       user-db:
         condition: service_healthy
-    networks: [internal]
+    networks: [app, net-user]
 
   collaboration-api:
     <<: [*restart, *logging]
@@ -121,7 +121,7 @@ services:
     depends_on:
       board-db:
         condition: service_healthy
-    networks: [internal]
+    networks: [app, net-board]
 
   pizarra-api:
     <<: [*restart, *logging]
@@ -141,7 +141,7 @@ services:
     depends_on:
       canvas-db:
         condition: service_healthy
-    networks: [internal]
+    networks: [app, net-canvas]
 
   chat-api:
     <<: [*restart, *logging]
@@ -161,7 +161,7 @@ services:
     depends_on:
       pixels-nosqldb:
         condition: service_healthy
-    networks: [internal]
+    networks: [app, net-mongo]
 
   pixels-api:
     <<: [*restart, *logging]
@@ -181,7 +181,7 @@ services:
     depends_on:
       pixels-nosqldb:
         condition: service_healthy
-    networks: [internal]
+    networks: [app, net-mongo]
 
   # notification-api y message-worker (C#): ver docker-compose.stubs.yml
 
@@ -206,9 +206,8 @@ services:
       RABBITMQ_DLQ: ${RABBITMQ_DLQ:-notifications.tasks.dlq}
       RABBITMQ_DLQ_ROUTING_KEY: ${RABBITMQ_DLQ_ROUTING_KEY:-notifications.failed}
       RABBITMQ_MAX_DELIVERIES: ${RABBITMQ_MAX_DELIVERIES:-3}
-    ports:
-      # Solo consola de administración, y solo desde la propia máquina.
-      - "${RABBITMQ_CONSOLE_BIND:-127.0.0.1}:15672:15672"
+    # La consola de administración (127.0.0.1:15672) se publica solo con
+    # docker-compose.dev-ports.yml para mantener `net-mq` 100% internal: true.
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
@@ -217,7 +216,7 @@ services:
       timeout: 10s
       retries: 12
       start_period: 30s
-    networks: [internal]
+    networks: [net-mq]
 
   # ---------------------------------------------------------------- Almacenes
   user-db:
@@ -234,7 +233,7 @@ services:
       interval: 3s
       timeout: 3s
       retries: 20
-    networks: [internal]
+    networks: [net-user]
 
   board-db:
     <<: [*restart, *logging]
@@ -250,7 +249,7 @@ services:
       interval: 3s
       timeout: 3s
       retries: 20
-    networks: [internal]
+    networks: [net-board]
 
   canvas-db:
     <<: [*restart, *logging]
@@ -266,7 +265,7 @@ services:
       interval: 3s
       timeout: 3s
       retries: 20
-    networks: [internal]
+    networks: [net-canvas]
 
   notification-db:
     <<: [*restart, *logging]
@@ -282,7 +281,7 @@ services:
       interval: 3s
       timeout: 3s
       retries: 20
-    networks: [internal]
+    networks: [net-notif]
 
   # MongoDB: dos bases lógicas (collaboard_pixels y chat) con credenciales separadas.
   pixels-nosqldb:
@@ -304,16 +303,18 @@ services:
       timeout: 5s
       retries: 20
       start_period: 10s
-    networks: [internal]
+    networks: [net-mongo]
 
   # ---------------------------------------------------------------- Opcional
   # Prueba de humo del broker (perfil `tools`), en la red interna:
   #   docker compose --profile tools run --rm rabbit-smoke
   rabbit-smoke:
     profiles: ["tools"]
-    image: python:3.12-slim
+    build:
+      context: ./scripts
+      dockerfile: Dockerfile.rabbit-smoke
     working_dir: /scripts
-    command: ["sh", "-c", "pip install -q --disable-pip-version-check pika==1.3.2 && python rabbit_smoke_test.py"]
+    command: ["python", "rabbit_smoke_test.py"]
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_VHOST: ${RABBITMQ_VHOST:-collaboard}
@@ -333,7 +334,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-    networks: [internal]
+    networks: [net-mq]
 
   # Interfaz del lienzo de Pixels (Frontend SPA)
   pixels-ui:
@@ -359,10 +360,29 @@ volumes:
   rabbitmq_data:
 
 networks:
-  # Única red con salida al host: solo el gateway (y la UI opcional de Pixels).
+  # Única red perimetral con salida al host: solo gateway y pixels-ui.
   edge:
     driver: bridge
-  # Red de servicios y datos. No se publica ningún puerto desde aquí salvo el
-  # de la consola de RabbitMQ (127.0.0.1:15672).
-  internal:
+  # Zona de aplicación (internal: true): comunicación HTTP/WS entre gateway, SSR y APIs sin salida a Internet.
+  app:
     driver: bridge
+    internal: true
+  # Zonas aisladas de datos y mensajería por almacén (mínimo privilegio, sin salida a Internet).
+  net-user:
+    driver: bridge
+    internal: true
+  net-board:
+    driver: bridge
+    internal: true
+  net-canvas:
+    driver: bridge
+    internal: true
+  net-notif:
+    driver: bridge
+    internal: true
+  net-mongo:
+    driver: bridge
+    internal: true
+  net-mq:
+    driver: bridge
+    internal: true

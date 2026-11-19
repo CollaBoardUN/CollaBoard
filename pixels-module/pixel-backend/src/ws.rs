@@ -32,17 +32,39 @@ async fn handle_socket(socket: WebSocket, state: AppState) {
         total_placed: state.total_placed.load(Ordering::Relaxed),
         unique_contributors: state.unique_contributors.len(),
     };
-    let _ = state.broadcast_tx.send(stats_msg);
+    if state.config.batch_interval_ms > 0 {
+        if let Ok(s) = serde_json::to_string(&stats_msg) {
+            let _ = state.broadcast_raw_tx.send(std::sync::Arc::from(s));
+        }
+    } else {
+        let _ = state.broadcast_tx.send(stats_msg);
+    }
 
     let (mut sender, mut receiver) = socket.split();
+    let use_batch = state.config.batch_interval_ms > 0;
     let mut rx = state.broadcast_tx.subscribe();
+    let mut rx_raw = state.broadcast_raw_tx.subscribe();
 
     // Tarea para enviar mensajes del canal broadcast al cliente WebSocket
     let mut send_task = tokio::spawn(async move {
-        while let Ok(msg) = rx.recv().await {
-            if let Ok(text) = serde_json::to_string(&msg) {
-                if sender.send(Message::Text(text)).await.is_err() {
-                    break;
+        if use_batch {
+            loop {
+                match rx_raw.recv().await {
+                    Ok(text) => {
+                        if sender.send(Message::Text(text.to_string())).await.is_err() {
+                            break;
+                        }
+                    }
+                    Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => continue,
+                    Err(tokio::sync::broadcast::error::RecvError::Closed) => break,
+                }
+            }
+        } else {
+            while let Ok(msg) = rx.recv().await {
+                if let Ok(text) = serde_json::to_string(&msg) {
+                    if sender.send(Message::Text(text)).await.is_err() {
+                        break;
+                    }
                 }
             }
         }
