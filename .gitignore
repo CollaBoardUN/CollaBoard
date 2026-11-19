@@ -31,3 +31,6 @@ rendimiento/tls/certs/
 # Rust
 target/
 **/target/
+
+# Excepción: llaves de sesión TLS de la evidencia de S1 (solo abren esa captura; ver docs/p3/evidencia/S1/wireshark/README.md).
+!docs/p3/evidencia/S1/wireshark/despues/llaves-tls.log
