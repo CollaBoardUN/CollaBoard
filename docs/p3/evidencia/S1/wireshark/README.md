@@ -16,6 +16,10 @@ que exportó el navegador (`SSLKEYLOGFILE`). Solo abren esta captura y no sirven
 
 ![Wireshark antes y después](s1-wireshark-antes-despues.png)
 
+Pantallazos de la interfaz de Wireshark y del navegador: `../capturas/`
+(`wireshark-antes-post-en-claro.png`, `wireshark-despues-solo-tls.png`, `navegador-conexion-segura.png`,
+`certutil-ca-confiable.png`).
+
 ## Mostrarlo en la interfaz de Wireshark
 
 **Antes (P2):** abrir `antes/captura.pcapng`.

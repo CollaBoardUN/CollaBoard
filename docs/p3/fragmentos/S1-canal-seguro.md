@@ -119,6 +119,23 @@ El último renglón descarta que el 0 se deba a haber capturado otra cosa: la ca
 sesión, pero sin los secretos de TLS (que solo tienen el navegador y el gateway) no se puede leer.
 En el P3 también aparecen *Server Hello* sin certificado: es la reanudación de sesión.
 
+Las mismas capturas abiertas en la interfaz de Wireshark:
+
+![Wireshark, P2: las peticiones POST viajan en HTTP plano](../evidencia/S1/capturas/wireshark-antes-post-en-claro.png)
+
+*P2 (`antes/captura.pcapng`), filtro `http.request.method == "POST"`: registro, login, creación del tablero
+y mensaje de chat viajan en HTTP plano; el panel inferior muestra el formulario (`multipart/form-data`) legible.*
+
+![Wireshark, P3: solo TLS 1.3](../evidencia/S1/capturas/wireshark-despues-solo-tls.png)
+
+*P3 (`despues/captura.pcapng`), filtro `tls`: Client Hello (SNI `localhost`), Server Hello y Application Data;
+ningún contenido legible.*
+
+**Desde el navegador.** Con la CA de desarrollo importada (`certutil -user -addstore Root gateway\certs\ca.crt`),
+Chrome abre `https://localhost:8443` sin advertencias e indica "La conexión es segura":
+
+![Chrome: la conexión es segura](../evidencia/S1/capturas/navegador-conexion-segura.png)
+
 **Verificación automática** (corre en el CI). Mismo script, misma acción y misma herramienta de captura contra el P2 y el P3
 (`security-tests/s1_tls.py`; salidas, capturas `.pcap` y resúmenes en `docs/p3/evidencia/S1/antes` y
 `docs/p3/evidencia/S1/despues`):
