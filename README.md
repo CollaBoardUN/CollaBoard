@@ -37,7 +37,7 @@ docker compose up -d --build --wait
 |---|---|
 | Web SSR, API y WebSockets (mismo origen) | https://localhost:8443 (`http://localhost:8088` redirige) |
 | Consola de RabbitMQ y bases (solo depuración local) | `-f docker-compose.dev-ports.yml` → `http://127.0.0.1:15672`, PostgreSQL `15432..15435`, Mongo `27017` |
-| Interfaz de Pixels | http://localhost:3000 |
+| Interfaz de Pixels (detrás del gateway; sin puerto propio desde el P3 · S2) | https://localhost:8443/pixels/ |
 | Redes internas (`app` y `net-*`) | aisladas con `internal: true` (sin puertos al host ni salida a Internet; ver [Segmentación](#-segmentación-de-redes-p3--s3-network-segmentation)) |
 
 **Verificar** (cada comando imprime `OK`/`FAIL` por comprobación):
@@ -49,6 +49,7 @@ sh scripts/gateway_smoke.sh https://localhost:8443               # rutas, /inter
 node scripts/ws_check.mjs https://localhost:8443                 # WebSocket (wss://) de Pizarra, Chat y Pixels
 python security-tests/s1_tls.py                                  # S1: redirección, TLS, HSTS, cookie Secure, WSS, captura
 python security-tests/s3_segmentacion.py                         # S3: matriz de conectividad por zonas y bloqueo de salida a Internet
+node security-tests/s2_proxy.mjs --target https://localhost:8443 --ca gateway/certs/ca.crt   # S2: catálogo de ataques al borde
 docker compose --profile tools run --rm rabbit-smoke             # RabbitMQ: publicar/consumir, permisos, DLQ
 NODE_EXTRA_CA_CERTS=gateway/tests/certs/ca.crt node --test gateway/tests/contract.test.mjs   # contrato del gateway (ver gateway/tests/compose.test.yml)
 ```
@@ -86,6 +87,21 @@ En lugar de una sola red plana `internal`, los contenedores se reparten en **8 r
 - **Verificación de la matriz:** `python security-tests/s3_segmentacion.py` (o `sh scripts/segmentation_check.sh`) inyecta `nicolaka/netshoot` en el namespace de red de cada contenedor para probar todos los pares permitidos y prohibidos más la salida a Internet.
 - **Abrir puertos de bases o la consola de RabbitMQ (`15672`) en local:** como Docker no publica puertos desde redes `internal: true`, añade `-f docker-compose.dev-ports.yml` al levantar si necesitas entrar desde el host.
 - **Prueba de rendimiento de `pixels-api` (Rust) y costo de segmentación:** ver [rendimiento/pixels/README.md](rendimiento/pixels/README.md).
+
+### 🛡️ Reverse Proxy (P3 · S2 gateway endurecido)
+
+El gateway es el único punto de entrada: solo publica `8088`/`8443`, sirve la UI de Pixels en `/pixels/` y aplica una lista blanca de rutas y métodos, la
+validación de `Host`, el saneado de cabeceras, las cabeceras de seguridad (CSP y otras), errores JSON y
+límites por IP. Lo no declarado responde `404` desde el gateway, sin llegar a ningún servicio.
+
+- **Reproducir el escenario:** `node security-tests/s2_proxy.mjs --target https://localhost:8443 --ca gateway/certs/ca.crt`
+  (41 casos de ataque y 5 controles; requiere Docker). Detalle y P2 → P3: [security-tests/README.md](security-tests/README.md).
+- **Variables** (`.env.example`): `GATEWAY_ALLOWED_HOSTS` (Host aceptados; añade aquí la IP o el nombre
+  de `TLS_EXTRA_SAN` si entras desde otra máquina), `RATE_LIMIT_WEB`, `RATE_LIMIT_WEB_BURST`,
+  `LIMIT_CONN_PER_IP` y `LIMIT_CONN_WS_PER_IP`.
+- **Pruebas de carga:** salen de una sola IP; sube esos límites (y los `RATE_LIMIT_*` del P2) en el
+  override de la prueba, p. ej. `LIMIT_CONN_PER_IP=100000`, `RATE_LIMIT_WEB=100000r/s`.
+- Decisión y valores medidos: [ADR 0012](docs/adr/0012-reverse-proxy-endurecido.md).
 
 **Logs correlacionados:** cada petición lleva `X-Request-ID`; el gateway lo escribe en su log
 de acceso (`docker compose logs gateway | grep rid=`) y lo reenvía a los servicios.
