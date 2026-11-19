@@ -1,5 +1,5 @@
-S2 · Reverse Proxy — 44 casos contra http://localhost:8088 (P2 6af0456) · corrida ebdcb3
-UI de Pixels: http://localhost:3000/ · log/captura: C:\Users\Sebastián\Desktop\p2-baseline
+S2 · Reverse Proxy — 46 casos contra http://localhost:8088 (P2 6af0456) · corrida 99fdd5
+UI de Pixels: http://localhost:3000/ · log/captura: ../p2-baseline
 
 
 OK   K01 [Control] GET /healthz
@@ -51,13 +51,13 @@ FAIL C03 [Host y cabeceras] GET /api/boards con X-Forwarded-For: 203.0.113.66
 FAIL C04 [Host y cabeceras] GET /api/boards con X-Real-IP: 203.0.113.77
        → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-Real-IP: 203.0.113.77 · FALSIFICADO: 203.0.113.77
 FAIL C05 [Host y cabeceras] GET /api/boards con X-Service-Token: s2-token-falso-<corrida>
-       → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-Service-Token: s2-token-falso-ebdcb3 · FALSIFICADO: s2-token-falso-ebdcb3
+       → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-Service-Token: s2-token-falso-99fdd5 · FALSIFICADO: s2-token-falso-99fdd5
 FAIL C06 [Host y cabeceras] GET /api/boards con X-User-Id: s2-usuario-falso-<corrida>
-       → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-User-Id: s2-usuario-falso-ebdcb3 · FALSIFICADO: s2-usuario-falso-ebdcb3
+       → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-User-Id: s2-usuario-falso-99fdd5 · FALSIFICADO: s2-usuario-falso-99fdd5
 FAIL C07 [Host y cabeceras] GET /api/boards con X-Forwarded-Host: evil-s2.example y Forwarded: for=203.0.113.88;host=evil-s2.example;proto=http
        → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | Forwarded: for=203.0.113.88;host=evil-s2.example;proto=http · FALSIFICADO: evil-s2.example, 203.0.113.88
 OK   C08 [Host y cabeceras] GET /api/boards con X-Request-ID: abc def" us=200 up=10.0.0.1 (falsificar campos del log)
-       → 401 · X-Request-ID devuelto: "51f4839141f874546ab9cdc475604ed5"
+       → 401 · X-Request-ID devuelto: "d1981ae01361a4ce2ae68027f5764b79"
 FAIL C09 [Host y cabeceras] GET /api/boards con X-Request-ID seguido de una línea plegada (obs-fold: CRLF + espacio + X-Inyectada: s2)
        → 400 text/html <html> <head><title>400 Bad Request</title></head> <body> <center><h1>…
 FAIL C10 [Host y cabeceras] GET /api/boards con X-Request-ID que contiene un CR suelto (\r) + X-Inyectada: s2
@@ -73,11 +73,15 @@ FAIL D04 [Tamaños] POST /api/auth/login con cuerpo JSON de 100 KiB (límite pro
 FAIL E01 [Lentitud y volumen] GET /login enviando una cabecera cada 2 s sin terminar nunca (slow headers)
        → la conexión seguía abierta a los 25.0 s
 FAIL E02 [Lentitud y volumen] POST /api/boards con Content-Length: 1000, 10 bytes de cuerpo y luego nada (slow body)
-       → la conexión seguía abierta a los 25.0 s
+       → la conexión seguía abierta a los 25.0 s · upstream: no (us=- en 1 línea)
 FAIL E03 [Lentitud y volumen] 120 conexiones desde una IP (una cada 50 ms, bajo la tasa de limit_req), cada una POST /api/boards con el cuerpo pendiente
-       → 0/120 rechazadas al instante ({}); 120 retenidas por el gateway esperando el cuerpo · error log: 0 «limiting connections», 0 «limiting requests» · upstream: n/a
+       → 0/120 rechazadas al instante ({}); 120 retenidas por el gateway esperando el cuerpo · error log: 0 «limiting connections» (zona conn), 0 «limiting requests» · upstream: n/a
 FAIL E04 [Lentitud y volumen] 300 GET /login en ráfaga (30 en paralelo)
        → 0/300 limitadas: {"200":300} · upstream: n/a
+FAIL E05 [Lentitud y volumen] GET del estático más grande de la web sin leer la respuesta (SO_RCVBUF=1 KiB, 25 s), desde un contenedor en la red edge (slow read)
+       → /_next/static/chunks/2nii411saqstq.js (207234 B): tras 25 s sin leer se recibieron 207234 B y la conexión terminó «cerrada» (HTTP/1.1 200 OK) en 25.8 s
+FAIL E06 [Lentitud y volumen] 40 WebSocket a /ws/pixels abiertos a la vez desde una IP (uno cada 50 ms)
+       → 0/40 WebSocket rechazados ({"101":40}) · error log: 0 «limiting connections» (zona conn_ws), 0 «limiting requests» · upstream: n/a
 FAIL F01 [Exposición] GET /s2-no-existe
        → 307 - /login?next=%2Fs2-no-existe · upstream: SÍ (us=307)
 FAIL F02 [Exposición] GET /api/s2-no-existe
@@ -91,6 +95,6 @@ FAIL F05 [Exposición] GET /login, /api/boards, /s2-no-existe y UI de Pixels: ca
 FAIL F06 [Exposición] Puertos publicados por el stack (docker compose ps) y TCP desde el host a 3000, 5432, 5672, 8000, 8001, 8002, 8080, 8081, 8090, 15432, 15433, 15434, 15435, 15672, 27017 en 127.0.0.1 y en las IP de la LAN
        → publicados por el stack: gateway 0.0.0.0:8088→80, pixels-ui 0.0.0.0:3000→80, rabbitmq 127.0.0.1:15672→15672 · indebidos: pixels-ui 0.0.0.0:3000→80 · responden por TCP sin estar permitidos: 127.0.0.1:3000, 172.29.x.x:3000, 192.168.x.x:3000 · abiertos por procesos del host ajenos al stack (no cuentan): 5432, 8080 · IP probadas: 127.0.0.1, 192.168.x.x, 172.29.x.x
 
-Ataques bloqueados o normalizados: 9/39 · controles: 5/5 · rechazos con us=- en el log: 14/26
+Ataques bloqueados o normalizados: 9/41 · controles: 5/5 · rechazos con us=- en el log: 15/28
 Resultados: docs/p3/evidencia/S2/antes/s2_proxy-p2.json
 exit=1

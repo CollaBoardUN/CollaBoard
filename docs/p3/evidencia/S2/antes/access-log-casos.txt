@@ -1,0 +1,56 @@
+# Líneas del access log del gateway (P2) de cada caso verificado por log
+# Generado desde docs/p3/evidencia/S2/antes/s2_proxy-p2.json (campo log de cada caso). us=<código> = la petición llegó al servicio.
+
+A01 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:21+00:00] "GET /internal/events" 404 rid=s2-A01-99fdd5 up=- us=- rt=0.000
+A02 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:21+00:00] "POST /internal/boards/b1/access" 404 rid=s2-A02-99fdd5 up=- us=- rt=0.000
+A03 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:21+00:00] "GET /internal/events" 404 rid=s2-A03-99fdd5 up=- us=- rt=0.000
+A04 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:21+00:00] "GET /INTERNAL/events" 404 rid=s2-A04-99fdd5 up=- us=- rt=0.000
+A05 FAIL · upstream: no (us=- en 1 línea, por ventana de tiempo)
+    172.19.0.1 [2026-11-19T23:25:22+00:00] "GET " 400 rid=6ba91756ecd2626aaa8c6bc53bab5837 up=- us=- rt=0.000
+A06 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:23+00:00] "GET /api/internal/events" 404 rid=s2-A06-99fdd5 up=- us=- rt=0.000
+A07 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:23+00:00] "GET /internal/boards/b1/access" 404 rid=s2-A07-99fdd5 up=- us=- rt=0.000
+A08 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:23+00:00] "GET /internal/events" 404 rid=s2-A08-99fdd5 up=- us=- rt=0.000
+A09 FAIL · upstream: SÍ (us=307)
+    172.19.0.1 [2026-11-19T23:25:23+00:00] "GET /%69nternal/events" 307 rid=s2-A09-99fdd5 up=172.18.0.2:3000 us=307 rt=0.004
+A10 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:23+00:00] "GET /internal/events" 404 rid=s2-A10-99fdd5 up=- us=- rt=0.000
+A11 FAIL · upstream: SÍ (us=401)
+    172.19.0.1 [2026-11-19T23:25:23+00:00] "GET /api/chat/%69nternal/events" 401 rid=s2-A11-99fdd5 up=172.18.0.13:8090 us=401 rt=0.015
+B01 FAIL · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:23+00:00] "TRACE /" 405 rid=s2-B01-99fdd5 up=- us=- rt=0.000
+B02 FAIL · upstream: no (us=- en 1 línea, por ventana de tiempo)
+    172.19.0.1 [2026-11-19T23:25:24+00:00] "- -" 400 rid=8739170062fb62aba6bdf3e060a4d427 up=- us=- rt=0.000
+B03 FAIL · upstream: SÍ (us=200)
+    172.19.0.1 [2026-11-19T23:25:25+00:00] "DELETE /login" 200 rid=s2-B03-99fdd5 up=172.18.0.2:3000 us=200 rt=0.021
+B04 FAIL · upstream: SÍ (us=405)
+    172.19.0.1 [2026-11-19T23:25:25+00:00] "PUT /auth/login" 405 rid=s2-B04-99fdd5 up=172.18.0.10:8001 us=405 rt=0.002
+C01 FAIL · upstream: SÍ (us=307)
+    172.19.0.1 [2026-11-19T23:25:25+00:00] "GET /" 307 rid=s2-C01-99fdd5 up=172.18.0.2:3000 us=307 rt=0.004
+C02 FAIL · upstream: SÍ (us=307)
+    172.19.0.1 [2026-11-19T23:25:25+00:00] "GET /" 307 rid=s2-C02-99fdd5 up=172.18.0.2:3000 us=307 rt=0.005
+D01 FAIL · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:30+00:00] "POST /api/boards" 413 rid=s2-D01-99fdd5 up=- us=- rt=5.000
+D02 FAIL · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:25:30+00:00] "GET /login" 400 rid=s2-D02-99fdd5 up=- us=- rt=0.000
+D03 FAIL · upstream: no (us=- en 1 línea, por ventana de tiempo)
+    172.19.0.1 [2026-11-19T23:25:31+00:00] "- -" 414 rid=94e7bf0366ed1ae9249ce0b3c83ed306 up=- us=- rt=0.000
+D04 FAIL · upstream: SÍ (us=400)
+    172.19.0.1 [2026-11-19T23:25:32+00:00] "POST /auth/login" 400 rid=s2-D04-99fdd5 up=172.18.0.10:8001 us=400 rt=0.001
+E02 FAIL · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:26:03+00:00] "POST /boards" 400 rid=s2-E02-99fdd5 up=- us=- rt=25.005
+E03 FAIL · upstream: n/a
+E04 FAIL · upstream: n/a
+E06 FAIL · upstream: n/a
+F01 FAIL · upstream: SÍ (us=307)
+    172.19.0.1 [2026-11-19T23:25:32+00:00] "GET /s2-no-existe" 307 rid=s2-F01-99fdd5 up=172.18.0.2:3000 us=307 rt=0.003
+F02 FAIL · upstream: SÍ (us=307)
+    172.19.0.1 [2026-11-19T23:25:32+00:00] "GET /api/s2-no-existe" 307 rid=s2-F02-99fdd5 up=172.18.0.2:3000 us=307 rt=0.003
+F03 FAIL · upstream: SÍ (us=307)
+    172.19.0.1 [2026-11-19T23:25:32+00:00] "GET /api/canvas/boards/b1/otra-cosa" 307 rid=s2-F03-99fdd5 up=172.18.0.2:3000 us=307 rt=0.003

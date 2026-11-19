@@ -1,0 +1,810 @@
+{
+  "herramienta": "security-tests/s2_proxy.mjs",
+  "objetivo": "https://localhost:8443",
+  "ui_pixels": "https://localhost:8443/pixels/",
+  "etiqueta": "P3 clon limpio 1258f75",
+  "corrida": "5cc3d5",
+  "inicio": "2026-11-19T23:27:48.307Z",
+  "fin": "2026-11-19T23:28:52.284Z",
+  "node": "v22.17.0",
+  "resumen": {
+    "ataques_ok": 41,
+    "ataques": 41,
+    "controles_ok": 5,
+    "controles": 5,
+    "rechazos_us_guion": 28,
+    "rechazos_con_log": 28
+  },
+  "resultados": [
+    {
+      "id": "K01",
+      "tipo": "control",
+      "cat": "Control",
+      "tactica": "—",
+      "peticion": "GET /healthz",
+      "esperado": "200",
+      "verif": "respuesta",
+      "ok": true,
+      "detail": "200 text/plain ok",
+      "status": 200,
+      "upstream": "n/a"
+    },
+    {
+      "id": "K02",
+      "tipo": "control",
+      "cat": "Control",
+      "tactica": "—",
+      "peticion": "GET /login",
+      "esperado": "200 text/html (web SSR)",
+      "verif": "respuesta",
+      "ok": true,
+      "detail": "200 text/html <!DOCTYPE html><html lang=\"es\"><head><meta charSet=\"utf-8\"/><meta name…",
+      "status": 200,
+      "upstream": "n/a"
+    },
+    {
+      "id": "K03",
+      "tipo": "control",
+      "cat": "Control",
+      "tactica": "—",
+      "peticion": "GET /api/boards (sin sesión)",
+      "esperado": "401 JSON del servicio (sí llega al upstream)",
+      "verif": "respuesta",
+      "ok": true,
+      "detail": "401 application/json {\"detail\":\"No autenticado\"}",
+      "status": 401,
+      "upstream": "n/a"
+    },
+    {
+      "id": "K04",
+      "tipo": "control",
+      "cat": "Control",
+      "tactica": "—",
+      "peticion": "GET /api/pixels/board",
+      "esperado": "200",
+      "verif": "respuesta",
+      "ok": true,
+      "detail": "200 application/json",
+      "status": 200,
+      "upstream": "n/a"
+    },
+    {
+      "id": "K05",
+      "tipo": "control",
+      "cat": "Control",
+      "tactica": "—",
+      "peticion": "GET <UI de Pixels> (P2 :3000/ · P3 /pixels/)",
+      "esperado": "200 text/html",
+      "verif": "respuesta",
+      "ok": true,
+      "detail": "https://localhost:8443/pixels/ → 200 text/html <!doctype html> <html lang=\"es\"> <head> <meta charset=\"UTF-8\" /> <link…",
+      "status": null,
+      "upstream": "n/a"
+    },
+    {
+      "id": "A01",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "GET /internal/events",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:48+00:00] \"GET /internal/events\" 404 rid=s2-A01-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-A01-5cc3d5"
+      ]
+    },
+    {
+      "id": "A02",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "POST /internal/boards/b1/access",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:48+00:00] \"POST /internal/boards/b1/access\" 404 rid=s2-A02-5cc3d5 up=- us=- rt=0.001"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-A02-5cc3d5"
+      ]
+    },
+    {
+      "id": "A03",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "GET //internal/events",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:48+00:00] \"GET /internal/events\" 404 rid=s2-A03-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-A03-5cc3d5"
+      ]
+    },
+    {
+      "id": "A04",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "GET /INTERNAL/events",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:48+00:00] \"GET /INTERNAL/events\" 404 rid=s2-A04-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-A04-5cc3d5"
+      ]
+    },
+    {
+      "id": "A05",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "GET /%2e%2e/internal/events (sin normalizar)",
+      "esperado": "400 o 404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "aislar": true,
+      "logHint": [
+        [
+          "GET",
+          ""
+        ],
+        [
+          "GET",
+          "/__gw/400"
+        ]
+      ],
+      "ok": true,
+      "detail": "400 application/json {\"detail\":\"Solicitud inválida.\"}",
+      "status": 400,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:49+00:00] \"GET /__gw/400\" 400 rid=304c249d9ff4844319f02c431e82e499 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea, por ventana de tiempo)",
+      "rids": [
+        "s2-A05-5cc3d5"
+      ]
+    },
+    {
+      "id": "A06",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "GET /api/boards/../internal/events (sin normalizar)",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:50+00:00] \"GET /api/internal/events\" 404 rid=s2-A06-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-A06-5cc3d5"
+      ]
+    },
+    {
+      "id": "A07",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "GET /api/boards/%2e%2e/%2e%2e/internal/boards/b1/access",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:50+00:00] \"GET /internal/boards/b1/access\" 404 rid=s2-A07-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-A07-5cc3d5"
+      ]
+    },
+    {
+      "id": "A08",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "GET /%69nternal/events (i codificada)",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:50+00:00] \"GET /internal/events\" 404 rid=s2-A08-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-A08-5cc3d5"
+      ]
+    },
+    {
+      "id": "A09",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "GET /%2569nternal/events (doble codificación)",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:50+00:00] \"GET /%69nternal/events\" 404 rid=s2-A09-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-A09-5cc3d5"
+      ]
+    },
+    {
+      "id": "A10",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "GET /internal%2fevents (barra codificada)",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:50+00:00] \"GET /internal/events\" 404 rid=s2-A10-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-A10-5cc3d5"
+      ]
+    },
+    {
+      "id": "A11",
+      "cat": "Rutas internas",
+      "tactica": "Limit access",
+      "peticion": "GET /api/chat/%2569nternal/events (doble codificación bajo un prefijo que se reenvía sin reescribir)",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:50+00:00] \"GET /api/chat/%69nternal/events\" 404 rid=s2-A11-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-A11-5cc3d5"
+      ]
+    },
+    {
+      "id": "B01",
+      "cat": "Métodos",
+      "tactica": "Limit access",
+      "peticion": "TRACE / HTTP/1.1",
+      "esperado": "405 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "405 application/json {\"detail\":\"Método no permitido.\"}",
+      "status": 405,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:50+00:00] \"TRACE /\" 405 rid=s2-B01-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-B01-5cc3d5"
+      ]
+    },
+    {
+      "id": "B02",
+      "cat": "Métodos",
+      "tactica": "Limit access",
+      "peticion": "CONNECT <host>:<puerto> HTTP/1.1",
+      "esperado": "400 o 405 JSON del gateway, sin upstream",
+      "verif": "log",
+      "aislar": true,
+      "logHint": [
+        [
+          "-",
+          "-"
+        ],
+        [
+          "GET",
+          "/__gw/400"
+        ]
+      ],
+      "ok": true,
+      "detail": "400 application/json {\"detail\":\"Solicitud inválida.\"}",
+      "status": 400,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:51+00:00] \"GET /__gw/400\" 400 rid=5ce0388b17eaa0da6c7c20d76e9e258d up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea, por ventana de tiempo)",
+      "rids": [
+        "s2-B02-5cc3d5"
+      ]
+    },
+    {
+      "id": "B03",
+      "cat": "Métodos",
+      "tactica": "Limit access",
+      "peticion": "DELETE /login",
+      "esperado": "405 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "405 application/json {\"detail\":\"Método no permitido.\"}",
+      "status": 405,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:52+00:00] \"DELETE /login\" 405 rid=s2-B03-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-B03-5cc3d5"
+      ]
+    },
+    {
+      "id": "B04",
+      "cat": "Métodos",
+      "tactica": "Limit access",
+      "peticion": "PUT /api/auth/login",
+      "esperado": "405 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "405 application/json {\"detail\":\"Método no permitido.\"}",
+      "status": 405,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:52+00:00] \"PUT /api/auth/login\" 405 rid=s2-B04-5cc3d5 up=- us=- rt=0.001"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-B04-5cc3d5"
+      ]
+    },
+    {
+      "id": "C01",
+      "cat": "Host y cabeceras",
+      "tactica": "Validate input",
+      "peticion": "GET / con Host: evil-s2.example",
+      "esperado": "421 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "421 application/json {\"detail\":\"Host no permitido.\"}",
+      "status": 421,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:52+00:00] \"GET /\" 421 rid=s2-C01-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-C01-5cc3d5"
+      ]
+    },
+    {
+      "id": "C02",
+      "cat": "Host y cabeceras",
+      "tactica": "Validate input",
+      "peticion": "GET http://evil-s2.example/ HTTP/1.1 (forma absoluta) con Host legítimo",
+      "esperado": "421 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "421 application/json {\"detail\":\"Host no permitido.\"}",
+      "status": 421,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:52+00:00] \"GET /\" 421 rid=s2-C02-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-C02-5cc3d5"
+      ]
+    },
+    {
+      "id": "C03",
+      "cat": "Host y cabeceras",
+      "tactica": "Validate input",
+      "peticion": "GET /api/boards con X-Forwarded-For: 203.0.113.66",
+      "esperado": "el servicio recibe X-Forwarded-For = IP real del cliente, sin el valor falsificado",
+      "verif": "captura",
+      "ok": true,
+      "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8443 | X-Forwarded-For: 172.19.0.1 | X-Real-IP: 172.19.0.1",
+      "status": 401,
+      "upstream": "llega saneada (captura)",
+      "captura": "23:28:03.988064 eth1  Out IP 172.18.0.16.46396 > 172.18.0.10.8000: Flags [P.], seq 0:245, ack 1, win 502, options [nop,nop,TS val 838297797 ecr 3006538349], length 245\nE..).^@.@.W2.......\n.<.@`..7..!.....YZ.....\n1.h..4\"mGET /boards HTTP/1.1\nHost: localhost:8443\nX-Request-ID: s2-C03-5cc3d5\nX-Forwarded-Host: localhost:8443\nX-Forwarded-Proto: https\nX-Forwarded-For: 172.19.0.1\nX-Real-IP: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\n\n"
+    },
+    {
+      "id": "C04",
+      "cat": "Host y cabeceras",
+      "tactica": "Validate input",
+      "peticion": "GET /api/boards con X-Real-IP: 203.0.113.77",
+      "esperado": "el servicio no recibe el X-Real-IP falsificado",
+      "verif": "captura",
+      "ok": true,
+      "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8443 | X-Forwarded-For: 172.19.0.1 | X-Real-IP: 172.19.0.1",
+      "status": 401,
+      "upstream": "llega saneada (captura)",
+      "captura": "23:28:03.997802 eth1  Out IP 172.18.0.16.46400 > 172.18.0.10.8000: Flags [P.], seq 0:245, ack 1, win 502, options [nop,nop,TS val 838297807 ecr 3006538359], length 245\nE..)4.@.@..........\n.@.@.4..........YZ.....\n1.h..4\"wGET /boards HTTP/1.1\nHost: localhost:8443\nX-Request-ID: s2-C04-5cc3d5\nX-Forwarded-Host: localhost:8443\nX-Forwarded-Proto: https\nX-Forwarded-For: 172.19.0.1\nX-Real-IP: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\n\n"
+    },
+    {
+      "id": "C05",
+      "cat": "Host y cabeceras",
+      "tactica": "Validate input",
+      "peticion": "GET /api/boards con X-Service-Token: s2-token-falso-<corrida>",
+      "esperado": "el servicio no recibe X-Service-Token",
+      "verif": "captura",
+      "ok": true,
+      "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8443 | X-Forwarded-For: 172.19.0.1 | X-Real-IP: 172.19.0.1",
+      "status": 401,
+      "upstream": "llega saneada (captura)",
+      "captura": "23:28:04.006608 eth1  Out IP 172.18.0.16.46412 > 172.18.0.10.8000: Flags [P.], seq 0:245, ack 1, win 502, options [nop,nop,TS val 838297815 ecr 3006538367], length 245\nE..).-@.@.4c.......\n.L.@ ^;x..Ux....YZ.....\n1.h..4\".GET /boards HTTP/1.1\nHost: localhost:8443\nX-Request-ID: s2-C05-5cc3d5\nX-Forwarded-Host: localhost:8443\nX-Forwarded-Proto: https\nX-Forwarded-For: 172.19.0.1\nX-Real-IP: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\n\n"
+    },
+    {
+      "id": "C06",
+      "cat": "Host y cabeceras",
+      "tactica": "Validate input",
+      "peticion": "GET /api/boards con X-User-Id: s2-usuario-falso-<corrida>",
+      "esperado": "el servicio no recibe X-User-Id",
+      "verif": "captura",
+      "ok": true,
+      "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8443 | X-Forwarded-For: 172.19.0.1 | X-Real-IP: 172.19.0.1",
+      "status": 401,
+      "upstream": "llega saneada (captura)",
+      "captura": "23:28:04.015383 eth1  Out IP 172.18.0.16.46418 > 172.18.0.10.8000: Flags [P.], seq 0:245, ack 1, win 502, options [nop,nop,TS val 838297824 ecr 3006538376], length 245\nE..)._@.@.D1.......\n.R.@';.DV.2.....YZ.....\n1.h..4\".GET /boards HTTP/1.1\nHost: localhost:8443\nX-Request-ID: s2-C06-5cc3d5\nX-Forwarded-Host: localhost:8443\nX-Forwarded-Proto: https\nX-Forwarded-For: 172.19.0.1\nX-Real-IP: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\n\n"
+    },
+    {
+      "id": "C07",
+      "cat": "Host y cabeceras",
+      "tactica": "Validate input",
+      "peticion": "GET /api/boards con X-Forwarded-Host: evil-s2.example y Forwarded: for=203.0.113.88;host=evil-s2.example;proto=http",
+      "esperado": "el servicio no recibe evil-s2.example ni 203.0.113.88",
+      "verif": "captura",
+      "ok": true,
+      "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8443 | X-Forwarded-For: 172.19.0.1 | X-Real-IP: 172.19.0.1",
+      "status": 401,
+      "upstream": "llega saneada (captura)",
+      "captura": "23:28:04.025399 eth1  Out IP 172.18.0.16.46420 > 172.18.0.10.8000: Flags [P.], seq 0:245, ack 1, win 502, options [nop,nop,TS val 838297834 ecr 3006538386], length 245\nE..).\"@.@..m.......\n.T.@.^...A......YZ.....\n1.h..4\".GET /boards HTTP/1.1\nHost: localhost:8443\nX-Request-ID: s2-C07-5cc3d5\nX-Forwarded-Host: localhost:8443\nX-Forwarded-Proto: https\nX-Forwarded-For: 172.19.0.1\nX-Real-IP: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\n\n"
+    },
+    {
+      "id": "C08",
+      "cat": "Host y cabeceras",
+      "tactica": "Validate input",
+      "peticion": "GET /api/boards con X-Request-ID: abc def\" us=200 up=10.0.0.1 (falsificar campos del log)",
+      "esperado": "X-Request-ID reemplazado por uno generado (formato estricto)",
+      "verif": "respuesta",
+      "ok": true,
+      "detail": "401 · X-Request-ID devuelto: \"417af74d4489186432c45f2e5b96dbda\"",
+      "status": 401,
+      "upstream": "n/a"
+    },
+    {
+      "id": "C09",
+      "cat": "Host y cabeceras",
+      "tactica": "Validate input",
+      "peticion": "GET /api/boards con X-Request-ID seguido de una línea plegada (obs-fold: CRLF + espacio + X-Inyectada: s2)",
+      "esperado": "400 JSON, o X-Request-ID válido sin rastro de la línea inyectada",
+      "verif": "respuesta",
+      "ok": true,
+      "detail": "400 application/json {\"detail\":\"Solicitud inválida.\"}",
+      "status": 400,
+      "upstream": "n/a",
+      "rids": [
+        "s2-C09-5cc3d5"
+      ]
+    },
+    {
+      "id": "C10",
+      "cat": "Host y cabeceras",
+      "tactica": "Validate input",
+      "peticion": "GET /api/boards con X-Request-ID que contiene un CR suelto (\\r) + X-Inyectada: s2",
+      "esperado": "400 JSON, o X-Request-ID válido sin rastro de la línea inyectada",
+      "verif": "respuesta",
+      "ok": true,
+      "detail": "400 application/json {\"detail\":\"Solicitud inválida.\"}",
+      "status": 400,
+      "upstream": "n/a",
+      "rids": [
+        "s2-C10-5cc3d5"
+      ]
+    },
+    {
+      "id": "D01",
+      "cat": "Tamaños",
+      "tactica": "Detect service denial",
+      "peticion": "POST /api/boards con Content-Length: 2097152 (2 MiB > CLIENT_MAX_BODY_SIZE=1m)",
+      "esperado": "413 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "413 application/json {\"detail\":\"Cuerpo de la solicitud demasiado grande.\"}",
+      "status": 413,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:57+00:00] \"POST /api/boards\" 413 rid=s2-D01-5cc3d5 up=- us=- rt=5.004"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-D01-5cc3d5"
+      ]
+    },
+    {
+      "id": "D02",
+      "cat": "Tamaños",
+      "tactica": "Detect service denial",
+      "peticion": "GET /login con una cabecera de 20 000 bytes",
+      "esperado": "400/431 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "431 application/json {\"detail\":\"Cabeceras de la solicitud demasiado grandes.\"}",
+      "status": 431,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:57+00:00] \"GET /__gw/431\" 431 rid=s2-D02-5cc3d5 up=- us=- rt=0.001"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-D02-5cc3d5"
+      ]
+    },
+    {
+      "id": "D03",
+      "cat": "Tamaños",
+      "tactica": "Detect service denial",
+      "peticion": "GET /login?q=<12 000 bytes>",
+      "esperado": "414 JSON del gateway, sin upstream",
+      "verif": "log",
+      "aislar": true,
+      "logHint": [
+        [
+          "-",
+          "-"
+        ],
+        [
+          "GET",
+          "/__gw/414"
+        ]
+      ],
+      "ok": true,
+      "detail": "414 application/json {\"detail\":\"URI demasiado larga.\"}",
+      "status": 414,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:58+00:00] \"GET /__gw/414\" 414 rid=7b47e1a1e96781010b3f9e59d65cb20b up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea, por ventana de tiempo)",
+      "rids": [
+        "s2-D03-5cc3d5"
+      ]
+    },
+    {
+      "id": "D04",
+      "cat": "Tamaños",
+      "tactica": "Detect service denial",
+      "peticion": "POST /api/auth/login con cuerpo JSON de 100 KiB (límite propio de la ruta)",
+      "esperado": "413 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "413 application/json {\"detail\":\"Cuerpo de la solicitud demasiado grande.\"}",
+      "status": 413,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:59+00:00] \"POST /api/auth/login\" 413 rid=s2-D04-5cc3d5 up=- us=- rt=0.001"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-D04-5cc3d5"
+      ]
+    },
+    {
+      "id": "E01",
+      "cat": "Lentitud y volumen",
+      "tactica": "Detect service denial",
+      "peticion": "GET /login enviando una cabecera cada 2 s sin terminar nunca (slow headers)",
+      "esperado": "el gateway cierra la conexión en <= 15 s",
+      "verif": "tiempo",
+      "ok": true,
+      "detail": "cerrada por el gateway a los 10.0 s (sin respuesta)",
+      "status": null,
+      "upstream": "n/a"
+    },
+    {
+      "id": "E02",
+      "cat": "Lentitud y volumen",
+      "tactica": "Detect service denial",
+      "peticion": "POST /api/boards con Content-Length: 1000, 10 bytes de cuerpo y luego nada (slow body)",
+      "esperado": "el gateway cierra en <= 15 s, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "cerrada a los 10.0 s (sin respuesta)",
+      "status": null,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:28:15+00:00] \"POST /boards\" 408 rid=s2-E02-5cc3d5 up=- us=- rt=10.008"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-E02-5cc3d5"
+      ]
+    },
+    {
+      "id": "E03",
+      "cat": "Lentitud y volumen",
+      "tactica": "Detect service denial",
+      "peticion": "120 conexiones desde una IP (una cada 50 ms, bajo la tasa de limit_req), cada una POST /api/boards con el cuerpo pendiente",
+      "esperado": "las que superan el límite de conexiones por IP reciben 429 JSON al instante, sin upstream (error log: «limiting connections» de la zona conn y ningún «limiting requests» de la zona api)",
+      "verif": "log",
+      "ok": true,
+      "detail": "60/120 rechazadas al instante ({\"429\":60}); 60 retenidas por el gateway esperando el cuerpo · error log: 60 «limiting connections» (zona conn), 0 «limiting requests»",
+      "status": null,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:28:40+00:00] \"POST /boards\" 429 rid=s2-E03-5cc3d5-60 up=- us=- rt=5.005",
+        "172.19.0.1 [2026-11-19T23:28:40+00:00] \"POST /boards\" 429 rid=s2-E03-5cc3d5-61 up=- us=- rt=5.000",
+        "172.19.0.1 [2026-11-19T23:28:40+00:00] \"POST /boards\" 429 rid=s2-E03-5cc3d5-62 up=- us=- rt=5.000"
+      ],
+      "upstream": "no (us=- en 60 líneas)",
+      "rids": [
+        "s2-E03-5cc3d5-60",
+        "s2-E03-5cc3d5-61",
+        "s2-E03-5cc3d5-62",
+        "s2-E03-5cc3d5-63",
+        "s2-E03-5cc3d5-64",
+        "… (60)"
+      ]
+    },
+    {
+      "id": "E04",
+      "cat": "Lentitud y volumen",
+      "tactica": "Detect service denial",
+      "peticion": "300 GET /login en ráfaga (30 en paralelo)",
+      "esperado": "429 JSON con las cabeceras de seguridad, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "172/300 limitadas: {\"200\":128,\"429\":172}",
+      "status": 172,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:28:49+00:00] \"GET /login\" 429 rid=s2-E04-5cc3d5-118 up=- us=- rt=0.000",
+        "172.19.0.1 [2026-11-19T23:28:49+00:00] \"GET /login\" 429 rid=s2-E04-5cc3d5-119 up=- us=- rt=0.000",
+        "172.19.0.1 [2026-11-19T23:28:49+00:00] \"GET /login\" 429 rid=s2-E04-5cc3d5-120 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 172 líneas)",
+      "rids": [
+        "s2-E04-5cc3d5-118",
+        "s2-E04-5cc3d5-119",
+        "s2-E04-5cc3d5-120",
+        "s2-E04-5cc3d5-121",
+        "s2-E04-5cc3d5-122",
+        "… (172)"
+      ]
+    },
+    {
+      "id": "E05",
+      "cat": "Lentitud y volumen",
+      "tactica": "Detect service denial",
+      "peticion": "GET del estático más grande de la web sin leer la respuesta (SO_RCVBUF=1 KiB, 25 s), desde un contenedor en la red edge (slow read)",
+      "esperado": "el gateway corta el envío (send_timeout): cuerpo truncado y conexión cerrada por el gateway",
+      "verif": "tiempo",
+      "ok": true,
+      "detail": "/_next/static/chunks/2nii411saqstq.js (207234 B): tras 25 s sin leer se recibieron 31842 B y la conexión terminó «cerrada» (HTTP/1.1 200 OK) en 26.2 s",
+      "status": null,
+      "upstream": "n/a"
+    },
+    {
+      "id": "E06",
+      "cat": "Lentitud y volumen",
+      "tactica": "Detect service denial",
+      "peticion": "40 WebSocket a /ws/pixels abiertos a la vez desde una IP (uno cada 50 ms)",
+      "esperado": "los que superan el límite de WebSocket por IP reciben 429 JSON, sin upstream (error log: «limiting connections» de la zona conn_ws y ningún «limiting requests» de la zona api)",
+      "verif": "log",
+      "ok": true,
+      "detail": "10/40 WebSocket rechazados ({\"101\":30,\"429\":10}) · error log: 10 «limiting connections» (zona conn_ws), 0 «limiting requests»",
+      "status": null,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:28:45+00:00] \"GET /ws/pixels\" 429 rid=s2-E06-5cc3d5-30 up=- us=- rt=0.000",
+        "172.19.0.1 [2026-11-19T23:28:45+00:00] \"GET /ws/pixels\" 429 rid=s2-E06-5cc3d5-31 up=- us=- rt=0.000",
+        "172.19.0.1 [2026-11-19T23:28:46+00:00] \"GET /ws/pixels\" 429 rid=s2-E06-5cc3d5-32 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 10 líneas)",
+      "rids": [
+        "s2-E06-5cc3d5-30",
+        "s2-E06-5cc3d5-31",
+        "s2-E06-5cc3d5-32",
+        "s2-E06-5cc3d5-33",
+        "s2-E06-5cc3d5-34",
+        "… (10)"
+      ]
+    },
+    {
+      "id": "F01",
+      "cat": "Exposición",
+      "tactica": "Limit exposure",
+      "peticion": "GET /s2-no-existe",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:59+00:00] \"GET /s2-no-existe\" 404 rid=s2-F01-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-F01-5cc3d5"
+      ]
+    },
+    {
+      "id": "F02",
+      "cat": "Exposición",
+      "tactica": "Limit exposure",
+      "peticion": "GET /api/s2-no-existe",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:59+00:00] \"GET /api/s2-no-existe\" 404 rid=s2-F02-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-F02-5cc3d5"
+      ]
+    },
+    {
+      "id": "F03",
+      "cat": "Exposición",
+      "tactica": "Limit exposure",
+      "peticion": "GET /api/canvas/boards/b1/otra-cosa",
+      "esperado": "404 JSON del gateway, sin upstream",
+      "verif": "log",
+      "ok": true,
+      "detail": "404 application/json {\"detail\":\"No encontrado\"}",
+      "status": 404,
+      "log": [
+        "172.19.0.1 [2026-11-19T23:27:59+00:00] \"GET /api/canvas/boards/b1/otra-cosa\" 404 rid=s2-F03-5cc3d5 up=- us=- rt=0.000"
+      ],
+      "upstream": "no (us=- en 1 línea)",
+      "rids": [
+        "s2-F03-5cc3d5"
+      ]
+    },
+    {
+      "id": "F04",
+      "cat": "Exposición",
+      "tactica": "Limit exposure",
+      "peticion": "GET a 8 rutas (web, 5 APIs, 404 y UI de Pixels): cabeceras de respuesta",
+      "esperado": "Server ausente o «nginx» sin versión; 0 cabeceras de los servicios (X-Powered-By, x-nextjs-*, …)",
+      "verif": "respuesta",
+      "ok": true,
+      "detail": "solo «Server: nginx» sin versión",
+      "status": null,
+      "upstream": "n/a"
+    },
+    {
+      "id": "F05",
+      "cat": "Exposición",
+      "tactica": "Limit exposure",
+      "peticion": "GET /login, /api/boards, /s2-no-existe y UI de Pixels: cabeceras de seguridad",
+      "esperado": "CSP (con frame-ancestors), nosniff, Referrer-Policy, Permissions-Policy y X-Frame-Options exactamente una vez; HSTS una vez con HTTPS",
+      "verif": "respuesta",
+      "ok": true,
+      "detail": "todas presentes una vez en las 4 respuestas",
+      "status": null,
+      "upstream": "n/a"
+    },
+    {
+      "id": "F06",
+      "cat": "Exposición",
+      "tactica": "Limit access",
+      "peticion": "Puertos publicados por el stack (docker compose ps) y TCP desde el host a 3000, 5432, 5672, 8000, 8001, 8002, 8080, 8081, 8090, 15432, 15433, 15434, 15435, 15672, 27017 en 127.0.0.1 y en las IP de la LAN",
+      "esperado": "el stack solo publica los puertos del gateway y 127.0.0.1:15672; ningún otro puerto del stack responde",
+      "verif": "puertos",
+      "ok": true,
+      "detail": "publicados por el stack: gateway 0.0.0.0:8088→80, gateway 0.0.0.0:8443→443, rabbitmq 127.0.0.1:15672→15672 · indebidos: ninguno · responden por TCP sin estar permitidos: ninguno · abiertos por procesos del host ajenos al stack (no cuentan): 5432, 8080 · IP probadas: 127.0.0.1, 192.168.x.x, 172.29.x.x",
+      "status": null,
+      "upstream": "n/a"
+    }
+  ]
+}

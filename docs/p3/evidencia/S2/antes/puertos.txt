@@ -1,24 +1,24 @@
 # Estado de puertos del P2 (antes del ataque)
-Fecha: 2026-11-19T21:51:36Z · commit del P2: 6af04566d772194e2852d52ab51a70ba91d33539 · proyecto Compose: p2-baseline
+Fecha: 2026-11-19T23:25:20Z · commit del P2: 6af04566d772194e2852d52ab51a70ba91d33539 · proyecto Compose: p2-baseline
 
 ## docker compose ps (puertos publicados)
 SERVICE             STATUS                    PORTS
-auth-api            Up 24 seconds (healthy)   8001/tcp
-board-db            Up 28 seconds (healthy)   5432/tcp
-canvas-db           Up 28 seconds (healthy)   5432/tcp
-chat-api            Up 21 seconds (healthy)   8090/tcp
-collaboration-api   Up 24 seconds (healthy)   8000/tcp
-gateway             Up 15 seconds (healthy)   0.0.0.0:8088->80/tcp, [::]:8088->80/tcp
-message-worker      Up 20 seconds             
-notification-api    Up 21 seconds             
-notification-db     Up 28 seconds (healthy)   5432/tcp
-pixels-api          Up 21 seconds (healthy)   8000/tcp
-pixels-nosqldb      Up 28 seconds (healthy)   27017/tcp
-pixels-ui           Up 15 seconds             0.0.0.0:3000->80/tcp, [::]:3000->80/tcp
-pizarra-api         Up 24 seconds (healthy)   8000/tcp
-rabbitmq            Up 28 seconds (healthy)   127.0.0.1:15672->15672/tcp
-user-db             Up 28 seconds (healthy)   5432/tcp
-web-ssr             Up 28 seconds (healthy)   3000/tcp
+auth-api            Up 14 seconds (healthy)   8001/tcp
+board-db            Up 18 seconds (healthy)   5432/tcp
+canvas-db           Up 18 seconds (healthy)   5432/tcp
+chat-api            Up 11 seconds (healthy)   8090/tcp
+collaboration-api   Up 14 seconds (healthy)   8000/tcp
+gateway             Up 6 seconds (healthy)    0.0.0.0:8088->80/tcp, [::]:8088->80/tcp
+message-worker      Up 11 seconds             
+notification-api    Up 11 seconds             
+notification-db     Up 18 seconds (healthy)   5432/tcp
+pixels-api          Up 11 seconds (healthy)   8000/tcp
+pixels-nosqldb      Up 18 seconds (healthy)   27017/tcp
+pixels-ui           Up 5 seconds              0.0.0.0:3000->80/tcp, [::]:3000->80/tcp
+pizarra-api         Up 14 seconds (healthy)   8000/tcp
+rabbitmq            Up 18 seconds (healthy)   127.0.0.1:15672->15672/tcp
+user-db             Up 18 seconds (healthy)   5432/tcp
+web-ssr             Up 18 seconds (healthy)   3000/tcp
 
 ## Puertos en escucha en el host (Windows: netstat -ano -p TCP; ss -ltnp no existe aquí)
 Filtro: puertos del gateway, de pixels-ui, de RabbitMQ y los de servicios/bases que prueba F06.
@@ -28,4 +28,4 @@ Filtro: puertos del gateway, de pixels-ui, de RabbitMQ y los de servicios/bases 
   TCP    0.0.0.0:8088           0.0.0.0:0              LISTENING       21336
   TCP    127.0.0.1:15672        0.0.0.0:0              LISTENING       21336
 
-Atribución: los puertos 3000, 8088 y 15672 los abre com.docker.backend (Docker Desktop) por el stack; 5432 y 8080 pertenecen a procesos del host ajenos a Docker (un PostgreSQL local y otra aplicación), no al stack.
+Atribución: 3000, 8088 y 15672 los abre com.docker.backend (Docker Desktop) por el stack; 5432 y 8080 pertenecen a procesos del host ajenos a Docker (un PostgreSQL local y otra aplicación), no al stack.

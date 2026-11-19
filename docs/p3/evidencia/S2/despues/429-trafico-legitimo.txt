@@ -1,0 +1,3 @@
+Respuestas 429 del gateway en los últimos 30 min (dos corridas del catálogo, smoke, ws_check, E2E y navegador):
+  con rid=s2-* (catálogo S2): 481
+  resto (tráfico legítimo):   0

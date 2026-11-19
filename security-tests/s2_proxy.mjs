@@ -891,7 +891,7 @@ async function main() {
   const selected = CATALOGO.filter((c) => !o.only || o.only.has(c.id));
   const started = Date.now();
   console.log(`S2 · Reverse Proxy — ${selected.length} casos contra ${T.url.origin}${o.label ? ` (${o.label})` : ""} · corrida ${tag}`);
-  console.log(`UI de Pixels: ${PX.url.href} · log/captura: ${o.docker ? o.composeDir : "desactivados"}\n`);
+  console.log(`UI de Pixels: ${PX.url.href} · log/captura: ${o.docker ? path.relative(process.cwd(), o.composeDir) || "." : "desactivados"}\n`);
 
   const entries = [];
   const run = async (meta) => {

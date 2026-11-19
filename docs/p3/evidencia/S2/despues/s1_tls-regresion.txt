@@ -1,0 +1,19 @@
+$ python security-tests/s1_tls.py   (regresión de S1)
+S1 · Secure Channel contra https://localhost:8443
+
+OK   HTTP GET /login redirige a HTTPS — 301 → https://localhost:8443/login
+OK   HTTP POST /api/auth/login redirige a HTTPS — 301 → https://localhost:8443/api/auth/login
+OK   TLS 1.3 negociado y certificado válido para el host — TLSv1.3 TLS_AES_256_GCM_SHA384
+OK   TLS 1.2 admitido (clientes antiguos) — TLSv1.2 ECDHE-ECDSA-AES256-GCM-SHA384
+OK   TLS 1.0 rechazado por el gateway — TLSV1_ALERT_PROTOCOL_VERSION
+OK   TLS 1.1 rechazado por el gateway — TLSV1_ALERT_PROTOCOL_VERSION
+OK   cabecera Strict-Transport-Security — max-age=300
+OK   sesión de prueba completa (tablero y mensaje de chat creados) — tablero HTTP 201, mensaje HTTP 201
+OK   login por la web: cookie de sesión Secure; HttpOnly; SameSite — Secure; HttpOnly; SameSite=lax
+OK   WebSocket Pixels por wss:// — wss:// → HTTP/1.1 101 Switching Protocols
+OK   WebSocket Chat con cookie por wss:// — wss:// → HTTP/1.1 101 
+OK   captura de red: 0 secretos legibles — correo: 0, contraseña: 0, JWT de sesión: 0, mensaje de chat: 0 (captura de 36871 bytes)
+
+
+Todas las comprobaciones OK
+exit=0

@@ -3,17 +3,17 @@
   "objetivo": "http://localhost:8088",
   "ui_pixels": "http://localhost:3000/",
   "etiqueta": "P2 6af0456",
-  "corrida": "ebdcb3",
-  "inicio": "2026-11-19T21:51:45.496Z",
-  "fin": "2026-11-19T21:52:40.522Z",
+  "corrida": "99fdd5",
+  "inicio": "2026-11-19T23:25:21.599Z",
+  "fin": "2026-11-19T23:26:25.974Z",
   "node": "v22.17.0",
   "resumen": {
     "ataques_ok": 9,
-    "ataques": 39,
+    "ataques": 41,
     "controles_ok": 5,
     "controles": 5,
-    "rechazos_us_guion": 14,
-    "rechazos_con_log": 26
+    "rechazos_us_guion": 15,
+    "rechazos_con_log": 28
   },
   "resultados": [
     {
@@ -92,11 +92,11 @@
       "detail": "404 application/json {\"detail\":\"No encontrado\"}",
       "status": 404,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:45+00:00] \"GET /internal/events\" 404 rid=s2-A01-ebdcb3 up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:21+00:00] \"GET /internal/events\" 404 rid=s2-A01-99fdd5 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-A01-ebdcb3"
+        "s2-A01-99fdd5"
       ]
     },
     {
@@ -110,11 +110,11 @@
       "detail": "404 application/json {\"detail\":\"No encontrado\"}",
       "status": 404,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:45+00:00] \"POST /internal/boards/b1/access\" 404 rid=s2-A02-ebdcb3 up=- us=- rt=0.001"
+        "172.19.0.1 [2026-11-19T23:25:21+00:00] \"POST /internal/boards/b1/access\" 404 rid=s2-A02-99fdd5 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-A02-ebdcb3"
+        "s2-A02-99fdd5"
       ]
     },
     {
@@ -128,11 +128,11 @@
       "detail": "404 application/json {\"detail\":\"No encontrado\"}",
       "status": 404,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:45+00:00] \"GET /internal/events\" 404 rid=s2-A03-ebdcb3 up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:21+00:00] \"GET /internal/events\" 404 rid=s2-A03-99fdd5 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-A03-ebdcb3"
+        "s2-A03-99fdd5"
       ]
     },
     {
@@ -146,11 +146,11 @@
       "detail": "404 application/json {\"detail\":\"No encontrado\"}",
       "status": 404,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:45+00:00] \"GET /INTERNAL/events\" 404 rid=s2-A04-ebdcb3 up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:21+00:00] \"GET /INTERNAL/events\" 404 rid=s2-A04-99fdd5 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-A04-ebdcb3"
+        "s2-A04-99fdd5"
       ]
     },
     {
@@ -162,18 +162,24 @@
       "verif": "log",
       "aislar": true,
       "logHint": [
-        "GET",
-        ""
+        [
+          "GET",
+          ""
+        ],
+        [
+          "GET",
+          "/__gw/400"
+        ]
       ],
       "ok": false,
       "detail": "400 text/html <html> <head><title>400 Bad Request</title></head> <body> <center><h1>…",
       "status": 400,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:46+00:00] \"GET \" 400 rid=f6693b77615794fc3e9383f57b9b5aa4 up=- us=- rt=0.001"
+        "172.19.0.1 [2026-11-19T23:25:22+00:00] \"GET \" 400 rid=6ba91756ecd2626aaa8c6bc53bab5837 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea, por ventana de tiempo)",
       "rids": [
-        "s2-A05-ebdcb3"
+        "s2-A05-99fdd5"
       ]
     },
     {
@@ -187,11 +193,11 @@
       "detail": "404 application/json {\"detail\":\"No encontrado\"}",
       "status": 404,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:47+00:00] \"GET /api/internal/events\" 404 rid=s2-A06-ebdcb3 up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:23+00:00] \"GET /api/internal/events\" 404 rid=s2-A06-99fdd5 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-A06-ebdcb3"
+        "s2-A06-99fdd5"
       ]
     },
     {
@@ -205,11 +211,11 @@
       "detail": "404 application/json {\"detail\":\"No encontrado\"}",
       "status": 404,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:47+00:00] \"GET /internal/boards/b1/access\" 404 rid=s2-A07-ebdcb3 up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:23+00:00] \"GET /internal/boards/b1/access\" 404 rid=s2-A07-99fdd5 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-A07-ebdcb3"
+        "s2-A07-99fdd5"
       ]
     },
     {
@@ -223,11 +229,11 @@
       "detail": "404 application/json {\"detail\":\"No encontrado\"}",
       "status": 404,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:47+00:00] \"GET /internal/events\" 404 rid=s2-A08-ebdcb3 up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:23+00:00] \"GET /internal/events\" 404 rid=s2-A08-99fdd5 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-A08-ebdcb3"
+        "s2-A08-99fdd5"
       ]
     },
     {
@@ -241,11 +247,11 @@
       "detail": "307 - /login?next=%2F%252569nternal%2Fevents",
       "status": 307,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:47+00:00] \"GET /%69nternal/events\" 307 rid=s2-A09-ebdcb3 up=172.18.0.4:3000 us=307 rt=0.006"
+        "172.19.0.1 [2026-11-19T23:25:23+00:00] \"GET /%69nternal/events\" 307 rid=s2-A09-99fdd5 up=172.18.0.2:3000 us=307 rt=0.004"
       ],
       "upstream": "SÍ (us=307)",
       "rids": [
-        "s2-A09-ebdcb3"
+        "s2-A09-99fdd5"
       ]
     },
     {
@@ -259,11 +265,11 @@
       "detail": "404 application/json {\"detail\":\"No encontrado\"}",
       "status": 404,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:47+00:00] \"GET /internal/events\" 404 rid=s2-A10-ebdcb3 up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:23+00:00] \"GET /internal/events\" 404 rid=s2-A10-99fdd5 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-A10-ebdcb3"
+        "s2-A10-99fdd5"
       ]
     },
     {
@@ -277,11 +283,11 @@
       "detail": "401 application/json {\"detail\":\"No autenticado\"}",
       "status": 401,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:47+00:00] \"GET /api/chat/%69nternal/events\" 401 rid=s2-A11-ebdcb3 up=172.18.0.13:8090 us=401 rt=0.014"
+        "172.19.0.1 [2026-11-19T23:25:23+00:00] \"GET /api/chat/%69nternal/events\" 401 rid=s2-A11-99fdd5 up=172.18.0.13:8090 us=401 rt=0.015"
       ],
       "upstream": "SÍ (us=401)",
       "rids": [
-        "s2-A11-ebdcb3"
+        "s2-A11-99fdd5"
       ]
     },
     {
@@ -295,11 +301,11 @@
       "detail": "405 text/html <html> <head><title>405 Not Allowed</title></head> <body> <center><h1>…",
       "status": 405,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:47+00:00] \"TRACE /\" 405 rid=s2-B01-ebdcb3 up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:23+00:00] \"TRACE /\" 405 rid=s2-B01-99fdd5 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-B01-ebdcb3"
+        "s2-B01-99fdd5"
       ]
     },
     {
@@ -311,18 +317,24 @@
       "verif": "log",
       "aislar": true,
       "logHint": [
-        "-",
-        "-"
+        [
+          "-",
+          "-"
+        ],
+        [
+          "GET",
+          "/__gw/400"
+        ]
       ],
       "ok": false,
       "detail": "400 text/html <html> <head><title>400 Bad Request</title></head> <body> <center><h1>…",
       "status": 400,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:48+00:00] \"- -\" 400 rid=bec45d83c78c302103ab45742444570c up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:24+00:00] \"- -\" 400 rid=8739170062fb62aba6bdf3e060a4d427 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea, por ventana de tiempo)",
       "rids": [
-        "s2-B02-ebdcb3"
+        "s2-B02-99fdd5"
       ]
     },
     {
@@ -336,11 +348,11 @@
       "detail": "200 text/html <!DOCTYPE html><html lang=\"es\"><head><meta charSet=\"utf-8\"/><meta name…",
       "status": 200,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:49+00:00] \"DELETE /login\" 200 rid=s2-B03-ebdcb3 up=172.18.0.4:3000 us=200 rt=0.022"
+        "172.19.0.1 [2026-11-19T23:25:25+00:00] \"DELETE /login\" 200 rid=s2-B03-99fdd5 up=172.18.0.2:3000 us=200 rt=0.021"
       ],
       "upstream": "SÍ (us=200)",
       "rids": [
-        "s2-B03-ebdcb3"
+        "s2-B03-99fdd5"
       ]
     },
     {
@@ -354,11 +366,11 @@
       "detail": "405 application/json {\"detail\":\"Método no permitido\"}",
       "status": 405,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:49+00:00] \"PUT /auth/login\" 405 rid=s2-B04-ebdcb3 up=172.18.0.10:8001 us=405 rt=0.001"
+        "172.19.0.1 [2026-11-19T23:25:25+00:00] \"PUT /auth/login\" 405 rid=s2-B04-99fdd5 up=172.18.0.10:8001 us=405 rt=0.002"
       ],
       "upstream": "SÍ (us=405)",
       "rids": [
-        "s2-B04-ebdcb3"
+        "s2-B04-99fdd5"
       ]
     },
     {
@@ -372,11 +384,11 @@
       "detail": "307 - /login · Location: /login",
       "status": 307,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:49+00:00] \"GET /\" 307 rid=s2-C01-ebdcb3 up=172.18.0.4:3000 us=307 rt=0.004"
+        "172.19.0.1 [2026-11-19T23:25:25+00:00] \"GET /\" 307 rid=s2-C01-99fdd5 up=172.18.0.2:3000 us=307 rt=0.004"
       ],
       "upstream": "SÍ (us=307)",
       "rids": [
-        "s2-C01-ebdcb3"
+        "s2-C01-99fdd5"
       ]
     },
     {
@@ -390,11 +402,11 @@
       "detail": "307 - /login · Location: /login",
       "status": 307,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:49+00:00] \"GET /\" 307 rid=s2-C02-ebdcb3 up=172.18.0.4:3000 us=307 rt=0.003"
+        "172.19.0.1 [2026-11-19T23:25:25+00:00] \"GET /\" 307 rid=s2-C02-99fdd5 up=172.18.0.2:3000 us=307 rt=0.005"
       ],
       "upstream": "SÍ (us=307)",
       "rids": [
-        "s2-C02-ebdcb3"
+        "s2-C02-99fdd5"
       ]
     },
     {
@@ -408,7 +420,7 @@
       "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 203.0.113.66, 172.19.0.1 · FALSIFICADO: 203.0.113.66",
       "status": 401,
       "upstream": "llega saneada (captura)",
-      "captura": "21:52:00.998335 eth1  Out IP 172.18.0.16.37380 > 172.18.0.9.8000: Flags [P.], seq 0:235, ack 1, win 502, options [nop,nop,TS val 426342388 ecr 2038490115], length 235\nE....N@.@..M.......\t...@p....xhy....YO.....\n.iw.y...GET /boards HTTP/1.1\nHost: localhost:8088\nX-Request-ID: s2-C03-ebdcb3\nX-Forwarded-Host: localhost:8088\nX-Forwarded-Proto: http\nX-Forwarded-For: 203.0.113.66, 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\n\n"
+      "captura": "23:25:37.037869 eth1  Out IP 172.18.0.16.50774 > 172.18.0.11.8000: Flags [P.], seq 0:235, ack 1, win 502, options [nop,nop,TS val 2984069675 ecr 3950070398], length 235\nE.....@.@............V.@$2..}G......YQ.....\n..J+.qJ~GET /boards HTTP/1.1\nHost: localhost:8088\nX-Request-ID: s2-C03-99fdd5\nX-Forwarded-Host: localhost:8088\nX-Forwarded-Proto: http\nX-Forwarded-For: 203.0.113.66, 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\n\n"
     },
     {
       "id": "C04",
@@ -421,7 +433,7 @@
       "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-Real-IP: 203.0.113.77 · FALSIFICADO: 203.0.113.77",
       "status": 401,
       "upstream": "llega saneada (captura)",
-      "captura": "21:52:01.003280 eth1  Out IP 172.18.0.16.37390 > 172.18.0.9.8000: Flags [P.], seq 0:246, ack 1, win 502, options [nop,nop,TS val 426342393 ecr 2038490120], length 246\nE..*.'@.@..i.......\t...@..(H...F....YZ.....\n.iw.y...GET /boards HTTP/1.1\nHost: localhost:8088\nX-Request-ID: s2-C04-ebdcb3\nX-Forwarded-Host: localhost:8088\nX-Forwarded-Proto: http\nX-Forwarded-For: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\nX-Real-IP: 203.0.113.77\n\n"
+      "captura": "23:25:37.043352 eth1  Out IP 172.18.0.16.50788 > 172.18.0.11.8000: Flags [P.], seq 0:246, ack 1, win 502, options [nop,nop,TS val 2984069681 ecr 3950070404], length 246\nE..*..@.@.3..........d.@...0Av......Y\\.....\n..J1.qJ.GET /boards HTTP/1.1\nHost: localhost:8088\nX-Request-ID: s2-C04-99fdd5\nX-Forwarded-Host: localhost:8088\nX-Forwarded-Proto: http\nX-Forwarded-For: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\nX-Real-IP: 203.0.113.77\n\n"
     },
     {
       "id": "C05",
@@ -431,10 +443,10 @@
       "esperado": "el servicio no recibe X-Service-Token",
       "verif": "captura",
       "ok": false,
-      "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-Service-Token: s2-token-falso-ebdcb3 · FALSIFICADO: s2-token-falso-ebdcb3",
+      "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-Service-Token: s2-token-falso-99fdd5 · FALSIFICADO: s2-token-falso-99fdd5",
       "status": 401,
       "upstream": "llega saneada (captura)",
-      "captura": "21:52:01.007551 eth1  Out IP 172.18.0.16.37398 > 172.18.0.9.8000: Flags [P.], seq 0:261, ack 1, win 502, options [nop,nop,TS val 426342398 ecr 2038490124], length 261\nE..9.-@.@..T.......\t...@.....x......Yi.....\n.iw.y...GET /boards HTTP/1.1\nHost: localhost:8088\nX-Request-ID: s2-C05-ebdcb3\nX-Forwarded-Host: localhost:8088\nX-Forwarded-Proto: http\nX-Forwarded-For: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\nX-Service-Token: s2-token-falso-ebdcb3\n\n"
+      "captura": "23:25:37.048320 eth1  Out IP 172.18.0.16.50790 > 172.18.0.11.8000: Flags [P.], seq 0:261, ack 1, win 502, options [nop,nop,TS val 2984069686 ecr 3950070409], length 261\nE..9.3@.@..K.........f.@...H%.......Yk.....\n..J6.qJ.GET /boards HTTP/1.1\nHost: localhost:8088\nX-Request-ID: s2-C05-99fdd5\nX-Forwarded-Host: localhost:8088\nX-Forwarded-Proto: http\nX-Forwarded-For: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\nX-Service-Token: s2-token-falso-99fdd5\n\n"
     },
     {
       "id": "C06",
@@ -444,10 +456,10 @@
       "esperado": "el servicio no recibe X-User-Id",
       "verif": "captura",
       "ok": false,
-      "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-User-Id: s2-usuario-falso-ebdcb3 · FALSIFICADO: s2-usuario-falso-ebdcb3",
+      "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-User-Id: s2-usuario-falso-99fdd5 · FALSIFICADO: s2-usuario-falso-99fdd5",
       "status": 401,
       "upstream": "llega saneada (captura)",
-      "captura": "21:52:01.011623 eth1  Out IP 172.18.0.16.37402 > 172.18.0.9.8000: Flags [P.], seq 0:257, ack 1, win 502, options [nop,nop,TS val 426342402 ecr 2038490129], length 257\nE..5..@.@.=........\t...@...6........Ye.....\n.ix.y...GET /boards HTTP/1.1\nHost: localhost:8088\nX-Request-ID: s2-C06-ebdcb3\nX-Forwarded-Host: localhost:8088\nX-Forwarded-Proto: http\nX-Forwarded-For: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\nX-User-Id: s2-usuario-falso-ebdcb3\n\n"
+      "captura": "23:25:37.052828 eth1  Out IP 172.18.0.16.50792 > 172.18.0.11.8000: Flags [P.], seq 0:257, ack 1, win 502, options [nop,nop,TS val 2984069690 ecr 3950070413], length 257\nE..5L.@.@............h.@.,.\n........Yg.....\n..J:.qJ.GET /boards HTTP/1.1\nHost: localhost:8088\nX-Request-ID: s2-C06-99fdd5\nX-Forwarded-Host: localhost:8088\nX-Forwarded-Proto: http\nX-Forwarded-For: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\nX-User-Id: s2-usuario-falso-99fdd5\n\n"
     },
     {
       "id": "C07",
@@ -460,7 +472,7 @@
       "detail": "401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | Forwarded: for=203.0.113.88;host=evil-s2.example;proto=http · FALSIFICADO: evil-s2.example, 203.0.113.88",
       "status": 401,
       "upstream": "llega saneada (captura)",
-      "captura": "21:52:01.016079 eth1  Out IP 172.18.0.16.37412 > 172.18.0.9.8000: Flags [P.], seq 0:282, ack 1, win 502, options [nop,nop,TS val 426342406 ecr 2038490133], length 282\nE..N..@.@.>........\t.$.@6._/........Y~.....\n.ix.y...GET /boards HTTP/1.1\nHost: localhost:8088\nX-Request-ID: s2-C07-ebdcb3\nX-Forwarded-Host: localhost:8088\nX-Forwarded-Proto: http\nX-Forwarded-For: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\nForwarded: for=203.0.113.88;host=evil-s2.example;proto=http\n\n"
+      "captura": "23:25:37.057102 eth1  Out IP 172.18.0.16.50794 > 172.18.0.11.8000: Flags [P.], seq 0:282, ack 1, win 502, options [nop,nop,TS val 2984069694 ecr 3950070417], length 282\nE..N*.@.@............j.@E...........Y......\n..J>.qJ.GET /boards HTTP/1.1\nHost: localhost:8088\nX-Request-ID: s2-C07-99fdd5\nX-Forwarded-Host: localhost:8088\nX-Forwarded-Proto: http\nX-Forwarded-For: 172.19.0.1\nConnection: close\nUser-Agent: s2-proxy/1.0\nAccept: */*\nForwarded: for=203.0.113.88;host=evil-s2.example;proto=http\n\n"
     },
     {
       "id": "C08",
@@ -470,7 +482,7 @@
       "esperado": "X-Request-ID reemplazado por uno generado (formato estricto)",
       "verif": "respuesta",
       "ok": true,
-      "detail": "401 · X-Request-ID devuelto: \"51f4839141f874546ab9cdc475604ed5\"",
+      "detail": "401 · X-Request-ID devuelto: \"d1981ae01361a4ce2ae68027f5764b79\"",
       "status": 401,
       "upstream": "n/a"
     },
@@ -486,7 +498,7 @@
       "status": 400,
       "upstream": "n/a",
       "rids": [
-        "s2-C09-ebdcb3"
+        "s2-C09-99fdd5"
       ]
     },
     {
@@ -501,7 +513,7 @@
       "status": 400,
       "upstream": "n/a",
       "rids": [
-        "s2-C10-ebdcb3"
+        "s2-C10-99fdd5"
       ]
     },
     {
@@ -515,11 +527,11 @@
       "detail": "413 text/html <html> <head><title>413 Request Entity Too Large</title></head> <body>…",
       "status": 413,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:54+00:00] \"POST /api/boards\" 413 rid=s2-D01-ebdcb3 up=- us=- rt=5.003"
+        "172.19.0.1 [2026-11-19T23:25:30+00:00] \"POST /api/boards\" 413 rid=s2-D01-99fdd5 up=- us=- rt=5.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-D01-ebdcb3"
+        "s2-D01-99fdd5"
       ]
     },
     {
@@ -533,11 +545,11 @@
       "detail": "400 text/html <html> <head><title>400 Request Header Or Cookie Too Large</title></he…",
       "status": 400,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:54+00:00] \"GET /login\" 400 rid=s2-D02-ebdcb3 up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:30+00:00] \"GET /login\" 400 rid=s2-D02-99fdd5 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-D02-ebdcb3"
+        "s2-D02-99fdd5"
       ]
     },
     {
@@ -549,18 +561,24 @@
       "verif": "log",
       "aislar": true,
       "logHint": [
-        "-",
-        "-"
+        [
+          "-",
+          "-"
+        ],
+        [
+          "GET",
+          "/__gw/414"
+        ]
       ],
       "ok": false,
       "detail": "414 text/html <html> <head><title>414 Request-URI Too Large</title></head> <body> <c…",
       "status": 414,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:55+00:00] \"- -\" 414 rid=ff3972c2821faccb1f201525f9ae927e up=- us=- rt=0.000"
+        "172.19.0.1 [2026-11-19T23:25:31+00:00] \"- -\" 414 rid=94e7bf0366ed1ae9249ce0b3c83ed306 up=- us=- rt=0.000"
       ],
       "upstream": "no (us=- en 1 línea, por ventana de tiempo)",
       "rids": [
-        "s2-D03-ebdcb3"
+        "s2-D03-99fdd5"
       ]
     },
     {
@@ -574,11 +592,11 @@
       "detail": "400 application/json {\"detail\":\"JSON inválido o demasiado grande\"}",
       "status": 400,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:56+00:00] \"POST /auth/login\" 400 rid=s2-D04-ebdcb3 up=172.18.0.10:8001 us=400 rt=0.002"
+        "172.19.0.1 [2026-11-19T23:25:32+00:00] \"POST /auth/login\" 400 rid=s2-D04-99fdd5 up=172.18.0.10:8001 us=400 rt=0.001"
       ],
       "upstream": "SÍ (us=400)",
       "rids": [
-        "s2-D04-ebdcb3"
+        "s2-D04-99fdd5"
       ]
     },
     {
@@ -599,13 +617,16 @@
       "tactica": "Detect service denial",
       "peticion": "POST /api/boards con Content-Length: 1000, 10 bytes de cuerpo y luego nada (slow body)",
       "esperado": "el gateway cierra en <= 15 s, sin upstream",
-      "verif": "tiempo",
+      "verif": "log",
       "ok": false,
       "detail": "la conexión seguía abierta a los 25.0 s",
       "status": null,
-      "upstream": "n/a",
+      "log": [
+        "172.19.0.1 [2026-11-19T23:26:03+00:00] \"POST /boards\" 400 rid=s2-E02-99fdd5 up=- us=- rt=25.005"
+      ],
+      "upstream": "no (us=- en 1 línea)",
       "rids": [
-        "s2-E02-ebdcb3"
+        "s2-E02-99fdd5"
       ]
     },
     {
@@ -613,10 +634,10 @@
       "cat": "Lentitud y volumen",
       "tactica": "Detect service denial",
       "peticion": "120 conexiones desde una IP (una cada 50 ms, bajo la tasa de limit_req), cada una POST /api/boards con el cuerpo pendiente",
-      "esperado": "las que superan el límite de conexiones por IP reciben 429 JSON al instante, sin upstream (error log: «limiting connections», sin «limiting requests»)",
+      "esperado": "las que superan el límite de conexiones por IP reciben 429 JSON al instante, sin upstream (error log: «limiting connections» de la zona conn y ningún «limiting requests» de la zona api)",
       "verif": "log",
       "ok": false,
-      "detail": "0/120 rechazadas al instante ({}); 120 retenidas por el gateway esperando el cuerpo · error log: 0 «limiting connections», 0 «limiting requests»",
+      "detail": "0/120 rechazadas al instante ({}); 120 retenidas por el gateway esperando el cuerpo · error log: 0 «limiting connections» (zona conn), 0 «limiting requests»",
       "status": null,
       "upstream": "n/a",
       "rids": []
@@ -634,6 +655,31 @@
       "upstream": "n/a"
     },
     {
+      "id": "E05",
+      "cat": "Lentitud y volumen",
+      "tactica": "Detect service denial",
+      "peticion": "GET del estático más grande de la web sin leer la respuesta (SO_RCVBUF=1 KiB, 25 s), desde un contenedor en la red edge (slow read)",
+      "esperado": "el gateway corta el envío (send_timeout): cuerpo truncado y conexión cerrada por el gateway",
+      "verif": "tiempo",
+      "ok": false,
+      "detail": "/_next/static/chunks/2nii411saqstq.js (207234 B): tras 25 s sin leer se recibieron 207234 B y la conexión terminó «cerrada» (HTTP/1.1 200 OK) en 25.8 s",
+      "status": null,
+      "upstream": "n/a"
+    },
+    {
+      "id": "E06",
+      "cat": "Lentitud y volumen",
+      "tactica": "Detect service denial",
+      "peticion": "40 WebSocket a /ws/pixels abiertos a la vez desde una IP (uno cada 50 ms)",
+      "esperado": "los que superan el límite de WebSocket por IP reciben 429 JSON, sin upstream (error log: «limiting connections» de la zona conn_ws y ningún «limiting requests» de la zona api)",
+      "verif": "log",
+      "ok": false,
+      "detail": "0/40 WebSocket rechazados ({\"101\":40}) · error log: 0 «limiting connections» (zona conn_ws), 0 «limiting requests»",
+      "status": null,
+      "upstream": "n/a",
+      "rids": []
+    },
+    {
       "id": "F01",
       "cat": "Exposición",
       "tactica": "Limit exposure",
@@ -644,11 +690,11 @@
       "detail": "307 - /login?next=%2Fs2-no-existe",
       "status": 307,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:56+00:00] \"GET /s2-no-existe\" 307 rid=s2-F01-ebdcb3 up=172.18.0.4:3000 us=307 rt=0.003"
+        "172.19.0.1 [2026-11-19T23:25:32+00:00] \"GET /s2-no-existe\" 307 rid=s2-F01-99fdd5 up=172.18.0.2:3000 us=307 rt=0.003"
       ],
       "upstream": "SÍ (us=307)",
       "rids": [
-        "s2-F01-ebdcb3"
+        "s2-F01-99fdd5"
       ]
     },
     {
@@ -662,11 +708,11 @@
       "detail": "307 - /login?next=%2Fapi%2Fs2-no-existe",
       "status": 307,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:56+00:00] \"GET /api/s2-no-existe\" 307 rid=s2-F02-ebdcb3 up=172.18.0.4:3000 us=307 rt=0.003"
+        "172.19.0.1 [2026-11-19T23:25:32+00:00] \"GET /api/s2-no-existe\" 307 rid=s2-F02-99fdd5 up=172.18.0.2:3000 us=307 rt=0.003"
       ],
       "upstream": "SÍ (us=307)",
       "rids": [
-        "s2-F02-ebdcb3"
+        "s2-F02-99fdd5"
       ]
     },
     {
@@ -680,11 +726,11 @@
       "detail": "307 - /login?next=%2Fapi%2Fcanvas%2Fboards%2Fb1%2Fotra-cosa",
       "status": 307,
       "log": [
-        "172.19.0.1 [2026-11-19T21:51:56+00:00] \"GET /api/canvas/boards/b1/otra-cosa\" 307 rid=s2-F03-ebdcb3 up=172.18.0.4:3000 us=307 rt=0.003"
+        "172.19.0.1 [2026-11-19T23:25:32+00:00] \"GET /api/canvas/boards/b1/otra-cosa\" 307 rid=s2-F03-99fdd5 up=172.18.0.2:3000 us=307 rt=0.003"
       ],
       "upstream": "SÍ (us=307)",
       "rids": [
-        "s2-F03-ebdcb3"
+        "s2-F03-99fdd5"
       ]
     },
     {
