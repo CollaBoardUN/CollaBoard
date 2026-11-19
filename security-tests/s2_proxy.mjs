@@ -66,8 +66,10 @@ export const CATALOGO = [
   { id: "A03", cat: "Rutas internas", tactica: "Limit access", peticion: "GET //internal/events", esperado: "404 JSON del gateway, sin upstream", verif: "log" },
   { id: "A04", cat: "Rutas internas", tactica: "Limit access", peticion: "GET /INTERNAL/events", esperado: "404 JSON del gateway, sin upstream", verif: "log" },
   // aislar + logHint: Nginx rechaza estas peticiones antes de leer X-Request-ID, así que su línea
-  // se identifica por segundo propio, estado y "método uri" tal como los registra el log.
-  { id: "A05", cat: "Rutas internas", tactica: "Limit access", peticion: "GET /%2e%2e/internal/events (sin normalizar)", esperado: "400 o 404 JSON del gateway, sin upstream", verif: "log", aislar: true, logHint: ["GET", ""] },
+  // se identifica por segundo propio, estado y "método uri" tal como los registra el log: en el P2
+  // con la página HTML de Nginx ("GET " o "- -"); en el P3, tras la redirección interna a la
+  // página de error JSON ("GET /__gw/400", "GET /__gw/414").
+  { id: "A05", cat: "Rutas internas", tactica: "Limit access", peticion: "GET /%2e%2e/internal/events (sin normalizar)", esperado: "400 o 404 JSON del gateway, sin upstream", verif: "log", aislar: true, logHint: [["GET", ""], ["GET", "/__gw/400"]] },
   { id: "A06", cat: "Rutas internas", tactica: "Limit access", peticion: "GET /api/boards/../internal/events (sin normalizar)", esperado: "404 JSON del gateway, sin upstream", verif: "log" },
   { id: "A07", cat: "Rutas internas", tactica: "Limit access", peticion: "GET /api/boards/%2e%2e/%2e%2e/internal/boards/b1/access", esperado: "404 JSON del gateway, sin upstream", verif: "log" },
   { id: "A08", cat: "Rutas internas", tactica: "Limit access", peticion: "GET /%69nternal/events (i codificada)", esperado: "404 JSON del gateway, sin upstream", verif: "log" },
@@ -77,7 +79,7 @@ export const CATALOGO = [
 
   // --- B. Métodos
   { id: "B01", cat: "Métodos", tactica: "Limit access", peticion: "TRACE / HTTP/1.1", esperado: "405 JSON del gateway, sin upstream", verif: "log" },
-  { id: "B02", cat: "Métodos", tactica: "Limit access", peticion: "CONNECT <host>:<puerto> HTTP/1.1", esperado: "400 o 405 JSON del gateway, sin upstream", verif: "log", aislar: true, logHint: ["-", "-"] },
+  { id: "B02", cat: "Métodos", tactica: "Limit access", peticion: "CONNECT <host>:<puerto> HTTP/1.1", esperado: "400 o 405 JSON del gateway, sin upstream", verif: "log", aislar: true, logHint: [["-", "-"], ["GET", "/__gw/400"]] },
   { id: "B03", cat: "Métodos", tactica: "Limit access", peticion: "DELETE /login", esperado: "405 JSON del gateway, sin upstream", verif: "log" },
   { id: "B04", cat: "Métodos", tactica: "Limit access", peticion: "PUT /api/auth/login", esperado: "405 JSON del gateway, sin upstream", verif: "log" },
 
@@ -96,14 +98,16 @@ export const CATALOGO = [
   // --- D. Tamaños
   { id: "D01", cat: "Tamaños", tactica: "Detect service denial", peticion: "POST /api/boards con Content-Length: 2097152 (2 MiB > CLIENT_MAX_BODY_SIZE=1m)", esperado: "413 JSON del gateway, sin upstream", verif: "log" },
   { id: "D02", cat: "Tamaños", tactica: "Detect service denial", peticion: "GET /login con una cabecera de 20 000 bytes", esperado: "400/431 JSON del gateway, sin upstream", verif: "log" },
-  { id: "D03", cat: "Tamaños", tactica: "Detect service denial", peticion: "GET /login?q=<12 000 bytes>", esperado: "414 JSON del gateway, sin upstream", verif: "log", aislar: true, logHint: ["-", "-"] },
+  { id: "D03", cat: "Tamaños", tactica: "Detect service denial", peticion: "GET /login?q=<12 000 bytes>", esperado: "414 JSON del gateway, sin upstream", verif: "log", aislar: true, logHint: [["-", "-"], ["GET", "/__gw/414"]] },
   { id: "D04", cat: "Tamaños", tactica: "Detect service denial", peticion: "POST /api/auth/login con cuerpo JSON de 100 KiB (límite propio de la ruta)", esperado: "413 JSON del gateway, sin upstream", verif: "log" },
 
   // --- E. Lentitud y volumen
   { id: "E01", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "GET /login enviando una cabecera cada 2 s sin terminar nunca (slow headers)", esperado: "el gateway cierra la conexión en <= 15 s", verif: "tiempo" },
-  { id: "E02", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "POST /api/boards con Content-Length: 1000, 10 bytes de cuerpo y luego nada (slow body)", esperado: "el gateway cierra en <= 15 s, sin upstream", verif: "tiempo" },
+  { id: "E02", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "POST /api/boards con Content-Length: 1000, 10 bytes de cuerpo y luego nada (slow body)", esperado: "el gateway cierra en <= 15 s, sin upstream", verif: "log" },
   { id: "E03", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "120 conexiones desde una IP (una cada 50 ms, bajo la tasa de limit_req), cada una POST /api/boards con el cuerpo pendiente", esperado: "las que superan el límite de conexiones por IP reciben 429 JSON al instante, sin upstream (error log: «limiting connections», sin «limiting requests»)", verif: "log" },
   { id: "E04", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "300 GET /login en ráfaga (30 en paralelo)", esperado: "429 JSON con las cabeceras de seguridad, sin upstream", verif: "log" },
+  { id: "E05", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "GET del estático más grande de la web sin leer la respuesta (SO_RCVBUF=1 KiB, 25 s), desde un contenedor en la red edge (slow read)", esperado: "el gateway corta el envío (send_timeout): cuerpo truncado y conexión cerrada por el gateway", verif: "tiempo" },
+  { id: "E06", cat: "Lentitud y volumen", tactica: "Detect service denial", peticion: "40 WebSocket a /ws/pixels abiertos a la vez desde una IP (uno cada 50 ms)", esperado: "los que superan el límite de WebSocket por IP reciben 429 JSON, sin upstream (error log: zona conn_ws)", verif: "log" },
 
   // --- F. Exposición
   { id: "F01", cat: "Exposición", tactica: "Limit exposure", peticion: "GET /s2-no-existe", esperado: "404 JSON del gateway, sin upstream", verif: "log" },
@@ -267,7 +271,7 @@ function compose(dir, args, opts = {}) {
 
 const LOG_RE = /^(\S+) \[([^\]]+)\] "(\S*) ?([^"]*)" (\d{3}) rid=(\S+) up=(.*?) us=(.*?) rt=(\S+)$/;
 // Error log de Nginx (stderr del contenedor): "2026/11/19 21:46:50 [error] 32#32: *123 limiting connections by zone ..."
-const ERR_RE = /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}:\d{2}:\d{2}) \[(\w+)\] .*?(limiting (?:requests|connections))/;
+const ERR_RE = /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}:\d{2}:\d{2}) \[(\w+)\] .*?(limiting (?:requests|connections))(?:.*?by zone "(\w+)")?/;
 function readGatewayLog(dir, sinceMs) {
   const text = compose(dir, ["logs", "--no-color", "--no-log-prefix", "--since", new Date(sinceMs - 5000).toISOString(), "gateway"]);
   const rows = text.split(/\r?\n/).map((l) => l.trim());
@@ -281,7 +285,7 @@ function readGatewayLog(dir, sinceMs) {
   const errors = rows
     .map((line) => {
       const m = ERR_RE.exec(line);
-      return m && { line, time: Date.parse(`${m[1]}-${m[2]}-${m[3]}T${m[4]}Z`), kind: m[6] };
+      return m && { line, time: Date.parse(`${m[1]}-${m[2]}-${m[3]}T${m[4]}Z`), kind: m[6], zone: m[7] || null };
     })
     .filter(Boolean);
   return { access, errors };
@@ -555,6 +559,115 @@ function makeRunners(ctx) {
       };
     },
 
+    // Slow read: el cliente pide un archivo grande y no lo lee. Desde el host no se puede medir
+    // (el proxy de puertos de Docker Desktop lee por su cuenta): corre en un contenedor de la red
+    // edge, con SO_RCVBUF mínimo, contra el puerto interno del gateway.
+    E05: async (id) => {
+      if (!o.docker) return { ok: false, detail: "requiere Docker (--no-docker)" };
+      const page = await exchange(T, build(T, { path: "/login" }));
+      const chunks = [...new Set(page.body.match(/\/_next\/static\/[A-Za-z0-9_./~-]+\.js/g) || [])].slice(0, 40);
+      let best = null;
+      for (const c of chunks) {
+        const h = await exchange(T, build(T, { method: "HEAD", path: c }));
+        const len = Number(hget(h.headers, "content-length") || 0);
+        if (!best || len > best.len) best = { path: c, len };
+      }
+      if (!best || best.len < 50000) return { ok: false, detail: `no hay un estático de ≥ 50 KB para la prueba (${best ? best.len : 0} B)` };
+      const gw = compose(o.composeDir, ["ps", "-q", "gateway"]).trim();
+      const nets = JSON.parse(execFileSync("docker", ["inspect", gw, "--format", "{{json .NetworkSettings.Networks}}"], { encoding: "utf8" }));
+      const edge = Object.keys(nets).find((n) => n.endsWith("_edge")) || Object.keys(nets)[0];
+      const py = [
+        "import json,socket,ssl,sys,time",
+        "host,port,https,hosthdr,path,rid,wait=sys.argv[1],int(sys.argv[2]),sys.argv[3]=='1',sys.argv[4],sys.argv[5],sys.argv[6],float(sys.argv[7])",
+        "s=socket.socket();s.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,1024);s.connect((host,port))",
+        "if https:\n c=ssl.create_default_context();c.check_hostname=False;c.verify_mode=ssl.CERT_NONE;c.set_alpn_protocols(['http/1.1']);s=c.wrap_socket(s,server_hostname='localhost')",
+        "s.sendall(('GET %s HTTP/1.1\\r\\nHost: %s\\r\\nUser-Agent: s2-proxy/1.0\\r\\nX-Request-ID: %s\\r\\nConnection: close\\r\\n\\r\\n'%(path,hosthdr,rid)).encode())",
+        "time.sleep(wait)",
+        "s.settimeout(5);data=b'';end='timeout'",
+        "try:\n while True:\n  b=s.recv(65536)\n  if not b:\n   end='cerrada';break\n  data+=b\nexcept (ConnectionResetError,ssl.SSLError,OSError) as e:\n end='reset' if not isinstance(e,socket.timeout) else 'timeout'",
+        "head,_,body=data.partition(b'\\r\\n\\r\\n')",
+        "print(json.dumps({'fin':end,'status_line':head.split(b'\\r\\n')[0].decode('latin1'),'cuerpo':len(body)}))",
+      ].join("\n");
+      const t0 = Date.now();
+      const out = execFileSync(
+        "docker",
+        ["run", "--rm", "--network", edge, "python:3.12-slim", "python", "-c", py, "gateway", String(T.https ? 443 : 80), T.https ? "1" : "0", T.host, best.path, rid(id), String(o.slowWait)],
+        { encoding: "utf8", timeout: (o.slowWait + 60) * 1000 },
+      );
+      const r = JSON.parse(out.trim().split(/\r?\n/).pop());
+      // Corte = cuerpo incompleto y conexión terminada por el gateway. (Nginx registra el
+      // «client timed out … while sending» en nivel info; el error_log del gateway está en warn.)
+      const truncated = r.cuerpo < best.len;
+      return {
+        ok: truncated && r.fin !== "timeout",
+        detail: `${best.path} (${best.len} B): tras ${o.slowWait} s sin leer se recibieron ${r.cuerpo} B y la conexión terminó «${r.fin}» (${r.status_line || "sin cabeceras"}) en ${((Date.now() - t0) / 1000).toFixed(1)} s`,
+      };
+    },
+    // Muchos WebSocket abiertos a la vez: el límite propio de WS (conn_ws) debe rechazar los que sobran.
+    E06: async (id) => {
+      const n = o.wsConns;
+      const socks = [];
+      const results = await Promise.all(
+        Array.from({ length: n }, async (_, i) => {
+          await sleep(i * 50);
+          let sock;
+          try {
+            sock = await openSocket(T);
+          } catch (e) {
+            return { error: e.code || e.message };
+          }
+          socks.push(sock);
+          return new Promise((resolve) => {
+            const chunks = [];
+            let done = false;
+            const end = () => {
+              if (done) return;
+              done = true;
+              resolve(parseResponse(Buffer.concat(chunks)));
+            };
+            sock.on("data", (c) => {
+              chunks.push(c);
+              const buf = Buffer.concat(chunks);
+              const sep = buf.indexOf("\r\n\r\n");
+              if (sep < 0) return;
+              const head = buf.subarray(0, sep).toString("latin1");
+              // 101: el WebSocket queda abierto (y cuenta en el límite) hasta el final del caso.
+              if (/^HTTP\/1\.1 101/.test(head)) return end();
+              // Rechazo: se espera el cuerpo completo (las respuestas del gateway llevan Content-Length).
+              const len = Number((/\r\ncontent-length: *(\d+)/i.exec(head) || [])[1]);
+              if (Number.isFinite(len) && buf.length >= sep + 4 + len) end();
+            });
+            sock.on("close", end);
+            sock.on("error", end);
+            sock.write(
+              build(T, {
+                path: "/ws/pixels",
+                rid: `${rid(id)}-${i}`,
+                headers: [
+                  ["Upgrade", "websocket"],
+                  ["Connection", "Upgrade"],
+                  ["Sec-WebSocket-Version", "13"],
+                  ["Sec-WebSocket-Key", randomBytes(16).toString("base64")],
+                ],
+              }).toString("latin1").replace("Connection: close\r\n", ""),
+            );
+            setTimeout(end, 4000);
+          });
+        }),
+      );
+      await sleep(500);
+      socks.forEach((s) => s.destroy());
+      const codes = {};
+      results.forEach((r) => (codes[r?.status ?? "sin"] = (codes[r?.status ?? "sin"] || 0) + 1));
+      const limited = results.map((r, i) => ({ r, i })).filter(({ r }) => r?.status === 429);
+      const allJson = limited.every(({ r }) => isGatewayJson(r));
+      return {
+        ok: limited.length > 0 && allJson,
+        detail: `${limited.length}/${n} WebSocket rechazados (${JSON.stringify(codes)})${limited.length && !allJson ? " · rechazo sin JSON" : ""}`,
+        rids: limited.map(({ i }) => `${rid(id)}-${i}`),
+      };
+    },
+
     F01: reject([404], { path: "/s2-no-existe" }),
     F02: reject([404], { path: "/api/s2-no-existe" }),
     F03: reject([404], { path: "/api/canvas/boards/b1/otra-cosa" }),
@@ -659,12 +772,13 @@ function makeRunners(ctx) {
 function checkUpstream(entries, { access: lines, errors }) {
   for (const e of entries) {
     const meta = CATALOGO.find((c) => c.id === e.id);
-    // E03: el rechazo debe venir del límite de conexiones, no del de tasa.
-    if (e.id === "E03") {
-      const inWindow = errors.filter((x) => x.time >= Math.floor(e.t0 / 1000) * 1000 && x.time <= e.t1);
-      const byConn = inWindow.filter((x) => x.kind === "limiting connections").length;
+    // E03 / E06: el rechazo debe venir del límite de conexiones de su zona, no del de tasa.
+    const connZone = { E03: "conn", E06: "conn_ws" }[e.id];
+    if (connZone) {
+      const inWindow = errors.filter((x) => x.time >= Math.floor(e.t0 / 1000) * 1000 && x.time <= e.t1 + 1000);
+      const byConn = inWindow.filter((x) => x.kind === "limiting connections" && x.zone === connZone).length;
       const byRate = inWindow.filter((x) => x.kind === "limiting requests").length;
-      e.detail += ` · error log: ${byConn} «limiting connections», ${byRate} «limiting requests»`;
+      e.detail += ` · error log: ${byConn} «limiting connections» (zona ${connZone}), ${byRate} «limiting requests»`;
       if (byRate > 0 || (e.ok && byConn === 0)) e.ok = false;
     }
     if (meta.verif !== "log" || !e.rids?.length) {
@@ -680,11 +794,13 @@ function checkUpstream(entries, { access: lines, errors }) {
     if (!matched.length && e.status && meta.logHint) {
       const from = Math.floor(e.t0 / 1000) * 1000;
       const to = Math.floor(e.t1 / 1000) * 1000;
-      matched = lines.filter((l) => !l.rid.startsWith("s2-") && l.status === e.status && l.time >= from && l.time <= to && l.method === meta.logHint[0] && l.uri === meta.logHint[1]);
+      matched = lines.filter((l) => !l.rid.startsWith("s2-") && l.status === e.status && l.time >= from && l.time <= to && meta.logHint.some(([m, u]) => l.method === m && l.uri === u));
       how = "ventana";
     }
+    // Un rechazo que no deja línea no está verificado: cuenta como FAIL.
     if (!matched.length) {
-      e.upstream = "sin línea en el log";
+      e.upstream = "sin línea en el log (no verificado)";
+      e.ok = false;
       continue;
     }
     e.log = matched.slice(0, 3).map((l) => l.line);
@@ -707,6 +823,7 @@ function parseArgs(argv) {
     slowWait: 25,
     slowMax: 15,
     conns: 120,
+    wsConns: 40,
     burst: 300,
     concurrency: 30,
     allowedPorts: [8088, 8443],
@@ -726,6 +843,7 @@ function parseArgs(argv) {
       case "--slow-wait": o.slowWait = Number(v()); break;
       case "--slow-max": o.slowMax = Number(v()); break;
       case "--conns": o.conns = Number(v()); break;
+      case "--ws-conns": o.wsConns = Number(v()); break;
       case "--burst": o.burst = Number(v()); break;
       case "--concurrency": o.concurrency = Number(v()); break;
       case "--allowed-ports": o.allowedPorts = v().split(",").map(Number); break;
@@ -741,6 +859,7 @@ function parseArgs(argv) {
   --label TEXTO         etiqueta de la corrida (p. ej. "P2 6af0456")
   --slow-wait S / --slow-max S   espera máxima y umbral de corte en E01/E02 (25 / 15)
   --conns N             conexiones simultáneas en E03 (120)
+  --ws-conns N          WebSocket simultáneos en E06 (40)
   --burst N --concurrency N      ráfaga de E04 (300 / 30)
   --allowed-ports L     puertos del gateway permitidos en el host (8088,8443)
   --only IDS            solo estos casos (A01,C03,...)`);
@@ -789,8 +908,9 @@ async function main() {
 
   const byId = (ids) => selected.filter((c) => ids.includes(c.id));
   const sniffIds = ["C03", "C04", "C05", "C06", "C07"];
-  const slowIds = ["E01", "E02"];
-  const lastIds = ["E03", "E04"];
+  const slowIds = ["E01", "E02", "E05"];
+  // E04 va al final: deja agotada la zona web unos segundos.
+  const lastIds = ["E03", "E06", "E04"];
   const plain = selected.filter((c) => !sniffIds.includes(c.id) && !slowIds.includes(c.id) && !lastIds.includes(c.id));
 
   for (const meta of plain) await run(meta);
