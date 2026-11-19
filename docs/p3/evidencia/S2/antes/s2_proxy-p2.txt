@@ -1,0 +1,96 @@
+S2 · Reverse Proxy — 44 casos contra http://localhost:8088 (P2 6af0456) · corrida ebdcb3
+UI de Pixels: http://localhost:3000/ · log/captura: C:\Users\Sebastián\Desktop\p2-baseline
+
+
+OK   K01 [Control] GET /healthz
+       → 200 text/plain ok
+OK   K02 [Control] GET /login
+       → 200 text/html <!DOCTYPE html><html lang="es"><head><meta charSet="utf-8"/><meta name…
+OK   K03 [Control] GET /api/boards (sin sesión)
+       → 401 application/json {"detail":"No autenticado"}
+OK   K04 [Control] GET /api/pixels/board
+       → 200 application/json
+OK   K05 [Control] GET <UI de Pixels> (P2 :3000/ · P3 /pixels/)
+       → http://localhost:3000/ → 200 text/html <!doctype html> <html lang="es"> <head> <meta charset="UTF-8" /> <link…
+OK   A01 [Rutas internas] GET /internal/events
+       → 404 application/json {"detail":"No encontrado"} · upstream: no (us=- en 1 línea)
+OK   A02 [Rutas internas] POST /internal/boards/b1/access
+       → 404 application/json {"detail":"No encontrado"} · upstream: no (us=- en 1 línea)
+OK   A03 [Rutas internas] GET //internal/events
+       → 404 application/json {"detail":"No encontrado"} · upstream: no (us=- en 1 línea)
+OK   A04 [Rutas internas] GET /INTERNAL/events
+       → 404 application/json {"detail":"No encontrado"} · upstream: no (us=- en 1 línea)
+FAIL A05 [Rutas internas] GET /%2e%2e/internal/events (sin normalizar)
+       → 400 text/html <html> <head><title>400 Bad Request</title></head> <body> <center><h1>… · upstream: no (us=- en 1 línea, por ventana de tiempo)
+OK   A06 [Rutas internas] GET /api/boards/../internal/events (sin normalizar)
+       → 404 application/json {"detail":"No encontrado"} · upstream: no (us=- en 1 línea)
+OK   A07 [Rutas internas] GET /api/boards/%2e%2e/%2e%2e/internal/boards/b1/access
+       → 404 application/json {"detail":"No encontrado"} · upstream: no (us=- en 1 línea)
+OK   A08 [Rutas internas] GET /%69nternal/events (i codificada)
+       → 404 application/json {"detail":"No encontrado"} · upstream: no (us=- en 1 línea)
+FAIL A09 [Rutas internas] GET /%2569nternal/events (doble codificación)
+       → 307 - /login?next=%2F%252569nternal%2Fevents · upstream: SÍ (us=307)
+OK   A10 [Rutas internas] GET /internal%2fevents (barra codificada)
+       → 404 application/json {"detail":"No encontrado"} · upstream: no (us=- en 1 línea)
+FAIL A11 [Rutas internas] GET /api/chat/%2569nternal/events (doble codificación bajo un prefijo que se reenvía sin reescribir)
+       → 401 application/json {"detail":"No autenticado"} · upstream: SÍ (us=401)
+FAIL B01 [Métodos] TRACE / HTTP/1.1
+       → 405 text/html <html> <head><title>405 Not Allowed</title></head> <body> <center><h1>… · upstream: no (us=- en 1 línea)
+FAIL B02 [Métodos] CONNECT <host>:<puerto> HTTP/1.1
+       → 400 text/html <html> <head><title>400 Bad Request</title></head> <body> <center><h1>… · upstream: no (us=- en 1 línea, por ventana de tiempo)
+FAIL B03 [Métodos] DELETE /login
+       → 200 text/html <!DOCTYPE html><html lang="es"><head><meta charSet="utf-8"/><meta name… · upstream: SÍ (us=200)
+FAIL B04 [Métodos] PUT /api/auth/login
+       → 405 application/json {"detail":"Método no permitido"} · upstream: SÍ (us=405)
+FAIL C01 [Host y cabeceras] GET / con Host: evil-s2.example
+       → 307 - /login · Location: /login · upstream: SÍ (us=307)
+FAIL C02 [Host y cabeceras] GET http://evil-s2.example/ HTTP/1.1 (forma absoluta) con Host legítimo
+       → 307 - /login · Location: /login · upstream: SÍ (us=307)
+FAIL C03 [Host y cabeceras] GET /api/boards con X-Forwarded-For: 203.0.113.66
+       → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 203.0.113.66, 172.19.0.1 · FALSIFICADO: 203.0.113.66
+FAIL C04 [Host y cabeceras] GET /api/boards con X-Real-IP: 203.0.113.77
+       → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-Real-IP: 203.0.113.77 · FALSIFICADO: 203.0.113.77
+FAIL C05 [Host y cabeceras] GET /api/boards con X-Service-Token: s2-token-falso-<corrida>
+       → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-Service-Token: s2-token-falso-ebdcb3 · FALSIFICADO: s2-token-falso-ebdcb3
+FAIL C06 [Host y cabeceras] GET /api/boards con X-User-Id: s2-usuario-falso-<corrida>
+       → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | X-User-Id: s2-usuario-falso-ebdcb3 · FALSIFICADO: s2-usuario-falso-ebdcb3
+FAIL C07 [Host y cabeceras] GET /api/boards con X-Forwarded-Host: evil-s2.example y Forwarded: for=203.0.113.88;host=evil-s2.example;proto=http
+       → 401 · el servicio recibió: X-Forwarded-Host: localhost:8088 | X-Forwarded-For: 172.19.0.1 | Forwarded: for=203.0.113.88;host=evil-s2.example;proto=http · FALSIFICADO: evil-s2.example, 203.0.113.88
+OK   C08 [Host y cabeceras] GET /api/boards con X-Request-ID: abc def" us=200 up=10.0.0.1 (falsificar campos del log)
+       → 401 · X-Request-ID devuelto: "51f4839141f874546ab9cdc475604ed5"
+FAIL C09 [Host y cabeceras] GET /api/boards con X-Request-ID seguido de una línea plegada (obs-fold: CRLF + espacio + X-Inyectada: s2)
+       → 400 text/html <html> <head><title>400 Bad Request</title></head> <body> <center><h1>…
+FAIL C10 [Host y cabeceras] GET /api/boards con X-Request-ID que contiene un CR suelto (\r) + X-Inyectada: s2
+       → 400 text/html <html> <head><title>400 Bad Request</title></head> <body> <center><h1>…
+FAIL D01 [Tamaños] POST /api/boards con Content-Length: 2097152 (2 MiB > CLIENT_MAX_BODY_SIZE=1m)
+       → 413 text/html <html> <head><title>413 Request Entity Too Large</title></head> <body>… · upstream: no (us=- en 1 línea)
+FAIL D02 [Tamaños] GET /login con una cabecera de 20 000 bytes
+       → 400 text/html <html> <head><title>400 Request Header Or Cookie Too Large</title></he… · upstream: no (us=- en 1 línea)
+FAIL D03 [Tamaños] GET /login?q=<12 000 bytes>
+       → 414 text/html <html> <head><title>414 Request-URI Too Large</title></head> <body> <c… · upstream: no (us=- en 1 línea, por ventana de tiempo)
+FAIL D04 [Tamaños] POST /api/auth/login con cuerpo JSON de 100 KiB (límite propio de la ruta)
+       → 400 application/json {"detail":"JSON inválido o demasiado grande"} · upstream: SÍ (us=400)
+FAIL E01 [Lentitud y volumen] GET /login enviando una cabecera cada 2 s sin terminar nunca (slow headers)
+       → la conexión seguía abierta a los 25.0 s
+FAIL E02 [Lentitud y volumen] POST /api/boards con Content-Length: 1000, 10 bytes de cuerpo y luego nada (slow body)
+       → la conexión seguía abierta a los 25.0 s
+FAIL E03 [Lentitud y volumen] 120 conexiones desde una IP (una cada 50 ms, bajo la tasa de limit_req), cada una POST /api/boards con el cuerpo pendiente
+       → 0/120 rechazadas al instante ({}); 120 retenidas por el gateway esperando el cuerpo · error log: 0 «limiting connections», 0 «limiting requests» · upstream: n/a
+FAIL E04 [Lentitud y volumen] 300 GET /login en ráfaga (30 en paralelo)
+       → 0/300 limitadas: {"200":300} · upstream: n/a
+FAIL F01 [Exposición] GET /s2-no-existe
+       → 307 - /login?next=%2Fs2-no-existe · upstream: SÍ (us=307)
+FAIL F02 [Exposición] GET /api/s2-no-existe
+       → 307 - /login?next=%2Fapi%2Fs2-no-existe · upstream: SÍ (us=307)
+FAIL F03 [Exposición] GET /api/canvas/boards/b1/otra-cosa
+       → 307 - /login?next=%2Fapi%2Fcanvas%2Fboards%2Fb1%2Fotra-cosa · upstream: SÍ (us=307)
+FAIL F04 [Exposición] GET a 8 rutas (web, 5 APIs, 404 y UI de Pixels): cabeceras de respuesta
+       → UI de Pixels localhost:3000/: server=nginx/1.31.9
+FAIL F05 [Exposición] GET /login, /api/boards, /s2-no-existe y UI de Pixels: cabeceras de seguridad
+       → /login (200): sin content-security-policy · /api/boards (401): sin content-security-policy, sin x-content-type-options, sin referrer-policy, sin permissions-policy, sin x-frame-options · /s2-no-existe (307): sin content-security-policy · UI de Pixels (200): sin content-security-policy, sin x-content-type-options, sin referrer-policy, sin permissions-policy, sin x-frame-options
+FAIL F06 [Exposición] Puertos publicados por el stack (docker compose ps) y TCP desde el host a 3000, 5432, 5672, 8000, 8001, 8002, 8080, 8081, 8090, 15432, 15433, 15434, 15435, 15672, 27017 en 127.0.0.1 y en las IP de la LAN
+       → publicados por el stack: gateway 0.0.0.0:8088→80, pixels-ui 0.0.0.0:3000→80, rabbitmq 127.0.0.1:15672→15672 · indebidos: pixels-ui 0.0.0.0:3000→80 · responden por TCP sin estar permitidos: 127.0.0.1:3000, 172.29.x.x:3000, 192.168.x.x:3000 · abiertos por procesos del host ajenos al stack (no cuentan): 5432, 8080 · IP probadas: 127.0.0.1, 192.168.x.x, 172.29.x.x
+
+Ataques bloqueados o normalizados: 9/39 · controles: 5/5 · rechazos con us=- en el log: 14/26
+Resultados: docs/p3/evidencia/S2/antes/s2_proxy-p2.json
+exit=1
