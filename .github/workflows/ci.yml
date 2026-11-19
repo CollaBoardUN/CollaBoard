@@ -263,6 +263,9 @@ jobs:
           rid=$(curl -s -o /dev/null -D - -H 'X-Request-ID: ci-correlacion-0001' https://localhost:8443/api/boards | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
           test "$rid" = "ci-correlacion-0001"
           docker compose logs gateway | grep 'rid=ci-correlacion-0001'
+      # Al final: su ráfaga (E04) deja agotada unos segundos la zona web del gateway.
+      - name: Reverse Proxy (S2) - catálogo de ataques al borde, us=- y tramo interno
+        run: node security-tests/s2_proxy.mjs --target https://localhost:8443 --ca gateway/certs/ca.crt
       - if: failure()
         run: docker compose logs --tail=200
       - if: always()

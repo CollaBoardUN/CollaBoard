@@ -53,12 +53,17 @@ services:
     ports: ["18444:443"]
 
   # Límite de tasa estricto para comprobar el 429.
+  # P3 · S2: también la zona web y los límites de conexiones simultáneas (HTTP y WebSocket).
   gateway-limited:
     <<: *gateway
     environment:
       <<: *upstreams
       RATE_LIMIT_AUTH: 1r/s
       RATE_LIMIT_AUTH_BURST: "2"
+      RATE_LIMIT_WEB: 1r/s
+      RATE_LIMIT_WEB_BURST: "2"
+      LIMIT_CONN_PER_IP: "3"
+      LIMIT_CONN_WS_PER_IP: "1"
     ports: ["18445:443"]
 
   # Chat inexistente: el gateway debe responder 502 JSON y seguir vivo.
