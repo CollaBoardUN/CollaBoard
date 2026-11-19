@@ -1,4 +1,4 @@
-# S1 · Secure Channel: qué cambió y qué deben tener en cuenta (léanlo antes de seguir)
+# CONTEXTO S1 · Secure Channel: qué cambió y qué deben tener en cuenta (léanlo antes de seguir)
 
 Responsable: Jhon Prieto · Rama: `p3/s1-tls` · Detalle técnico completo: [`fragmentos/S1-canal-seguro.md`](fragmentos/S1-canal-seguro.md)
 
