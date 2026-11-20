@@ -33,7 +33,7 @@ import time
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from ..auth import decode_token
-from ..config import AUTH_DEV_MODE
+from ..config import AUTH_DEV_MODE, ROLE_RECHECK_SECONDS
 from ..database import SessionLocal
 from ..models import Role
 from ..permissions import can, get_role, get_role_remote
@@ -48,12 +48,10 @@ CLOSE_UNAUTHORIZED = 4401
 CLOSE_FORBIDDEN = 4403
 CLOSE_SERVER_ERROR = 1011
 MAX_MESSAGE_BYTES = 2_000_000
-# Cada cuánto se vuelve a comprobar el rol en mensajes que no son de dibujo.
-ROLE_RECHECK_SECONDS = 5.0
 
 
-async def _role_of(board_id: str, user_id: str) -> Role | None:
-    role = await get_role_remote(board_id, user_id)
+async def _role_of(board_id: str, user_id: str, token: str | None = None) -> Role | None:
+    role = await get_role_remote(board_id, user_id, token=token)
     if role is None and AUTH_DEV_MODE:
         with SessionLocal() as db:
             role = get_role(db, board_id, user_id)
@@ -77,7 +75,7 @@ async def board_ws(websocket: WebSocket, board_id: str, token: str = "") -> None
         await websocket.close(code=CLOSE_UNAUTHORIZED, reason="Token inválido")
         return
 
-    role = await _role_of(board_id, user.id)
+    role = await _role_of(board_id, user.id, token=token)
     if role is None:
         await websocket.close(code=CLOSE_FORBIDDEN, reason="No eres miembro del tablero")
         return
@@ -114,8 +112,8 @@ async def board_ws(websocket: WebSocket, board_id: str, token: str = "") -> None
             # Re-verificamos el rol: siempre antes de ops, y cada pocos segundos en el resto.
             # Así, si el owner quita o degrada a alguien, el cambio se aplica enseguida.
             now = time.monotonic()
-            if kind == "ops" or now - last_check > ROLE_RECHECK_SECONDS:
-                current = await _role_of(board_id, user.id)
+            if kind in ("ops", "draft") or now - last_check > ROLE_RECHECK_SECONDS:
+                current = await _role_of(board_id, user.id, token=token)
                 last_check = now
                 if current is None:
                     await websocket.close(code=CLOSE_FORBIDDEN, reason="Ya no eres miembro")

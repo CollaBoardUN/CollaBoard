@@ -47,3 +47,14 @@ INTERNAL_SERVICE_TOKEN = os.getenv(
     "INTERNAL_SERVICE_TOKEN",
     os.getenv("NOTIFICATIONS_SERVICE_TOKEN", "token-de-servicio-solo-desarrollo"),
 )
+
+# PEP · Caché de decisiones de autorización del PDP (Escenario S5, Cache-Aside).
+# 0 = caché desactivada (baseline de rendimiento); > 0 = TTL máximo en segundos.
+AUTHZ_CACHE_TTL_SECONDS = float(os.getenv("AUTHZ_CACHE_TTL_SECONDS", "2.0"))
+
+# Revalidación periódica de rol en WebSockets abiertos (debe ser <= 5 s junto con el TTL).
+ROLE_RECHECK_SECONDS = float(os.getenv("ROLE_RECHECK_SECONDS", "2.0"))
+
+# Si es false (producción / P3), Pizarra NO monta los routers CRUD legacy de tableros/invitaciones
+# (colaboracion-api es la única autoridad). Se activa en conftest.py para tests unitarios P1.
+LEGACY_BOARDS_ROUTES_ENABLED = os.getenv("LEGACY_BOARDS_ROUTES_ENABLED", "false").lower() == "true"

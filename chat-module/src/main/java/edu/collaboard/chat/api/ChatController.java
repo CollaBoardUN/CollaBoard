@@ -58,6 +58,11 @@ class ChatErrorHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("detail", "Tablero no encontrado"));
     }
 
+    @ExceptionHandler(edu.collaboard.chat.service.CollaborationClient.ActionForbiddenException.class)
+    ResponseEntity<Map<String, String>> actionForbidden(RuntimeException error) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("detail", "Acción no permitida para tu rol"));
+    }
+
     @ExceptionHandler(edu.collaboard.chat.service.CollaborationClient.CollaborationUnavailableException.class)
     ResponseEntity<Map<String, String>> collaborationUnavailable(RuntimeException error) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of("detail", "Colaboración no responde"));

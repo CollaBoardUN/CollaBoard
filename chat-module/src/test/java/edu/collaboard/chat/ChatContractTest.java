@@ -70,23 +70,48 @@ class ChatContractTest {
 
     @DynamicPropertySource static void properties(DynamicPropertyRegistry properties) throws Exception {
         collaboration = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        collaboration.createContext("/boards/", exchange -> {
+        com.sun.net.httpserver.HttpHandler collabHandler = exchange -> {
             String auth = exchange.getRequestHeaders().getFirst("Authorization");
             String user;
             try { user = SignedJWT.parse(auth.substring(7)).getJWTClaimsSet().getSubject(); }
             catch (Exception invalid) { user = "unknown"; }
             String path = exchange.getRequestURI().getPath();
-            String board = path.substring("/boards/".length()).split("/")[0];
+            String prefix = path.startsWith("/internal/boards/") ? "/internal/boards/" : "/boards/";
+            String board = path.substring(prefix.length()).split("/")[0];
             int status = COLLAB_DOWN.get() ? 503 : !MEMBERS.contains(user) || !Set.of("b1", "b2").contains(board) ? 404 : 200;
-            Object body = status != 200 ? Map.of("detail", "Sin acceso") : path.endsWith("/members")
-                    ? MEMBERS.stream().map(id -> Map.of("user_id", id, "role", "viewer")).toList()
-                    : Map.of("id", board, "name", "Ideas P2", "my_role", "viewer");
+            Object body;
+            if (status != 200) {
+                body = Map.of("detail", "Sin acceso");
+            } else if (path.endsWith("/members")) {
+                body = MEMBERS.stream().map(id -> Map.of("user_id", id, "role", "viewer")).toList();
+            } else if (path.endsWith("/recipients")) {
+                String finalUser = user;
+                body = Map.of(
+                        "board_id", board,
+                        "board_name", "Ideas P2",
+                        "owner_id", "ana",
+                        "recipient_ids", MEMBERS.stream().filter(id -> !id.equals(finalUser)).toList());
+            } else {
+                body = Map.of(
+                        "id", board,
+                        "board_id", board,
+                        "name", "Ideas P2",
+                        "board_name", "Ideas P2",
+                        "owner_id", "ana",
+                        "user_id", user,
+                        "role", "viewer",
+                        "my_role", "viewer",
+                        "allowed", true,
+                        "permissions", List.of("chat:read", "chat:send", "chat:connect"));
+            }
             byte[] data = JSON.writeValueAsBytes(body);
             exchange.getResponseHeaders().set("Content-Type", "application/json");
             exchange.sendResponseHeaders(status, data.length);
             exchange.getResponseBody().write(data);
             exchange.close();
-        });
+        };
+        collaboration.createContext("/boards/", collabHandler);
+        collaboration.createContext("/internal/boards/", collabHandler);
         collaboration.start();
         notifications = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         notifications.createContext("/internal/events", exchange -> {
@@ -103,6 +128,7 @@ class ChatContractTest {
         properties.add("collaboard.jwt.secret", () -> SECRET);
         properties.add("collaboard.jwt.issuer", () -> "collaboard-auth");
         properties.add("collaboard.collaboration.url", () -> "http://127.0.0.1:" + collaboration.getAddress().getPort());
+        properties.add("collaboard.collaboration.cache-ttl-ms", () -> "0");
         properties.add("collaboard.notifications.url", () -> "http://127.0.0.1:" + notifications.getAddress().getPort());
         properties.add("collaboard.notifications.service-token", () -> "test-service-token");
         properties.add("collaboard.notifications.poll-ms", () -> "3600000");

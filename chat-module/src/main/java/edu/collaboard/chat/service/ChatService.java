@@ -41,7 +41,7 @@ public class ChatService {
 
     public ChatPage history(String boardId, ChatPrincipal user, int limit, String before, String after) {
         if (limit < 1 || limit > 100) throw new InvalidChatRequestException("limit debe estar entre 1 y 100");
-        collaboration.requireBoard(user.token(), boardId);
+        collaboration.requireAction(user.token(), boardId, "chat:read");
         if (before != null && after != null) throw new InvalidChatRequestException("Usa before o after, no ambos");
 
         Query query = new Query(Criteria.where("boardId").is(boardId));
@@ -86,7 +86,7 @@ public class ChatService {
             throw new InvalidChatRequestException("client_message_id inválido");
         }
 
-        JsonNode board = collaboration.requireBoard(user.token(), boardId);
+        JsonNode board = collaboration.requireAction(user.token(), boardId, "chat:send");
         var existing = messages.findByBoardIdAndSenderIdAndClientMessageId(boardId, user.id(), clientMessageId);
         if (existing.isPresent()) return new SendResult(existing.get(), false);
         List<String> recipients = collaboration.memberIds(user.token(), boardId).stream()

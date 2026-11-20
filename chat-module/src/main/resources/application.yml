@@ -19,14 +19,16 @@ collaboard:
   collaboration:
     url: ${COLLABORATION_URL:http://localhost:8002}
     timeout-ms: ${COLLABORATION_TIMEOUT_MS:4000}
-    boards-path: ${COLLABORATION_BOARDS_PATH:/boards}
+    boards-path: ${COLLABORATION_BOARDS_PATH:/internal/boards}
+    service-token: ${INTERNAL_SERVICE_TOKEN:${NOTIFICATIONS_SERVICE_TOKEN:}}
+    cache-ttl-ms: ${AUTHZ_CACHE_TTL_MS:2000}
   notifications:
     url: ${NOTIFICATIONS_URL:http://localhost:4100}
     service-token: ${NOTIFICATIONS_SERVICE_TOKEN:}
     poll-ms: ${NOTIFICATIONS_POLL_MS:4000}
   websocket:
     allowed-origins: ${CHAT_ALLOWED_ORIGINS:http://localhost:8088,http://127.0.0.1:8088}
-    recheck-ms: ${CHAT_RECHECK_MS:15000}
+    recheck-ms: ${CHAT_RECHECK_MS:3000}
 logging:
   level:
     edu.collaboard.chat: INFO

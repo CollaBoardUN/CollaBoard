@@ -45,6 +45,7 @@ docker compose up -d --build --wait
 curl -s localhost:8088/healthz                                   # ok
 sh scripts/gateway_smoke.sh http://localhost:8088                # rutas, /internal/* bloqueado, X-Request-ID
 node scripts/ws_check.mjs http://localhost:8088                  # WebSocket de Pizarra, Chat y Pixels
+python security-tests/s5_rbac.py --mode inprocess                # S5 · RBAC Authorizer (11 checks + matriz 144 celdas)
 docker compose --profile tools run --rm rabbit-smoke             # RabbitMQ: publicar/consumir, permisos, DLQ
 node --test gateway/tests/contract.test.mjs                      # contrato del gateway (ver gateway/tests/compose.test.yml)
 ```

@@ -90,7 +90,7 @@ class JoinResult(BaseModel):
 
 
 class InternalAccessOut(BaseModel):
-    """Respuesta de GET /internal/boards/{board_id}/access."""
+    """Respuesta del PDP en GET /internal/boards/{board_id}/access."""
 
     board_id: str
     board_name: str
@@ -99,6 +99,10 @@ class InternalAccessOut(BaseModel):
     role: Role
     exists: bool = True
     board_status: str = "active"
+    action: str | None = None
+    allowed: bool = True
+    permissions: list[str] = Field(default_factory=list)
+    cache_ttl_seconds: int = 3
 
 
 class InternalRecipientsOut(BaseModel):
