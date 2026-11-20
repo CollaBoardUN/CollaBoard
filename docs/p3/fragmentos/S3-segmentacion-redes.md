@@ -121,15 +121,11 @@ Regresión: los 16 contenedores levantan `healthy`, `python security-tests/s1_tl
 
 ### 7. Cambios en las vistas
 
-Archivos `.drawio` y `.png` en `docs/p3/diagramas/` (detalle en [`CAMBIOS-S3.md`](../diagramas/CAMBIOS-S3.md)):
+Detalle en [`docs/p3/diagramas/CAMBIOS-S3.md`](../diagramas/CAMBIOS-S3.md). Como la segmentación de redes no añade, elimina ni modifica ningún componente de software, contenedor, conector de aplicación, capa ni módulo de código (los 16 servicios y almacenes son exactamente los mismos del P2), **las 4 vistas principales (C&C, Despliegue, Capas y Descomposición) se mantienen sin cambios de componentes**.
 
-![Vista de Despliegue con S3](../diagramas/vista-despliegue.S3.png)
+Para explicar visualmente cómo quedan aisladas las zonas (`edge`, `app` y las 6 redes `net-*` con `internal: true`), los diagramas con anotaciones explicativas y el diagrama de secuencia (`secuencia-S3`) se dejan en la subcarpeta [`docs/p3/diagramas/explicacion-S3/`](../diagramas/explicacion-S3/):
 
-- **C&C (`vista-cc.S3`):** agrupa los componentes en las 8 fronteras de zona punteadas en naranja (`edge`, `app`, `net-user`, `net-board`, `net-canvas`, `net-notif`, `net-mongo`, `net-mq`) e incluye la nota de riesgo residual en `net-mongo`.
-- **Despliegue (`vista-despliegue.S3`):** cambia `container-network` por las 8 redes reales con `internal: true` en las 7 internas y muestra en cada contenedor las redes a las que se conecta.
-- **Capas (`vista-capas.S3`):** asocia cada capa con su zona (`edge` en Presentación/borde, `app` en Lógica con `message-worker` por fuera, y 6 bloques separados en Datos/Mensajería).
-- **Descomposición (`vista-descomposicion.S3`):** agrega el módulo *Política de zonas de red* en *Gateway y trazabilidad* y la red `net-*` de cada almacén en *Infraestructura de datos*.
-- **Secuencia (`secuencia-S3`):** muestra a `pixels-api` intentando abrir `user-db:5432` y `1.1.1.1:443` en el P2 (`SYN-ACK`) frente al P3 (`NXDOMAIN / Network unreachable`).
+![Diagrama explicativo de zonas en Despliegue](../diagramas/explicacion-S3/vista-despliegue.S3.png)
 
 ### 8. Rendimiento: `pixels-api` (Rust) con conexiones simultáneas y costo de segmentación
 

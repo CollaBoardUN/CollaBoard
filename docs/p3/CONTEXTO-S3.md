@@ -41,8 +41,9 @@ La red plana `internal` ya no existe: ahora hay **7 redes internas con `internal
 
 ## 5. Diagramas
 
-- **Base de despliegue (mi entrega de línea base para el equipo):** `docs/p3/diagramas/base/vista-despliegue.base.drawio` (limpia, sin colores de escenarios y con las correcciones en gris del P2). Úsenla como base para sus vistas de despliegue.
-- **Mis vistas de S3 (en naranja `#E65100`):** `vista-cc.S3`, `vista-despliegue.S3`, `vista-capas.S3`, `vista-descomposicion.S3`, `secuencia-S3` y `vista-despliegue-perf-pixels` (`.drawio` + `.png`). El detalle de qué cambié en cada una está en `docs/p3/diagramas/CAMBIOS-S3.md`.
+- **Base de despliegue (mi entrega de línea base para el equipo):** `docs/p3/diagramas/base/vista-despliegue.base.drawio` (limpia, sin colores de escenarios y con las correcciones en gris del P2).
+- **Las 4 vistas principales no cambian por S3:** como S3 solo segmenta las redes en Docker Compose y **no añade ni modifica ningún componente, contenedor, conector lógico, capa ni módulo de código**, las 4 vistas principales se dejan tal como están.
+- **Subcarpeta explicativa (`docs/p3/diagramas/explicacion-S3/`):** ahí dejé todos los diagramas con anotaciones explicativas de las zonas de red (`vista-despliegue.S3`, `vista-cc.S3`, `vista-capas.S3`, `vista-descomposicion.S3`), el diagrama de secuencia (`secuencia-S3`) y el de la prueba de rendimiento (`vista-despliegue-perf-pixels`). Ver `docs/p3/diagramas/CAMBIOS-S3.md`.
 
 ## 6. Dónde está cada cosa
 
