@@ -71,7 +71,7 @@ Nombres y categorías de Bass, *Software Architecture in Practice*, §11.2.
 
 | Táctica | Categoría | Cómo se materializa en CollaBoard | Casos |
 |---|---|---|---|
-| **Limit access** | Resist attacks | Un solo punto de acceso: `pixels-ui` deja de publicar `3000:80` y se sirve en `/pixels/` detrás del gateway; el stack publica solo `8088`/`8443` y `127.0.0.1:15672`. Tipo de tráfico restringido por punto de acceso: lista blanca de rutas y `limit_except` por servicio; `/internal/*` bloqueado en cualquier prefijo y codificación | A01–A11, B01–B04, F06 |
+| **Limit access** | Resist attacks | Un solo punto de acceso: `pixels-ui` deja de publicar `3000:80` y se sirve en `/pixels/` detrás del gateway; el stack publica solo `8088`/`8443` (con S3, la consola de RabbitMQ ya no se publica por defecto). Tipo de tráfico restringido por punto de acceso: lista blanca de rutas y `limit_except` por servicio; `/internal/*` bloqueado en cualquier prefijo y codificación | A01–A11, B01–B04, F06 |
 | **Limit exposure** | Resist attacks | Por el único punto de acceso solo se alcanzan las rutas declaradas (lo demás, 404 del gateway); las respuestas no revelan versión ni stack (`server_tokens off`, `proxy_hide_header`); la CSP, `frame-ancestors 'none'` y las demás cabeceras de seguridad acotan el daño de un XSS o de un *clickjacking* | F01–F05 |
 | **Validate input** | Resist attacks | Canonicalización y saneado en el borde: `Host` contra `GATEWAY_ALLOWED_HOSTS` (421); `X-Forwarded-For` y `X-Real-IP` los fija el gateway; se eliminan `X-Service-Token`, `X-User-Id`, `Forwarded` y los *overrides* de método o ruta; `X-Request-ID` con formato estricto; segmentos de ruta `[A-Za-z0-9_-]` (un `%` restante tras decodificar, como en `%2569`, no encaja) | C01–C10, A09, A11 |
 | **Detect service denial** | Detect attacks | El patrón de denegación se reconoce por umbrales por IP calibrados con tráfico legítimo medido: tasa (zona `web`), peticiones simultáneas (`conn`), WebSocket abiertos (`conn_ws`), duración de cabeceras, cuerpo y envío (10 s) y tamaño (cabeceras 8 KiB, cuerpo por ruta). Al detectarlo, el gateway corta (429, 408, 413, 414, 431) antes del servicio | D01–D04, E01–E06 |
@@ -212,8 +212,8 @@ Detalle por vista, con los elementos en verde de S2: [`docs/p3/diagramas/CAMBIOS
   de seguridad, bloqueo de `/internal`, errores JSON y `X-Request-ID`. Todo conector externo pasa por él:
   el conector Browser → `pixels-ui` desaparece y se sustituye por Browser → `gateway` (`HTTPS :443 /pixels/`)
   y `gateway` → `pixels-ui` (`HTTP :80`, red `edge`). Estilo: *Reverse Proxy* («reverse proxy»).
-- **Despliegue.** Solo publican puertos el `gateway` (`8088:80`, `8443:443`) y la consola de RabbitMQ en
-  `127.0.0.1:15672`. Desaparece `3000:80` de `pixels-ui`, que queda solo en la red `edge`. Este cambio
+- **Despliegue.** Solo publica puertos el `gateway` (`8088:80`, `8443:443`); la consola de RabbitMQ
+  (`127.0.0.1:15672`) solo existe con `docker-compose.dev-ports.yml` desde S3. Desaparece `3000:80` de `pixels-ui`, que queda solo en la red `edge`. Este cambio
   corrige el texto del P2 que hablaba de dos puertos de producción («el gateway (8088) y el frontend
   pixels-ui (3000:80)»).
 - **Capas.** En la Communication Tier, dentro de `gateway`, los módulos del proxy. `pixels-ui` deja de

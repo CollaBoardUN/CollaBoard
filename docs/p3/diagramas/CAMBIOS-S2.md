@@ -24,15 +24,15 @@ verde = S2»). Todo lo listado existe en `docker-compose.yml` o en `gateway/`.
 - Añadido: conector `gateway` → `pixels-ui` con la etiqueta `HTTP :80 (red edge)`.
 - Modificado: conector Browser → `gateway` (`HTTPS / WSS :443`, de S1): nota verde «único punto de entrada; todo pasa por la política de borde».
 - Eliminado: conector Browser → `pixels-ui` (`HTTP :3000`). El navegador ya no llega a `pixels-ui` sin pasar por el gateway.
-- Sin cambios: el conector desde la SPA de Pixels (en el navegador) a `gateway` (`HTTPS + WSS :443`, de S1) y los conectores `gateway` → APIs (`HTTP` en la red `internal`).
+- Sin cambios: el conector desde la SPA de Pixels (en el navegador) a `gateway` (`HTTPS + WSS :443`, de S1) y los conectores `gateway` → APIs (`HTTP` en la red `app`, de S3).
 - Estilos/patrones a describir en el texto: **Reverse Proxy** (único punto de entrada, lista blanca, saneado, límites); se apoya en **Secure Channel** (S1) en el mismo borde.
 
 ### Vista de despliegue (`vista-despliegue.S2.drawio`)
 - Modificado: nodo `pixels-ui` (`Nginx / Static`): se elimina el puerto publicado `3000 → 80`; queda solo `80` interno en la red `edge`.
-- Añadido: anotación verde junto a `gateway`: «únicos puertos publicados: `8088 → 80` (solo 301) y `8443 → 443`; más la consola de RabbitMQ en `127.0.0.1:15672`».
+- Añadido: anotación verde junto a `gateway`: «únicos puertos publicados: `8088 → 80` (solo 301) y `8443 → 443`». La consola de RabbitMQ (`127.0.0.1:15672`) ya no se publica por defecto desde S3.
 - Añadido: conector `gateway` → `pixels-ui` `HTTP :80` dentro de `edge`.
 - Eliminado: el acceso del host/LAN a `3000`. Corrige el texto del P2 «Únicamente el gateway (8088) y el frontend pixels-ui (3000:80) exponen interfaces».
-- Sin cambios: redes `edge` e `internal` (son de S3), bases y broker sin puertos publicados, volumen de certificados de S1.
+- Sin cambios: las redes `edge`, `app` y `net-*` (son de S3), bases y broker sin puertos publicados, volumen de certificados de S1.
 
 ### Vista de capas (`vista-capas.S2.drawio`)
 - Añadido: en la **Communication Tier**, dentro de `gateway Nginx`, el bloque verde «reverse proxy» con los módulos de la vista C&C (validación de Host, lista blanca, saneador, limitador, cabeceras de seguridad, bloqueo de rutas internas, errores JSON), junto al bloque azul de S1.
