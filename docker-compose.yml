@@ -81,6 +81,8 @@ services:
       AUTH_DATABASE_URL: postgres://${USER_DB_USER}:${USER_DB_PASSWORD}@user-db:5432/${USER_DB_NAME}?sslmode=disable
       JWT_SECRET: ${JWT_SECRET:?Copia .env.example a .env}
       AUTH_PORT: "8001"
+      JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-15m}
+      JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-168h}
       FRONTEND_URL: ${PUBLIC_ORIGIN:-http://localhost:8088}
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8001/health"]

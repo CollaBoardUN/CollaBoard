@@ -20,7 +20,13 @@ const PUBLIC_PAGES = new Set(["/login", "/register"]);
 
 function hasLiveSession(request: NextRequest): boolean {
   const token = request.cookies.get(SESSION_COOKIE)?.value;
-  return !!token && !!readClaims(token) && secondsUntilExpiry(token) > 0;
+  if (!token) return false;
+  const claims = readClaims(token);
+  if (!claims?.exp) return false;
+  const remaining = secondsUntilExpiry(token);
+  // Menor umbral si el TTL es corto en las pruebas; evita un bucle de redirects.
+  const total = claims.iat ? claims.exp - claims.iat : 900;
+  return remaining > Math.min(60, Math.max(1, Math.floor(total / 3)));
 }
 
 /**
@@ -40,8 +46,8 @@ export function proxy(request: NextRequest) {
   const loggedIn = hasLiveSession(request);
 
   if (!PUBLIC_PAGES.has(pathname) && !loggedIn) {
-    const query = pathname === "/" ? "" : `?next=${encodeURIComponent(pathname + search)}`;
-    return redirectTo(request, `/login${query}`, requestId);
+    const query = `?next=${encodeURIComponent(pathname + search)}`;
+    return redirectTo(request, `/session/refresh${query}`, requestId);
   }
   if (PUBLIC_PAGES.has(pathname) && loggedIn && !request.nextUrl.searchParams.has("reason")) {
     return redirectTo(request, "/", requestId);

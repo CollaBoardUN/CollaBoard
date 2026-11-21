@@ -1,0 +1,8 @@
+run_id,workers,prefetch,delay_ms,events,vus,avg_ms,p95_ms,requests_per_second,http_error_rate,metric_source
+1795272031-22178,1,1,0,500,25,104.93,823.48,236.85,0,salida_terminal_k6
+1795272118-5581,2,1,0,500,25,44.0,89.62,536.36,0,salida_terminal_k6
+1795272358-7192,4,1,0,500,25,61.51,115.22,400.91,0,salida_terminal_k6
+1795272644-16706,2,1,0,500,25,58.8,117.87,420.33,0,salida_terminal_k6
+1795273645-18102,1,1,200,500,25,63.35,210.48,388.42,0,salida_terminal_k6
+1795274453-24176,2,1,200,500,25,62.3,124.06,397.3,0,salida_terminal_k6
+1795276484-13504,4,1,200,500,25,38.53,91.92,634.86,0,salida_terminal_k6

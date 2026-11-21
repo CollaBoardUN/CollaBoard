@@ -31,7 +31,9 @@ internal sealed class NotificationConsumer : BackgroundService
                 using var channel = connection.CreateModel();
                 Broker.DeclareIfLocal(channel);
                 channel.ConfirmSelect();
-                channel.BasicQos(0, 1, false);
+                var prefetch = ushort.TryParse(Environment.GetEnvironmentVariable("WORKER_PREFETCH"), out var parsed) && parsed > 0
+                    ? parsed : (ushort)1;
+                channel.BasicQos(0, prefetch, false);
                 using var done = new ManualResetEventSlim(false);
                 connection.ConnectionShutdown += (_, _) => done.Set();
                 var consumer = new EventingBasicConsumer(channel);
@@ -57,6 +59,9 @@ internal sealed class NotificationConsumer : BackgroundService
             var item = JsonSerializer.Deserialize<NotificationEvent>(delivery.Body.Span);
             var validation = EventValidation.Error(item);
             if (validation != null) throw new InvalidDataException(validation);
+            // Retraso SOLO de laboratorio; mantener WORKER_TEST_DELAY_MS=0 en despliegues normales.
+            if (int.TryParse(Environment.GetEnvironmentVariable("WORKER_TEST_DELAY_MS"), out var delay) && delay > 0 && delay <= 1000)
+                Thread.Sleep(delay);
             _db.DeliverAsync(item!, CancellationToken.None).GetAwaiter().GetResult();
             // ACK solo después del COMMIT. Si el ACK se pierde, la reentrega es inocua.
             channel.BasicAck(delivery.DeliveryTag, multiple: false);

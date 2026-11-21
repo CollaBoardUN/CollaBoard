@@ -15,7 +15,7 @@ import "server-only";
 import { cookies } from "next/headers";
 
 import { readClaims, secondsUntilExpiry } from "@/core/lib/jwt";
-import { SESSION_COOKIE, serverConfig } from "./config";
+import { REFRESH_COOKIE, SESSION_COOKIE, serverConfig } from "./config";
 
 /** Token vigente de la cookie, o `null` si no hay o ya venció (sin llamar a nadie). */
 export async function readSessionToken(): Promise<string | null> {
@@ -37,6 +37,23 @@ export async function writeSessionCookie(token: string): Promise<void> {
     path: "/",
     maxAge,
     priority: "high",
+  });
+}
+
+/** Solo va a /session/*: nunca se envía a /bff/* ni a /api/*. */
+export async function writeRefreshCookie(token: string): Promise<void> {
+  if (!token) throw new Error("Auth no devolvió refresh token");
+  (await cookies()).set({
+    name: REFRESH_COOKIE, value: token, httpOnly: true, sameSite: "strict",
+    secure: serverConfig.cookieSecure, path: "/session", maxAge: 7*24*3600,
+    priority: "high",
+  });
+}
+
+export async function clearRefreshCookie(): Promise<void> {
+  (await cookies()).set({
+    name: REFRESH_COOKIE, value: "", httpOnly: true, sameSite: "strict",
+    secure: serverConfig.cookieSecure, path: "/session", maxAge: 0,
   });
 }
 

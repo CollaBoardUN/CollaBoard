@@ -55,3 +55,4 @@ export const serverConfig = {
 };
 
 export const SESSION_COOKIE = "cb_session";
+export const REFRESH_COOKIE = "cb_refresh";

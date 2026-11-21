@@ -1,0 +1,24 @@
+sequenceDiagram
+    autonumber
+    participant U as Navegador
+    participant W as web-ssr BFF
+    participant G as gateway Nginx
+    participant A as auth-api
+    participant D as user-db
+    participant X as Atacante
+    U->>W: Login
+    W->>G: POST /api/auth/login
+    G->>A: POST /auth/login
+    A->>D: INSERT hash refresh + family_id
+    A-->>G: Access JWT (<=15min) + refresh
+    G-->>W: Tokens
+    W-->>U: Cookies HttpOnly (cb_session, cb_refresh)
+    U->>W: GET privado casi al vencer JWT
+    W->>G: POST /api/auth/refresh
+    G->>A: POST /auth/refresh
+    A->>D: SELECT refresh FOR UPDATE + rotación
+    A-->>W: Nuevos tokens (vía gateway)
+    X->>G: Reutiliza refresh anterior
+    G->>A: Replay /auth/refresh
+    A->>D: Revoca toda la familia
+    A-->>X: HTTP 401 (vía gateway)

@@ -1,0 +1,35 @@
+# Usar junto con docker-compose.yml y el overlay de notificaciones del repositorio.
+# Ajustar nombre de red a net-mq/app tras integrar S3.
+services:
+  notification-api:
+    cpus: 1.0
+    mem_limit: 512m
+  message-worker:
+    cpus: 1.0
+    mem_limit: 512m
+    environment:
+      WORKER_PREFETCH: ${WORKER_PREFETCH:-1}
+      WORKER_TEST_DELAY_MS: ${WORKER_TEST_DELAY_MS:-0}
+  notification-db:
+    cpus: 1.0
+    mem_limit: 512m
+  rabbitmq:
+    cpus: 1.0
+    mem_limit: 1g
+  k6-notifications:
+    image: grafana/k6:latest
+    profiles: [benchmark]
+    entrypoint: ["k6"]
+    environment:
+      NOTIFICATIONS_API: http://notification-api:8080
+      NOTIFICATIONS_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN:?Definir token en .env}
+      RUN_ID: ${RUN_ID:-s4demo}
+      EVENTS: ${EVENTS:-500}
+      VUS: ${VUS:-25}
+    volumes:
+      - ./rendimiento/notificaciones:/bench
+    working_dir: /bench
+    networks: [internal]
+    depends_on:
+      notification-api:
+        condition: service_started

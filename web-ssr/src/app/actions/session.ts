@@ -13,7 +13,7 @@ import { redirect } from "next/navigation";
 import { safeNext } from "@/core/lib/safeNext";
 import { GatewayError, gatewayJson } from "@/server/gateway";
 import { currentRequestId } from "@/server/requestId";
-import { clearSessionCookie, writeSessionCookie } from "@/server/session";
+import { writeRefreshCookie, writeSessionCookie } from "@/server/session";
 
 export interface AuthFormState {
   error: string | null;
@@ -23,6 +23,7 @@ export interface AuthFormState {
 
 interface AuthSession {
   access_token: string;
+  refresh_token: string;
   token_type: string;
 }
 
@@ -49,6 +50,7 @@ export async function loginAction(_previous: AuthFormState, form: FormData): Pro
       body: { email, password },
       requestId: await currentRequestId(),
     });
+    await writeRefreshCookie(session.refresh_token);
     await writeSessionCookie(session.access_token);
   } catch (error) {
     return failure(error, fields, "No fue posible iniciar sesión.");
@@ -76,6 +78,7 @@ export async function registerAction(_previous: AuthFormState, form: FormData): 
       body: { name, email, password, confirm_password: confirm },
       requestId: await currentRequestId(),
     });
+    await writeRefreshCookie(session.refresh_token);
     await writeSessionCookie(session.access_token);
   } catch (error) {
     return failure(error, fields, "No fue posible crear tu cuenta.");
@@ -83,7 +86,7 @@ export async function registerAction(_previous: AuthFormState, form: FormData): 
   redirect(next);
 }
 
+// Mantener esta acción por compatibilidad; el formulario nuevo realiza POST /session/logout.
 export async function logoutAction(): Promise<void> {
-  await clearSessionCookie();
-  redirect("/login");
+  redirect("/session/logout");
 }
