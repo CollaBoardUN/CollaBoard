@@ -1,0 +1,17 @@
+ notificaciones | eventos_distintos | duplicados_evento_destinatario 
+----------------+-------------------+--------------------------------
+           2993 |              2993 |                              0
+(1 row)
+
+              event_id               |   recipient_id    |          created_at           
+-------------------------------------+-------------------+-------------------------------
+ s4sat-w8-r50-1795281948-3209-141-14 | perf-receiver-141 | 2026-11-21 17:33:16.802252+00
+(1 row)
+
+ application_name | client_addr | state  | conexiones 
+------------------+-------------+--------+------------
+                  | 172.21.0.14 | idle   |          1
+                  | 172.21.0.19 | idle   |          1
+ psql             |             | active |          1
+(3 rows)
+

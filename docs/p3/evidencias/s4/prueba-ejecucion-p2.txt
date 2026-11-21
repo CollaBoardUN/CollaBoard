@@ -1,0 +1,12 @@
+Preparando árbol de trabajo (HEAD desacoplado 6af0456)
+HEAD está ahora en 6af0456 Merge pull request #11 from CollaBoardUN/integracion-prototipo-2
+=== Reproducción del problema P2 (commit 6af0456) ===
+=== RUN   TestS4BaselineP2
+    s4_p2_evidence_test.go:69: OK: JWT P2 dura 3600 segundos
+    s4_p2_evidence_test.go:74: OK: P2 no entrega refresh token
+    s4_p2_evidence_test.go:84: OK: JWT válido antes de logout
+    s4_p2_evidence_test.go:90: OK: P2 no implementa logout servidor (HTTP 404)
+    s4_p2_evidence_test.go:96: OK: JWT continúa válido después del intento de logout
+--- PASS: TestS4BaselineP2 (0.12s)
+PASS
+ok  	github.com/CollaBoardUN/CollaBoard/authentication-module/internal/httpapi	0.131s

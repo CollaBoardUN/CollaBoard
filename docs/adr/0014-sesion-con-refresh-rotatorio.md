@@ -31,3 +31,7 @@ En el P2 `authentication-module/internal/config/config.go` fijaba `TokenTTL: tim
 ## Verificación requerida
 
 Comandos: `node security-tests/s4_sesion.mjs` y `cd authentication-module && go test ./...` desde un clon actualizado. Se requiere guardar salida real, estado CI, captura de un refresh reutilizado (401) y comprobar renovación web con TTL de prueba `JWT_ACCESS_TTL=5s`. No se han incorporado resultados de ejecución a esta ADR.
+
+## Resultados de verificación P3 — 21 de noviembre de 2026
+
+Se ejecutó `security-tests/s4_sesion.mjs` con 11/11 comprobaciones correctas, incluyendo TTL temporal de 5 segundos y restauración del TTL habitual. `security-tests/s4_web_refresh.mjs` comprobó ocho flujos de renovación SSR con peticiones y cookies HTTP simuladas; las pruebas unitarias Go finalizaron correctamente. Se reprodujo el comportamiento P2 en un worktree aislado a partir del commit `6af0456`, probando TTL de 3600 s y la ausencia de los endpoints refresh/logout con handlers reales y dependencias simuladas. Evidencias: `docs/p3/evidencias/s4/`. No se realizaron pruebas end-to-end en navegador real; la política de vencimiento de WebSocket abierto permanece como riesgo residual.

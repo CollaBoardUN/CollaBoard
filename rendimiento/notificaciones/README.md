@@ -1,5 +1,7 @@
 # Prueba de rendimiento — Notificaciones asíncronas (Cristian García)
 
+**Resultados finales P3:** [Informe de saturación, rodilla, fallo DLQ y recuperación](INFORME_P3_SATURACION.md).
+
 ## 1. Pregunta / hipótesis
 
 ¿La cola desacopla latencia del productor del costo de procesar notificaciones y cuántos workers aprovecha antes de saturar? Hipótesis previa: con retraso artificial de 200 ms por evento, el p95 del `POST /internal/events` debe mantenerse cercano al de la configuración sin retraso; la profundidad de la cola y el tiempo de drenaje aumentarán. Al sumar workers 1 → 2 → 4 debe mejorar mensajes procesados/s hasta alcanzar el cuello de la outbox o base de datos. **Los valores A y B se fijarán tras la línea base propia antes de la variante**, no se declaran medidos.

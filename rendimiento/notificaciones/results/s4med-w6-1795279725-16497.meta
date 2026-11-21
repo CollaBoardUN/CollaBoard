@@ -1,0 +1,6 @@
+run_id=s4med-w6-1795279725-16497
+workers=6
+prefetch=1
+delay_ms=200
+events=500
+vus=25

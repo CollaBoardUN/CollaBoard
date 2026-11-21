@@ -1,0 +1,6 @@
+?   	github.com/CollaBoardUN/CollaBoard/authentication-module/cmd/server	[no test files]
+?   	github.com/CollaBoardUN/CollaBoard/authentication-module/internal/config	[no test files]
+?   	github.com/CollaBoardUN/CollaBoard/authentication-module/internal/database	[no test files]
+ok  	github.com/CollaBoardUN/CollaBoard/authentication-module/internal/httpapi	(cached)
+ok  	github.com/CollaBoardUN/CollaBoard/authentication-module/internal/security	(cached)
+?   	github.com/CollaBoardUN/CollaBoard/authentication-module/internal/users	[no test files]

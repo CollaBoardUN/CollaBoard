@@ -1,0 +1,5 @@
+ eventos_reactivados 
+---------------------
+                   1
+(1 row)
+

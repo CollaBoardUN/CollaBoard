@@ -1,0 +1,26 @@
+{
+  "inspected_at": "2026-11-21T17:31:41.522586+00:00",
+  "queue": "notifications.tasks.dlq",
+  "event_id": "s4sat-w8-r50-1795281948-3209-141-14",
+  "redelivered": false,
+  "headers": {
+    "x-death": [
+      {
+        "count": 1,
+        "exchange": "notifications.events",
+        "queue": "notifications.tasks",
+        "reason": "delivery_limit",
+        "routing-keys": [
+          "notification.task"
+        ],
+        "time": 1795282017
+      }
+    ],
+    "x-first-death-exchange": "notifications.events",
+    "x-first-death-queue": "notifications.tasks",
+    "x-first-death-reason": "delivery_limit",
+    "x-last-death-exchange": "notifications.events",
+    "x-last-death-queue": "notifications.tasks",
+    "x-last-death-reason": "delivery_limit"
+  }
+}
