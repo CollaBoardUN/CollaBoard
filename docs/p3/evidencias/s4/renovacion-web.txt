@@ -1,0 +1,9 @@
+OK Registro HTTP 201
+OK Se recibieron access y refresh
+OK Access vencido recibe HTTP 401
+OK La página redirige al mecanismo de refresh
+OK El refresh web devuelve HTTP 303
+OK La web establece dos cookies nuevas
+OK Ambos tokens cambiaron
+OK El usuario vuelve a la página autenticada (HTTP 200)
+PRUEBA WEB S4 COMPLETADA

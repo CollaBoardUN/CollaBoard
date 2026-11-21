@@ -1,0 +1,7 @@
+run_id=s4sat-w8-r50-1795281948-3209
+workers=8
+rate=50
+duration_s=60
+prefetch=1
+delay_ms=200
+expected=3000

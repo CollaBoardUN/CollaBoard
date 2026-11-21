@@ -1,0 +1,12 @@
+OK Registro entrega access y refresh opaco
+OK JWT TTL <= 15min, con jti
+OK Access válido permite /auth/me
+OK Refresh válido rota los dos tokens
+OK Replay de refresh anterior se rechaza (401)
+OK Replay revoca toda la familia
+OK Logout devuelve 204
+OK Logout invalida refresh
+OK JWT manipulado no se acepta
+OK JWT alg=none no se acepta
+OK Access expirado en TTL de prueba (5s)
+11/11 verificaciones correctas.

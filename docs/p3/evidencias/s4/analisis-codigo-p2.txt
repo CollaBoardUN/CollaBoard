@@ -1,0 +1,31 @@
+=== P2: commit 6af0456 ===
+
+=== Configuracion original del JWT ===
+12-	DatabaseURL string
+13-	JWTSecret   string
+14-	FrontendURL string
+15:	TokenTTL    time.Duration
+16-}
+17-
+18-func Load() (Config, error) {
+--
+25-		DatabaseURL: dbURL,
+26-		JWTSecret:   os.Getenv("JWT_SECRET"),
+27-		FrontendURL: strings.TrimRight(env("FRONTEND_URL", "http://localhost:8088"), "/"),
+28:		TokenTTL:    time.Hour,
+29-	}
+30-	if c.DatabaseURL == "" {
+31-		return c, errors.New("USER_DATABASE_URL o AUTH_DATABASE_URL es obligatorio")
+
+=== Registro de endpoints de autenticacion ===
+52:	router.Post("/auth/register", a.register)
+53:	router.Post("/auth/login", a.login)
+
+=== Logout original del BFF ===
+83-  redirect(next);
+84-}
+85-
+86:export async function logoutAction(): Promise<void> {
+87-  await clearSessionCookie();
+88-  redirect("/login");
+89-}
