@@ -31,7 +31,7 @@ func main() {
 	defer db.Close()
 	repo := users.PostgresRepository{DB: db}
 	tokens := security.TokenService{Secret: []byte(cfg.JWTSecret), TTL: cfg.TokenTTL}
-	server := &http.Server{Addr: ":" + cfg.Port, Handler: httpapi.New(repo, tokens, cfg.FrontendURL), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
+	server := &http.Server{Addr: ":" + cfg.Port, Handler: httpapi.New(repo, tokens, cfg.FrontendURL, security.RefreshStore{DB: db, TTL: cfg.RefreshTTL}), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
 	stop, shutdown := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer shutdown()
 	go func() {

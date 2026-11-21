@@ -11,6 +11,7 @@ export interface TokenClaims {
   email?: string;
   /** Segundos desde la época Unix. */
   exp?: number;
+  iat?: number;
 }
 
 function decodeSegment(segment: string): string {
@@ -32,6 +33,7 @@ export function readClaims(token: string): TokenClaims | null {
       name: typeof payload.name === "string" ? payload.name : undefined,
       email: typeof payload.email === "string" ? payload.email : undefined,
       exp: typeof payload.exp === "number" ? payload.exp : undefined,
+      iat: typeof payload.iat === "number" ? payload.iat : undefined,
     };
   } catch {
     return null;

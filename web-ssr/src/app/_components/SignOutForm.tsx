@@ -1,9 +1,7 @@
-import { logoutAction } from "@/app/actions/session";
-
-/** Cerrar sesión: POST a una Server Action que borra la cookie en el servidor. */
+/** Logout servidor: POST con cookie cb_refresh solo en /session. */
 export function SignOutForm() {
   return (
-    <form action={logoutAction}>
+    <form action="/session/logout" method="post">
       <button type="submit" className="btn btn-small btn-quiet">
         Cerrar sesión
       </button>

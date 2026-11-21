@@ -50,7 +50,7 @@ export const getSession = cache(async (): Promise<Session | null> => {
 /** Usuario actual o redirección al login conservando a dónde quería ir. */
 export async function requireSession(nextPath: string): Promise<Session> {
   const session = await getSession();
-  if (!session) redirect(`/session/expired?next=${enc(nextPath)}`);
+  if (!session) redirect(`/session/refresh?next=${enc(nextPath)}`);
   return session;
 }
 
@@ -60,7 +60,7 @@ async function authed<T>(path: string, nextPath: string): Promise<T> {
     return await gatewayJson<T>(path, { token, requestId: await currentRequestId() });
   } catch (error) {
     // El token pudo vencer entre la verificación y esta llamada.
-    if (error instanceof GatewayError && error.status === 401) redirect(`/session/expired?next=${enc(nextPath)}`);
+    if (error instanceof GatewayError && error.status === 401) redirect(`/session/refresh?next=${enc(nextPath)}`);
     throw error;
   }
 }

@@ -22,8 +22,10 @@ type TokenService struct {
 
 func (s TokenService) Issue(id, name, email string) (string, error) {
 	now := time.Now().UTC()
+	jti, err := newUUID()
+	if err != nil { return "", err }
 	claims := Claims{Name: name, Email: email, RegisteredClaims: jwt.RegisteredClaims{
-		Subject: id, Issuer: issuer, IssuedAt: jwt.NewNumericDate(now), ExpiresAt: jwt.NewNumericDate(now.Add(s.TTL)),
+		Subject: id, ID: jti, Issuer: issuer, IssuedAt: jwt.NewNumericDate(now), ExpiresAt: jwt.NewNumericDate(now.Add(s.TTL)),
 	}}
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(s.Secret)
 }

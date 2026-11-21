@@ -55,7 +55,7 @@ export function createWebTransport(options: WebTransportOptions = {}): Transport
       };
       if (body !== undefined) headers["Content-Type"] = "application/json";
       try {
-        const response = await doFetch(`${bffBase}${withQuery(safe, path)}`, {
+        let response = await doFetch(`${bffBase}${withQuery(safe, path)}`, {
           method,
           headers,
           body: body === undefined ? undefined : JSON.stringify(body),
@@ -63,6 +63,20 @@ export function createWebTransport(options: WebTransportOptions = {}): Transport
           cache: "no-store",
           signal,
         });
+        // Si expiró el access token, el Route Handler rota el refresh HttpOnly.
+        // Solo se reintenta una vez para evitar bucles y duplicación de escrituras.
+        if (response.status === 401) {
+          const renewed = await doFetch("/session/refresh", {
+            method: "POST", credentials: "same-origin", cache: "no-store", signal,
+          });
+          if (renewed.ok) {
+            response = await doFetch(`${bffBase}${withQuery(safe, path)}`, {
+              method, headers,
+              body: body === undefined ? undefined : JSON.stringify(body),
+              credentials: "same-origin", cache: "no-store", signal,
+            });
+          }
+        }
         return { status: response.status, body: await readBody(response) };
       } catch {
         return { status: 0, body: null };

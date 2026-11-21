@@ -1,0 +1,6 @@
+run_id=1795274453-24176
+workers=2
+prefetch=1
+delay_ms=200
+events=500
+vus=25

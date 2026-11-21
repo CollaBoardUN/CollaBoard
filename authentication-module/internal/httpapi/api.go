@@ -23,6 +23,7 @@ type api struct {
 	repo   users.Repository
 	tokens security.TokenService
 	limits *loginLimiter
+	sessions security.RefreshSessions
 }
 
 type credentials struct {
@@ -37,12 +38,14 @@ type registration struct {
 }
 type session struct {
 	AccessToken string     `json:"access_token"`
+	RefreshToken string   `json:"refresh_token,omitempty"`
 	TokenType   string     `json:"token_type"`
 	User        users.User `json:"user"`
 }
 
-func New(repo users.Repository, tokens security.TokenService, frontendURL string) http.Handler {
+func New(repo users.Repository, tokens security.TokenService, frontendURL string, sessions ...security.RefreshSessions) http.Handler {
 	a := &api{repo: repo, tokens: tokens, limits: newLoginLimiter()}
+	if len(sessions)>0 { a.sessions = sessions[0] }
 	router := chi.NewRouter()
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.RequestID)
@@ -51,6 +54,8 @@ func New(repo users.Repository, tokens security.TokenService, frontendURL string
 	router.Get("/health", func(w http.ResponseWriter, _ *http.Request) { writeJSON(w, 200, map[string]string{"status": "ok"}) })
 	router.Post("/auth/register", a.register)
 	router.Post("/auth/login", a.login)
+	router.Post("/auth/refresh", a.refresh)
+	router.Post("/auth/logout", a.logout)
 	router.Get("/auth/me", a.me)
 	router.NotFound(func(w http.ResponseWriter, _ *http.Request) { fail(w, 404, "Ruta no encontrada") })
 	router.MethodNotAllowed(func(w http.ResponseWriter, _ *http.Request) { fail(w, 405, "Método no permitido") })
@@ -154,7 +159,7 @@ func (a *api) register(w http.ResponseWriter, r *http.Request) {
 		fail(w, 500, "No fue posible completar el registro")
 		return
 	}
-	a.respondSession(w, http.StatusCreated, user)
+	a.respondSession(w, r, http.StatusCreated, user)
 }
 
 func (a *api) login(w http.ResponseWriter, r *http.Request) {
@@ -186,16 +191,53 @@ func (a *api) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a.limits.Reset(ip + "|" + email)
-	a.respondSession(w, 200, user)
+	a.respondSession(w, r, 200, user)
 }
-func (a *api) respondSession(w http.ResponseWriter, status int, u users.User) {
+func (a *api) respondSession(w http.ResponseWriter, r *http.Request, status int, u users.User) {
 	token, err := a.tokens.Issue(u.ID, u.Name, u.Email)
 	if err != nil {
 		fail(w, 500, "No fue posible crear la sesión")
 		return
 	}
+	response := session{AccessToken: token, TokenType: "bearer", User: u}
+	if a.sessions != nil {
+		response.RefreshToken, err = a.sessions.Create(r.Context(), u.ID, r.UserAgent())
+		if err != nil { fail(w, 503, "No fue posible crear la sesión"); return }
+	}
 	w.Header().Set("Cache-Control", "no-store")
-	writeJSON(w, status, session{AccessToken: token, TokenType: "bearer", User: u})
+	writeJSON(w, status, response)
+}
+
+type refreshRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+func (a *api) refresh(w http.ResponseWriter, r *http.Request) {
+	if a.sessions == nil { fail(w, 503, "Sesiones no disponibles"); return }
+	var req refreshRequest
+	if !decode(w,r,&req) { return }
+	userID, fresh, err := a.sessions.Rotate(r.Context(),req.RefreshToken,r.UserAgent())
+	if errors.Is(err,security.ErrInvalidRefresh) { unauthorized(w); return }
+	if err != nil { fail(w,503,"No fue posible renovar la sesión"); return }
+	u, err := a.repo.ByID(r.Context(),userID)
+	if errors.Is(err,sql.ErrNoRows) { unauthorized(w); return }
+	if err != nil { fail(w,503,"No fue posible consultar el usuario"); return }
+	access, err := a.tokens.Issue(u.ID,u.Name,u.Email)
+	if err != nil { fail(w,503,"No fue posible renovar la sesión"); return }
+	w.Header().Set("Cache-Control","no-store")
+	writeJSON(w,200,session{AccessToken:access,RefreshToken:fresh,TokenType:"bearer",User:u})
+}
+
+func (a *api) logout(w http.ResponseWriter, r *http.Request) {
+	if a.sessions == nil { fail(w,503,"Sesiones no disponibles"); return }
+	var req refreshRequest
+	if !decode(w,r,&req) { return }
+	err := a.sessions.Revoke(r.Context(),req.RefreshToken)
+	if err != nil && !errors.Is(err,security.ErrInvalidRefresh) {
+		fail(w,503,"No fue posible cerrar la sesión"); return
+	}
+	w.Header().Set("Cache-Control","no-store")
+	w.WriteHeader(http.StatusNoContent)
 }
 func (a *api) me(w http.ResponseWriter, r *http.Request) {
 	rawToken := ""
