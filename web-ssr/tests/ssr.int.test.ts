@@ -165,21 +165,37 @@ describe("SSR de la web (paquete A)", () => {
     expect(res.headers.get("cache-control")).toMatch(/private/);
   });
 
-  it("sin sesión, o con sesión vencida, redirige al login sin datos privados", async () => {
+  it("sin sesión, o con sesión vencida, intenta renovar y va al login conservando el destino", async () => {
     for (const session of [undefined, EXPIRED]) {
       const res = await page("/boards/b-ana", session);
       expect(res.status).toBe(307);
-      expect(res.headers.get("location")).toMatch(/\/login\?next=%2Fboards%2Fb-ana$/);
+      expect(res.headers.get("location")).toMatch(/\/session\/refresh\?next=%2Fboards%2Fb-ana$/);
       expect(await res.text()).not.toContain("Mapa de servicios");
+      // Sin cookie de refresh no hay renovación: login con `next` intacto.
+      const login = await page("/session/refresh?next=%2Fboards%2Fb-ana", session);
+      expect(login.status).toBe(303);
+      const location = login.headers.get("location") ?? "";
+      expect(location).toMatch(/^\/login\?next=%2Fboards%2Fb-ana/);
+      // «Sesión expirada» solo si había una sesión; nunca a un visitante nuevo.
+      if (session) expect(location).toMatch(/reason=expired/);
+      else expect(location).not.toMatch(/reason=/);
     }
   });
 
-  it("un token que Auth rechaza lleva a limpiar la sesión", async () => {
+  it("un link de invitación sin sesión llega al login con la invitación como destino", async () => {
+    const res = await page("/join/token-de-prueba");
+    expect(res.headers.get("location")).toMatch(/\/session\/refresh\?next=%2Fjoin%2Ftoken-de-prueba$/);
+    const login = await page("/session/refresh?next=%2Fjoin%2Ftoken-de-prueba");
+    expect(login.headers.get("location")).toBe("/login?next=%2Fjoin%2Ftoken-de-prueba");
+  });
+
+  it("un token que Auth rechaza intenta renovar y, sin refresh, limpia la sesión", async () => {
     const forged = token("mallory", "Mallory");
     const res = await page("/", forged);
     expect(res.status).toBe(307);
-    expect(res.headers.get("location")).toMatch(/\/session\/expired/);
-    const cleanup = await page("/session/expired?next=/", forged);
+    expect(res.headers.get("location")).toMatch(/\/session\/refresh\?next=%2F$/);
+    const cleanup = await page("/session/refresh?next=%2F", forged);
+    expect(cleanup.headers.get("location")).toBe("/login?reason=expired");
     expect(cleanup.headers.get("set-cookie")).toMatch(/cb_session=;.*Max-Age=0/i);
   });
 
