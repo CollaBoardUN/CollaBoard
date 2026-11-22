@@ -1,4 +1,4 @@
-import { decideBff, publicOrigin, type BffInput } from "./bffPolicy";
+import { decideBff, isAllowedFormOrigin, publicOrigin, type BffInput } from "./bffPolicy";
 
 const base: BffInput = {
   method: "GET",
@@ -64,5 +64,31 @@ describe("origen público detrás del gateway", () => {
 
   it("sin proxy usa el host de la petición", () => {
     expect(publicOrigin(new Headers({ host: "localhost:3100" }), "http://localhost:3100/x")).toBe("http://localhost:3100");
+  });
+});
+
+describe("Formularios de /session/* (logout, refresh)", () => {
+  // Detrás del gateway con TLS: el navegador envía https://localhost:8443 y Next ve
+  // la petición interna http://web-ssr:3000; el origen propio sale de x-forwarded-*.
+  const headers = new Headers({
+    host: "web-ssr:3000",
+    "x-forwarded-host": "localhost:8443",
+    "x-forwarded-proto": "https",
+  });
+  const self = publicOrigin(headers, "http://web-ssr:3000/session/logout");
+
+  it("acepta el origen público del sitio detrás del gateway con TLS", () => {
+    expect(self).toBe("https://localhost:8443");
+    expect(isAllowedFormOrigin("https://localhost:8443", self, [])).toBe(true);
+  });
+
+  it("acepta la navegación sin Origin y los orígenes permitidos explícitamente", () => {
+    expect(isAllowedFormOrigin(null, self, [])).toBe(true);
+    expect(isAllowedFormOrigin("https://127.0.0.1:8443", self, ["https://127.0.0.1:8443"])).toBe(true);
+  });
+
+  it("rechaza otro sitio y el mismo host en HTTP plano", () => {
+    expect(isAllowedFormOrigin("https://evil.example", self, [])).toBe(false);
+    expect(isAllowedFormOrigin("http://localhost:8443", self, [])).toBe(false);
   });
 });

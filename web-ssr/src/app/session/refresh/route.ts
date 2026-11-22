@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import { safeNext } from "@/core/lib/safeNext";
 import { secondsUntilExpiry } from "@/core/lib/jwt";
+import { isAllowedFormOrigin, publicOrigin } from "@/server/bffPolicy";
 import { REFRESH_COOKIE, SESSION_COOKIE, serverConfig } from "@/server/config";
 import { gatewayJson } from "@/server/gateway";
 
@@ -60,8 +61,8 @@ export async function GET(request: NextRequest) {
   return response;
 }
 export async function POST(request: NextRequest) {
-  const origin = request.headers.get("origin");
-  if (origin && origin !== request.nextUrl.origin) {
+  const self = publicOrigin(request.headers, request.url);
+  if (!isAllowedFormOrigin(request.headers.get("origin"), self, serverConfig.extraAllowedOrigins)) {
     return NextResponse.json({ detail: "Origen no permitido" }, { status: 403 });
   }
   const session = await renew();

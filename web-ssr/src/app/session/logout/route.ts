@@ -1,6 +1,7 @@
 /** Logout de servidor mediante refresh token guardado con Path=/session. */
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAllowedFormOrigin, publicOrigin } from "@/server/bffPolicy";
 import { REFRESH_COOKIE, SESSION_COOKIE, serverConfig } from "@/server/config";
 import { gatewayJson } from "@/server/gateway";
 
@@ -21,8 +22,8 @@ async function doLogout() {
   return response;
 }
 export async function POST(request: NextRequest) {
-  const origin = request.headers.get("origin");
-  if (origin && origin !== request.nextUrl.origin) {
+  const self = publicOrigin(request.headers, request.url);
+  if (!isAllowedFormOrigin(request.headers.get("origin"), self, serverConfig.extraAllowedOrigins)) {
     return NextResponse.json({ detail: "Origen no permitido" }, { status: 403 });
   }
   try { return await doLogout(); }
