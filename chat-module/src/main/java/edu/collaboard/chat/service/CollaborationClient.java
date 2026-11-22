@@ -3,6 +3,7 @@ package edu.collaboard.chat.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -83,7 +84,9 @@ public class CollaborationClient implements BoardPermissions {
                     + (action != null ? "?action=" + encode(action) : "")
                 : baseUrl + boardsPath + "/" + encode(boardId);
         try {
-            JsonNode body = http.exchange(url, HttpMethod.GET, request(token), JsonNode.class).getBody();
+            // URI ya codificada: con un String, RestTemplate lo trata como plantilla y vuelve a
+            // codificar `%` (chat%3Aconnect -> chat%253Aconnect), y el PDP responde 422.
+            JsonNode body = http.exchange(URI.create(url), HttpMethod.GET, request(token), JsonNode.class).getBody();
             if (body == null || !body.isObject()) {
                 throw new CollaborationUnavailableException();
             }
@@ -132,7 +135,7 @@ public class CollaborationClient implements BoardPermissions {
         boolean isInternal = boardsPath.contains("/internal/");
         String suffix = isInternal ? "/recipients" : "/members";
         try {
-            JsonNode body = http.exchange(baseUrl + boardsPath + "/" + encode(boardId) + suffix,
+            JsonNode body = http.exchange(URI.create(baseUrl + boardsPath + "/" + encode(boardId) + suffix),
                     HttpMethod.GET, request(token), JsonNode.class).getBody();
             List<String> ids = new ArrayList<>();
             if (body != null && body.isObject() && body.has("recipient_ids") && body.get("recipient_ids").isArray()) {
