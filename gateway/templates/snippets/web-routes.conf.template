@@ -27,6 +27,15 @@ location = /session/expired {
   proxy_pass http://$web_upstream;
 }
 
+# --- Route handlers de renovación y cierre de sesión (S4: GET y POST)
+location ~ "^/session/(?:refresh|logout)$" {
+  limit_req zone=web burst=${RATE_LIMIT_WEB_BURST} nodelay;
+  limit_except GET POST { deny all; }
+  client_max_body_size 4k;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$web_upstream;
+}
+
 # --- BFF del navegador: /bff/<ruta pública de la API>. Mismos métodos y tope de cuerpo
 #     que el propio BFF (web-ssr/src/server/bffPolicy.ts: BFF_METHODS, 256 KiB).
 location ~ "^/bff/api/[A-Za-z0-9_/-]{1,256}$" {

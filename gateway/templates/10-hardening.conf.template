@@ -53,7 +53,7 @@ map $uri $gw_allow_by_route {
   "~^/api/(?:boards/|canvas/)"                       "GET, HEAD, POST, PATCH, DELETE";
   "~^/api/notifications"                             "GET, HEAD, PATCH, DELETE";
   "~^/bff/"                                          "GET, HEAD, POST, PUT, PATCH, DELETE";
-  "~^/(?:ws/|_next/static/|pixels/|session/|favicon\.svg$|collaboard-logo\.svg$)" "GET, HEAD";
+  "~^/(?:ws/|_next/static/|pixels/|session/expired$|favicon\.svg$|collaboard-logo\.svg$)" "GET, HEAD";
   default                                            "GET, HEAD, POST";
 }
 # El valor de un map se evalúa solo en la rama elegida: la tabla anterior se lee solo en los 405.
