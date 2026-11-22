@@ -1,12 +1,13 @@
-"""Endpoints internos de Colaboración (/internal/*).
+"""Endpoints internos de Colaboración (/internal/*) — Policy Decision Point (PDP).
 
-Consumidos por Pizarra y Chat en la red interna de contenedores. El API Gateway
-bloquea cualquier solicitud externa a `/internal/*`.
+Consumidos por los PEPs de Pizarra y Chat en la red interna de contenedores. El API
+Gateway bloquea cualquier solicitud externa a `/internal/*`.
 
 Rutas:
-  GET   /internal/boards/{board_id}/access      resolver existencia y rol del usuario
+  GET   /internal/boards/{board_id}/access      decisión PDP: rol, permisos y acción permitida
   GET   /internal/boards/{board_id}/recipients  destinatarios autorizados (excluye autor)
   PATCH /internal/boards/{board_id}/metadata    callback de guardado de Pizarra
+  GET   /internal/policy                        tabla completa de política RBAC (rol × acción)
 """
 
 import hmac
@@ -28,17 +29,28 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..auth import CurrentUser, decode_token
-from ..config import AUTH_DEV_MODE, INTERNAL_SERVICE_TOKEN, SESSION_COOKIE_NAME
+from ..config import (
+    AUTH_DEV_MODE,
+    AUTHZ_DECISION_TTL_SECONDS,
+    INTERNAL_SERVICE_TOKEN,
+    SESSION_COOKIE_NAME,
+)
 from ..database import get_db
 from ..models import BoardMember, utcnow
 from ..permissions import get_active_board
+from ..policy import (
+    Action,
+    is_action_allowed,
+    permissions_for_role,
+    policy_as_dict,
+)
 from ..schemas import (
     InternalAccessOut,
     InternalBoardMetadataUpdate,
     InternalRecipientsOut,
 )
 
-router = APIRouter(prefix="/internal", tags=["Interno (entre servicios)"])
+router = APIRouter(prefix="/internal", tags=["Interno (PDP entre servicios)"])
 _bearer = HTTPBearer(auto_error=False)
 
 
@@ -72,14 +84,13 @@ def resolve_internal_caller(
 ) -> CurrentUser:
     """Resuelve la identidad del usuario para consultas internas de autorización.
 
-    Regla de seguridad (plan P2, sección 4):
+    Regla de seguridad:
     - Si viene un JWT (Bearer o cookie), la identidad (`user_id`) sale SIEMPRE del token
       firmado por Auth (Go); el llamador no puede sustituir `user_id` mediante cabeceras
       ni parámetros de consulta.
     - Si hay credencial de servicio (`X-Service-Token`), se valida en tiempo constante.
-    - Compatibilidad con el cliente interno de Pizarra (Estefan): cuando no envía JWT,
-      solo se acepta `X-User-Id`/`?user_id=` si presenta `X-Service-Token` válido o si
-      `AUTH_DEV_MODE=true`.
+    - Cuando no se envía JWT, solo se acepta `X-User-Id`/`?user_id=` si presenta
+      `X-Service-Token` válido o si `AUTH_DEV_MODE=true`.
     """
     has_valid_service_token = _check_service_token(x_service_token)
     if x_service_token is not None and not has_valid_service_token:
@@ -105,13 +116,44 @@ def resolve_internal_caller(
     )
 
 
+@router.get("/policy")
+def get_rbac_policy(
+    _: None = Depends(require_service_token),
+) -> dict[str, object]:
+    """Exporta la tabla declarativa de política RBAC del PDP."""
+    return {
+        "pdp": "collaboration-api",
+        "cache_ttl_seconds": AUTHZ_DECISION_TTL_SECONDS,
+        "actions": policy_as_dict(),
+    }
+
+
 @router.get("/boards/{board_id}/access", response_model=InternalAccessOut)
 def check_board_access(
     board_id: str,
+    action: str | None = Query(
+        default=None,
+        description="Acción RBAC a evaluar en el PDP (p. ej. canvas:edit, chat:send)",
+    ),
     user: CurrentUser = Depends(resolve_internal_caller),
     db: Session = Depends(get_db),
 ) -> InternalAccessOut:
-    """Devuelve el rol del usuario sobre el tablero o 404 si no existe/fue retirado/inactivo."""
+    """Policy Decision Point (PDP): evalúa membresía, rol y acción sobre un tablero.
+
+    - 404 si el tablero no existe, está inactivo o el usuario no es miembro (no filtra existencia).
+    - 422 si se solicita una `action` que no existe en la tabla de política `POLICY_MATRIX`.
+    - 200 con `role`, `permissions`, `action`, `allowed` (True/False según `POLICY_MATRIX`)
+      y `cache_ttl_seconds`.
+    """
+    if action is not None:
+        try:
+            Action(action)
+        except ValueError:
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                f"Acción RBAC desconocida: '{action}'",
+            ) from None
+
     board = get_active_board(db, board_id)
     if board is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Tablero no encontrado")
@@ -125,6 +167,9 @@ def check_board_access(
     if role is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Tablero no encontrado")
 
+    granted = permissions_for_role(role)
+    allowed = True if action is None else is_action_allowed(role, action)
+
     return InternalAccessOut(
         board_id=board.id,
         board_name=board.name,
@@ -133,6 +178,10 @@ def check_board_access(
         role=role,
         exists=True,
         board_status=board.status,
+        action=action,
+        allowed=allowed,
+        permissions=granted,
+        cache_ttl_seconds=AUTHZ_DECISION_TTL_SECONDS,
     )
 
 

@@ -26,7 +26,8 @@ from ..config import FRONTEND_URL, OUTBOX_ENABLED
 from ..database import get_db
 from ..models import ROLE_RANK, BoardMember, BoardStatus, Invite, Role
 from ..outbox import dispatch_pending_once, enqueue_invite_accepted
-from ..permissions import BoardAccess, get_role, require_role
+from ..permissions import BoardAccess, get_role, require_action
+from ..policy import Action
 from ..schemas import InviteCreate, InviteOut, InvitePreview, JoinResult
 
 router = APIRouter(tags=["Invitaciones"])
@@ -76,7 +77,7 @@ def _get_active_invite(db: Session, token: str) -> Invite:
 )
 def create_invite(
     data: InviteCreate,
-    access: BoardAccess = Depends(require_role(Role.owner)),
+    access: BoardAccess = Depends(require_action(Action.invite_create)),
     db: Session = Depends(get_db),
 ):
     expires_at = (
@@ -97,7 +98,7 @@ def create_invite(
 
 @router.get("/boards/{board_id}/invites", response_model=list[InviteOut])
 def list_invites(
-    access: BoardAccess = Depends(require_role(Role.owner)),
+    access: BoardAccess = Depends(require_action(Action.invite_list)),
     db: Session = Depends(get_db),
 ):
     invites = db.scalars(
@@ -109,7 +110,7 @@ def list_invites(
 @router.delete("/boards/{board_id}/invites/{invite_id}", status_code=status.HTTP_204_NO_CONTENT)
 def revoke_invite(
     invite_id: str,
-    access: BoardAccess = Depends(require_role(Role.owner)),
+    access: BoardAccess = Depends(require_action(Action.invite_revoke)),
     db: Session = Depends(get_db),
 ):
     invite = db.get(Invite, invite_id)

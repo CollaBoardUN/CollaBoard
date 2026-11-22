@@ -14,6 +14,7 @@ os.environ["DATABASE_URL"] = os.getenv("TEST_DATABASE_URL", f"sqlite:///{_db_fil
 os.environ["JWT_SECRET"] = "secreto-de-pruebas-con-longitud-suficiente-32b"
 os.environ["AUTH_DEV_MODE"] = "false"
 os.environ["FRONTEND_URL"] = "http://front.test"
+os.environ["LEGACY_BOARDS_ROUTES_ENABLED"] = "true"
 
 import jwt  # noqa: E402
 import pytest  # noqa: E402

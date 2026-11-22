@@ -63,3 +63,6 @@ OUTBOX_ENABLED = os.getenv("OUTBOX_ENABLED", "true").lower() == "true"
 OUTBOX_POLL_SECONDS = float(os.getenv("OUTBOX_POLL_SECONDS", "2.0"))
 OUTBOX_HTTP_TIMEOUT_SECONDS = float(os.getenv("OUTBOX_HTTP_TIMEOUT_SECONDS", "4.0"))
 OUTBOX_MAX_ATTEMPTS = int(os.getenv("OUTBOX_MAX_ATTEMPTS", "10"))
+
+# TTL recomendado por el PDP para la caché de decisiones de autorización en los PEPs (S5).
+AUTHZ_DECISION_TTL_SECONDS = int(os.getenv("AUTHZ_DECISION_TTL_SECONDS", "3"))

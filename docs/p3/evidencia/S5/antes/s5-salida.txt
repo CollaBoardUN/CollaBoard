@@ -1,0 +1,16 @@
+S5 · RBAC Authorizer (PDP + PEPs + Cache-Aside) contra CollaBoard-main
+
+FAIL PDP con tabla declarativa única POLICY_MATRIX (colaboracion-module/app/policy.py) — ausente (solo ROLE_RANK numérico)
+FAIL endpoint interno GET /internal/policy exporta catálogo de acciones RBAC — HTTP 404
+FAIL PDP evalúa ?action=canvas:edit para viewer y responde allowed=false + permissions — body={"board_id": "d1c00303-2392-4e99-9685-c93aa3397779", "board_name": "Tablero S5 RBAC", "owner_id": "u-owner", "user_id": "u-viewer", "role": "viewer", "exists": true, "board_status": "active"}
+FAIL pizarra-api no expone CRUD duplicado de tableros (GET /boards -> 404) — HTTP 500
+FAIL PEP de pizarra-api falla cerrado (sin fallback que conceda rol owner) — contiene fallback return True, 'owner'
+FAIL PEP de pizarra-api implementa caché de decisiones (Cache-Aside con TTL) — sin caché (1 HTTP por operación)
+FAIL PEP de chat-api usa /internal/boards con X-Service-Token, caché y recheck <= 5 s — internal_pdp=False, cache=False, recheck_le_5s=False
+OK   matriz RBAC completa (6 identidades × 24 operaciones = 144 celdas) — 144/144 celdas coinciden con la política
+OK   degradación en vivo editor -> viewer bloquea ops en WS abierto (<= 5 s) — bloqueado=True, tiempo=0.337 s
+OK   revocación en vivo (expulsión de miembro) cierra WS abierto con 4403 (<= 5 s) — cierre_4403=True, tiempo=0.562 s
+FAIL caché de decisiones en PEP reduce llamadas repetidas al PDP dentro del TTL — sin caché: 20/20 llamadas al PDP; con caché (TTL 3 s): 20/20 (−0.0 %)
+
+Evidencia y tabla matricial guardadas en C:\Users\david\Documents\UN\2026-02\ArquiSoft\Proyecto\Entrega 3\CollaBoard-p3-s5\docs\p3\evidencia\S5\antes
+8 comprobaciones fallaron

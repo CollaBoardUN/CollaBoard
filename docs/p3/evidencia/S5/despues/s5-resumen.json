@@ -1,0 +1,22 @@
+{
+  "repo": "CollaBoard-p3-s5",
+  "static_checks": {
+    "has_policy_module": true,
+    "chat_uses_internal_pdp": true,
+    "chat_has_cache": true,
+    "chat_recheck_le_5s": true,
+    "chat_has_internal_purge": true,
+    "pizarra_fail_closed": true,
+    "pizarra_has_cache": true
+  },
+  "matrix_passed": 144,
+  "matrix_total": 144,
+  "degrade_ws_latency_seconds": 0.669,
+  "expel_ws_latency_seconds": 0.559,
+  "pdp_calls_per_20_requests": {
+    "without_cache": 20,
+    "with_cache_ttl_3s": 1,
+    "reduction_percent": 95.0
+  },
+  "failures": []
+}

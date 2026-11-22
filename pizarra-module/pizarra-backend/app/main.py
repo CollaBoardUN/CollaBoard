@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .config import AUTH_DEV_MODE, FRONTEND_URL
+from .config import AUTH_DEV_MODE, FRONTEND_URL, LEGACY_BOARDS_ROUTES_ENABLED
 from .internal_client import close_http_client
 from .persistence.autosave import autosaver
 from .persistence.store import load_state_async
@@ -48,8 +48,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(boards.router)
-app.include_router(invites.router)
+if LEGACY_BOARDS_ROUTES_ENABLED:
+    app.include_router(boards.router)
+    app.include_router(invites.router)
 app.include_router(versions.router)
 app.include_router(ws.router)
 app.include_router(internal_canvas.router)

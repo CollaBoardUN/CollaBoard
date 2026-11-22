@@ -143,6 +143,9 @@ services:
       AUTH_DEV_MODE: "false"
       COLABORACION_SERVICE_URL: http://collaboration-api:8000
       INTERNAL_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN}
+      AUTHZ_CACHE_TTL_SECONDS: "${AUTHZ_CACHE_TTL_SECONDS:-2.0}"
+      ROLE_RECHECK_SECONDS: "${ROLE_RECHECK_SECONDS:-2.0}"
+      LEGACY_BOARDS_ROUTES_ENABLED: "false"
     healthcheck:
       <<: *python-health
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
@@ -161,7 +164,10 @@ services:
       JWT_ISSUER: collaboard-auth
       MONGODB_URI: mongodb://${CHAT_MONGO_USER}:${CHAT_MONGO_PASSWORD}@pixels-nosqldb:27017/chat?authSource=chat
       COLLABORATION_URL: http://collaboration-api:8000
-      COLLABORATION_BOARDS_PATH: /boards
+      COLLABORATION_BOARDS_PATH: /internal/boards
+      INTERNAL_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN:?Copia .env.example a .env}
+      AUTHZ_CACHE_TTL_MS: "${AUTHZ_CACHE_TTL_MS:-2000}"
+      CHAT_RECHECK_MS: "${CHAT_RECHECK_MS:-3000}"
       NOTIFICATIONS_URL: http://notification-api:8080
       NOTIFICATIONS_POLL_MS: "500"
       NOTIFICATIONS_SERVICE_TOKEN: ${NOTIFICATIONS_SERVICE_TOKEN:?Copia .env.example a .env}

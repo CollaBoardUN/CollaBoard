@@ -50,6 +50,7 @@ node scripts/ws_check.mjs https://localhost:8443                 # WebSocket (ws
 python security-tests/s1_tls.py                                  # S1: redirección, TLS, HSTS, cookie Secure, WSS, captura
 python security-tests/s3_segmentacion.py                         # S3: matriz de conectividad por zonas y bloqueo de salida a Internet
 node security-tests/s2_proxy.mjs --target https://localhost:8443 --ca gateway/certs/ca.crt   # S2: catálogo de ataques al borde
+python security-tests/s5_rbac.py --mode inprocess                # S5 · RBAC Authorizer (11 checks + matriz 144 celdas)
 docker compose --profile tools run --rm rabbit-smoke             # RabbitMQ: publicar/consumir, permisos, DLQ
 NODE_EXTRA_CA_CERTS=gateway/tests/certs/ca.crt node --test gateway/tests/contract.test.mjs   # contrato del gateway (ver gateway/tests/compose.test.yml)
 ```

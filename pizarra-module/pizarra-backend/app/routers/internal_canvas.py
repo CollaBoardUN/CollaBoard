@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 from ..database import get_db
+from ..internal_client import invalidate_access_cache
 from ..persistence.autosave import autosaver
 from ..persistence.store import purge_board
 
@@ -27,7 +28,8 @@ def delete_canvas_board(board_id: str, db: Session = Depends(get_db)) -> Respons
     - Registra la purga en purged_boards para persistir el bloqueo.
     - Retorna 204 No Content.
     """
-    # 1. Bloqueo en memoria y cancelación de tareas pendientes de autosave
+    # 1. Invalidar caché del PEP y cancelar tareas pendientes de autosave
+    invalidate_access_cache(board_id)
     autosaver.mark_purged(board_id)
 
     # 2. Purga y registro persistente en CanvasDB
