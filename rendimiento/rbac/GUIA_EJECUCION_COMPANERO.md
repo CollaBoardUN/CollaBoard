@@ -1,6 +1,6 @@
 # Guía paso a paso para ejecutar la prueba de rendimiento S5 (Costo del Authorizer y efecto de la caché del PEP)
 
-> **Para el compañero encargado de ejecutar la prueba de rendimiento de S5:**
+> **Para reproducir la prueba de rendimiento de S5:**
 > Toda la infraestructura del escenario **S5 — Role-Based Access Control (RBAC) + Authorizer** ya está implementada y parametrizada por variables de entorno (`AUTHZ_CACHE_TTL_SECONDS` en `pizarra-api`, `CHAT_PERMISSION_CACHE_TTL_MS` en `chat-api`, `AUTHZ_DECISION_TTL_SECONDS` en `collaboration-api`).
 > Además, ya dejamos listos en esta carpeta (`rendimiento/rbac/`) el archivo `compose.override.yml`, el script de carga `k6/rbac_cache.js`, el orquestador `run.sh` y la plantilla completa de 12 secciones en `README.md`.
 

@@ -225,4 +225,8 @@ Detalle por vista, con los elementos en verde de S2: [`docs/p3/diagramas/CAMBIOS
 
 ### 8. Rendimiento
 
-Pendiente: se medirá al integrar todos los escenarios de seguridad (indicación del profesor).
+S2 no tiene una prueba de rendimiento propia: el análisis de rendimiento del sistema se presenta en la sección
+*Performance and Scalability* del documento (costo de TLS en el gateway, fan-out de WebSocket en Pixels y
+notificaciones asíncronas con RabbitMQ, entre otras). Para que la política de borde no distorsione esas
+mediciones, los límites por IP de S2 se elevan por variable de entorno durante las pruebas (p. ej.
+`LIMIT_CONN_PER_IP=100000`, `RATE_LIMIT_WEB=100000r/s`; ver [ADR 0012](../../adr/0012-reverse-proxy-endurecido.md)).

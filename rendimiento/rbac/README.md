@@ -77,7 +77,7 @@ docker compose -p collaboard \
 sh rendimiento/rbac/run.sh collaboard
 ```
 
-## 9. Resultados (verificación funcional de caché y modelo analítico + guía de llenado k6)
+## 9. Resultados (verificación funcional de caché y modelo analítico)
 
 ### 9.1 Medición determinista del Hit-Ratio y ventana de revocación (`security-tests/s5_rbac.py`)
 
@@ -108,16 +108,16 @@ Planning Time: 0.085 ms
 Execution Time: 0.042 ms
 ```
 
-### 9.3 Tabla para consolidar las corridas de `k6` (25 VUs, 3 repeticiones)
+### 9.3 Valores esperados por el modelo analítico (§10)
 
-*(El compañero encargado de correr el barrido con `sh rendimiento/rbac/run.sh collaboard` completa los valores de su máquina a partir de `rendimiento/rbac/resultados/ttl*.json` y `stats-rbac.csv`; se incluyen las cotas esperadas por el modelo analítico):*
+*(Cotas derivadas del modelo analítico de la §10 a partir del hit-ratio medido en la §9.1; no son resultados de una corrida de `k6`. El banco `sh rendimiento/rbac/run.sh collaboard` permite reproducirlas en otra máquina.)*
 
-| Configuración (`TTL`) | Hit-ratio en PEP ($h$) | Llamadas al PDP / s ($X_{\text{PDP}}$) | $p_{50}$ (ms) | $p_{95}$ (ms) | Throughput $X$ (req/s) | CPU `collaboration-api` ($U_{\text{PDP}}$) | Ventana máx. revocación |
-|---|---|---|---|---|---|---|---|
-| **A · `TTL = 0 s` (sin caché)** | `0 %` | $1,00 \cdot X$ | *medir con `run.sh`* | *medir con `run.sh`* | *medir con `run.sh`* | Alta ($\approx 75\text{–}95\%$, cuello en PDP) | `0 s` |
-| **B · `TTL = 1 s`** | $\ge 90\%$ | $\le 0,10 \cdot X$ | *medir con `run.sh`* | $< 200\text{ ms}$ | Sube $\approx 1,8\text{–}2,5\times$ | Baja ($< 15\%$) | `1 s` (cumple $\le 5\text{ s}$) |
-| **C · `TTL = 2–5 s` (elegida)** | **$\ge 95\%$** | **$\le 0,05 \cdot X$** | *medir con `run.sh`* | **$< 150\text{ ms}$** | **Máximo estable** | **Mínima ($< 8\%$)** | **`2–5 s` (cumple $\le 5\text{ s}$)** |
-| **D · `TTL = 30 s`** | $\ge 99\%$ | $\le 0,01 \cdot X$ | *medir con `run.sh`* | $< 150\text{ ms}$ (ganancia marginal $< 3\%$) | Igual a C | Mínima ($< 3\%$) | `30 s` (**NO cumple** $\le 5\text{ s}$) |
+| Configuración (`TTL`) | Hit-ratio en PEP ($h$) | Llamadas al PDP / s ($X_{\text{PDP}}$) | $p_{95}$ (ms) | Throughput $X$ (req/s) | CPU `collaboration-api` ($U_{\text{PDP}}$) | Ventana máx. revocación |
+|---|---|---|---|---|---|---|
+| **A · `TTL = 0 s` (sin caché)** | `0 %` | $1,00 \cdot X$ | Línea base (mayor: un salto al PDP en cada operación) | Línea base (techo del PDP $X_{\max} \approx 450\text{–}500$ req/s) | Alta ($\approx 75\text{–}95\%$, cuello en PDP) | `0 s` |
+| **B · `TTL = 1 s`** | $\ge 90\%$ | $\le 0,10 \cdot X$ | $< 200\text{ ms}$ | Sube $\approx 1,8\text{–}2,5\times$ | Baja ($< 15\%$) | `1 s` (cumple $\le 5\text{ s}$) |
+| **C · `TTL = 2–5 s` (elegida)** | **$\ge 95\%$** | **$\le 0,05 \cdot X$** | **$< 150\text{ ms}$** | **Máximo estable** | **Mínima ($< 8\%$)** | **`2–5 s` (cumple $\le 5\text{ s}$)** |
+| **D · `TTL = 30 s`** | $\ge 99\%$ | $\le 0,01 \cdot X$ | $< 150\text{ ms}$ (ganancia marginal $< 3\%$) | Igual a C | Mínima ($< 3\%$) | `30 s` (**NO cumple** $\le 5\text{ s}$) |
 
 ## 10. Análisis (Ley de Little, Ley de Utilización y Trade-off Seguridad vs. Rendimiento)
 

@@ -8,30 +8,21 @@ Plataforma colaborativa modular en tiempo real donde varias personas crean, dibu
 
 Todo el servidor corre en contenedores detrás de **un único gateway Nginx** (`https://localhost:8443`;
 `http://localhost:8088` solo redirige a HTTPS, ver [HTTPS](#-https-p3--s1-secure-channel)).
-Vista de despliegue y decisiones: [docs/p2-despliegue.md](docs/p2-despliegue.md) · [docs/adr/](docs/adr/) ·
-pendientes con el equipo: [docs/p2-pendientes-coordinacion.md](docs/p2-pendientes-coordinacion.md).
+Vista de despliegue y decisiones: [docs/p2-despliegue.md](docs/p2-despliegue.md) · [docs/adr/](docs/adr/).
 
 **Prerrequisitos:** Docker Desktop / Engine con Compose v2.24+ (el stack completo usa ≈1 GiB de RAM en reposo; dale al menos 4 GiB a Docker para compilar),
 Node.js 20+ (solo para las pruebas de WebSocket) y Python 3.12 (solo para el E2E web).
 
 ```bash
 git clone https://github.com/CollaBoardUN/CollaBoard.git && cd CollaBoard
-git checkout gateway/nginx-rabbitmq            # rama del paquete F (hasta que se integre a main)
 
 cp .env.example .env                           # valores SOLO de desarrollo; cámbialos fuera de tu máquina
 docker compose up -d --build --wait            # construye e inicia los 15 servicios, espera a que estén sanos
 docker compose ps                              # todos deben aparecer "healthy"
 ```
 
-`.env.example` activa `docker-compose.stubs.yml` (stubs de NotificationAPI y MessageWorker, que
-aún no existen en la rama). Si Pizarra todavía consulta permisos por SQL en la base de
-Colaboración (trabajo pendiente de David/Estefan), para el recorrido de dibujo completo añade
-los overrides de pruebas:
-
-```bash
-export COMPOSE_FILE=docker-compose.yml:docker-compose.stubs.yml:docker-compose.compat-shared-db.yml:docker-compose.notifications-mock.yml
-docker compose up -d --build --wait
-```
+`.env.example` activa los servicios reales de notificaciones (NotificationAPI y MessageWorker en C#,
+`notifications-module/compose.gateway.yml`).
 
 | Qué | Dónde |
 |---|---|

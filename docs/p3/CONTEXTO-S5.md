@@ -25,7 +25,7 @@ Responsable: David Eduardo Calderón · Rama: `p3/s5-rbac` · Detalle técnico c
 | Unit tests de política RBAC y PDP (`collaboration-api`) | `cd colaboracion-module && pytest -q` |
 | Unit tests de PEP + Cache-Aside (`pizarra-api`) | `cd pizarra-module/pizarra-backend && pytest -q` |
 | Unit tests del contrato de chat (`chat-api`) | `cd chat-module && mvn test` |
-| Banco de rendimiento RBAC (`k6`, para el compañero encargado de correrlo) | Ver [`rendimiento/rbac/GUIA_EJECUCION_COMPANERO.md`](../../rendimiento/rbac/GUIA_EJECUCION_COMPANERO.md) y `sh rendimiento/rbac/run.sh collaboard` |
+| Banco de rendimiento RBAC (`k6`, reproducible) | Ver [`rendimiento/rbac/GUIA_EJECUCION_COMPANERO.md`](../../rendimiento/rbac/GUIA_EJECUCION_COMPANERO.md) y `sh rendimiento/rbac/run.sh collaboard` |
 
 ## 4. Por escenario: lo que toca a cada quien
 
