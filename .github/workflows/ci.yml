@@ -14,6 +14,9 @@ jobs:
   backend:
     name: Backend (lint, tests, migraciones)
     runs-on: ubuntu-24.04
+    # Una prueba contra PostgreSQL se cuelga de forma intermitente; sin límite, el job
+    # (y el del sistema completo, que depende de él) quedaría bloqueado hasta 6 h.
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: pizarra-module/pizarra-backend
