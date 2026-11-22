@@ -1,0 +1,31 @@
+#!/bin/sh
+# P3 · S2 Reverse Proxy: lista blanca de Host del gateway.
+#
+# Convierte GATEWAY_ALLOWED_HOSTS (nombres o IPv4 separados por coma o espacio,
+# p. ej. "localhost,127.0.0.1,gateway") en la expresión regular EXACTA que usa el
+# map de $host en templates/10-hardening.conf.template:
+#   ^(localhost|127\.0\.0\.1|gateway)$
+# La imagen oficial de Nginx «sourcea» los *.envsh de /docker-entrypoint.d/ antes
+# de renderizar las plantillas (20-envsubst-on-templates.sh), así que la variable
+# exportada aquí llega a envsubst. Un nombre con caracteres fuera de
+# [A-Za-z0-9.-] detiene el arranque del contenedor: mejor fallar que abrir el filtro.
+
+s2_hosts=$(printf '%s' "${GATEWAY_ALLOWED_HOSTS:-localhost,127.0.0.1,gateway}" | tr ',' ' ' | tr 'A-Z' 'a-z')
+s2_re=""
+for s2_h in $s2_hosts; do
+  case "$s2_h" in
+    *[!a-z0-9.-]* | .* | *..*)
+      echo "allowed-hosts: GATEWAY_ALLOWED_HOSTS contiene un nombre no válido: '$s2_h'" >&2
+      exit 1
+      ;;
+  esac
+  s2_esc=$(printf '%s' "$s2_h" | sed 's/\./\\./g')
+  s2_re="${s2_re:+$s2_re|}$s2_esc"
+done
+if [ -z "$s2_re" ]; then
+  echo "allowed-hosts: GATEWAY_ALLOWED_HOSTS está vacío" >&2
+  exit 1
+fi
+export GATEWAY_ALLOWED_HOSTS_RE="^(${s2_re})\$"
+echo "allowed-hosts: Host permitidos ${GATEWAY_ALLOWED_HOSTS_RE}"
+unset s2_hosts s2_re s2_h s2_esc

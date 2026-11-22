@@ -1,0 +1,45 @@
+S3 · Network Segmentation (proyecto Compose: collaboard, 16 contenedores)
+
+Descargando imagen sonda nicolaka/netshoot...
+OK   gateway: pares permitidos alcanzan su destino — OK (7/7)
+FAIL gateway: movimiento lateral prohibido bloqueado — CONECTA a destinos prohibidos: user-db:5432, board-db:5432, canvas-db:5432, notification-db:5432, pixels-nosqldb:27017, rabbitmq:5672
+OK   web-ssr: pares permitidos alcanzan su destino — OK (1/1)
+FAIL web-ssr: movimiento lateral prohibido bloqueado — CONECTA a destinos prohibidos: user-db:5432, board-db:5432, canvas-db:5432, notification-db:5432, pixels-nosqldb:27017, rabbitmq:5672
+FAIL web-ssr: sin salida a Internet (1.1.1.1:443) — EXPUESTO (sale a Internet)
+OK   auth-api: pares permitidos alcanzan su destino — OK (1/1)
+FAIL auth-api: movimiento lateral prohibido bloqueado — CONECTA a destinos prohibidos: board-db:5432, canvas-db:5432, notification-db:5432, pixels-nosqldb:27017, rabbitmq:5672
+FAIL auth-api: sin salida a Internet (1.1.1.1:443) — EXPUESTO (sale a Internet)
+OK   collaboration-api: pares permitidos alcanzan su destino — OK (3/3)
+FAIL collaboration-api: movimiento lateral prohibido bloqueado — CONECTA a destinos prohibidos: user-db:5432, canvas-db:5432, notification-db:5432, pixels-nosqldb:27017, rabbitmq:5672
+FAIL collaboration-api: sin salida a Internet (1.1.1.1:443) — EXPUESTO (sale a Internet)
+OK   pizarra-api: pares permitidos alcanzan su destino — OK (2/2)
+FAIL pizarra-api: movimiento lateral prohibido bloqueado — CONECTA a destinos prohibidos: user-db:5432, board-db:5432, notification-db:5432, pixels-nosqldb:27017, rabbitmq:5672
+FAIL pizarra-api: sin salida a Internet (1.1.1.1:443) — EXPUESTO (sale a Internet)
+OK   chat-api: pares permitidos alcanzan su destino — OK (3/3)
+FAIL chat-api: movimiento lateral prohibido bloqueado — CONECTA a destinos prohibidos: user-db:5432, board-db:5432, canvas-db:5432, notification-db:5432, rabbitmq:5672
+FAIL chat-api: sin salida a Internet (1.1.1.1:443) — EXPUESTO (sale a Internet)
+OK   pixels-api: pares permitidos alcanzan su destino — OK (1/1)
+FAIL pixels-api: movimiento lateral prohibido bloqueado — CONECTA a destinos prohibidos: user-db:5432, board-db:5432, canvas-db:5432, notification-db:5432, rabbitmq:5672
+FAIL pixels-api: sin salida a Internet (1.1.1.1:443) — EXPUESTO (sale a Internet)
+OK   notification-api: pares permitidos alcanzan su destino — OK (2/2)
+FAIL notification-api: movimiento lateral prohibido bloqueado — CONECTA a destinos prohibidos: user-db:5432, board-db:5432, canvas-db:5432, pixels-nosqldb:27017
+FAIL notification-api: sin salida a Internet (1.1.1.1:443) — EXPUESTO (sale a Internet)
+OK   message-worker: pares permitidos alcanzan su destino — OK (2/2)
+FAIL message-worker: movimiento lateral prohibido bloqueado — CONECTA a destinos prohibidos: gateway:80, gateway:8081, web-ssr:3000, auth-api:8001, collaboration-api:8000, pizarra-api:8000, chat-api:8090, pixels-api:8000, notification-api:8080, user-db:5432, board-db:5432, canvas-db:5432, pixels-nosqldb:27017
+FAIL message-worker: sin salida a Internet (1.1.1.1:443) — EXPUESTO (sale a Internet)
+FAIL user-db: zona de datos sin salida a Internet — EXPUESTO (sale a Internet)
+FAIL board-db: zona de datos sin salida a Internet — EXPUESTO (sale a Internet)
+FAIL canvas-db: zona de datos sin salida a Internet — EXPUESTO (sale a Internet)
+FAIL notification-db: zona de datos sin salida a Internet — EXPUESTO (sale a Internet)
+FAIL pixels-nosqldb: zona de datos sin salida a Internet — EXPUESTO (sale a Internet)
+FAIL rabbitmq: zona de datos sin salida a Internet — EXPUESTO (sale a Internet)
+OK   topología red 'edge' — internal=False, miembros=2
+FAIL red Docker 'app' existe — no encontrada
+FAIL red Docker 'net-user' existe — no encontrada
+FAIL red Docker 'net-board' existe — no encontrada
+FAIL red Docker 'net-canvas' existe — no encontrada
+FAIL red Docker 'net-notif' existe — no encontrada
+FAIL red Docker 'net-mongo' existe — no encontrada
+FAIL red Docker 'net-mq' existe — no encontrada
+
+Resumen S3 — Permitidos: 22/22 | Bloqueados datos/broker: 0/45 | Bloqueados worker->app: 0/9 | Sin egreso a Internet: 0/14

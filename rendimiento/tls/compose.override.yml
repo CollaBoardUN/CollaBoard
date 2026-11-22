@@ -1,0 +1,28 @@
+# Banco de la prueba "costo de TLS" (P3 · S1). Se aplica IGUAL al P2 (baseline,
+# HTTP) y al P3 (HTTPS) para que la única diferencia sea el canal:
+#   docker compose -f docker-compose.yml -f notifications-module/compose.gateway.yml \
+#     -f rendimiento/tls/compose.override.yml up -d --build --wait
+services:
+  gateway:
+    cpus: "1.0"
+    mem_limit: 256m
+    environment:
+      # Se mide el canal, no el limitador de tasa (toda la carga sale de una IP).
+      RATE_LIMIT_API: 100000r/s
+      RATE_LIMIT_API_BURST: "100000"
+      RATE_LIMIT_AUTH: 100000r/s
+      RATE_LIMIT_AUTH_BURST: "100000"
+      # El generador entra por la red edge con el nombre "gateway" y verifica el
+      # certificado: el de esta prueba incluye ese nombre (carpeta propia).
+      TLS_EXTRA_SAN: DNS:gateway
+    volumes:
+      - ./rendimiento/tls/certs:/etc/nginx/certs
+  web-ssr:
+    cpus: "1.0"
+    mem_limit: 512m
+  auth-api:
+    cpus: "1.0"
+    mem_limit: 256m
+  collaboration-api:
+    cpus: "1.0"
+    mem_limit: 512m

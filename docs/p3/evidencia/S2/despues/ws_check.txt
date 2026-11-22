@@ -1,0 +1,18 @@
+$ NODE_EXTRA_CA_CERTS=gateway/certs/ca.crt node scripts/ws_check.mjs https://localhost:8443
+OK   registro por /api/auth/register — status 201
+OK   crear tablero por /api/boards — status 201
+OK   bloqueado /internal/events — status 404
+OK   bloqueado /api/internal/events — status 404
+OK   bloqueado /api/chat/internal/x — status 404
+OK   bloqueado /api/boards/internal/access — status 404
+OK   WS Pizarra con cookie: Upgrade 101 — cierre=null
+OK   WS Pizarra con Bearer: Upgrade 101 — cierre=null
+OK   WS Pizarra sin credencial: cierre 4401 — cierre=4401
+OK   WS Chat con cookie + Origin permitido: ping/pong — cierre=null msgs=["{\"type\":\"pong\"}"]
+OK   WS Chat con cookie sin Origin: rechazado
+OK   WS Chat con cookie y Origin ajeno: rechazado
+OK   WS Chat con Bearer: ping/pong — msgs=["{\"type\":\"pong\"}"]
+OK   WS Pixels: Upgrade 101 — msgs=0
+
+Todas las comprobaciones pasaron.
+exit=0

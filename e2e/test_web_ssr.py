@@ -14,6 +14,10 @@ pueden ser los mocks de desarrollo):
 
     docker compose -f docker-compose.p1.yml -f web-ssr/compose.dev.yml up --build -d
     WEB_SSR_URL=http://localhost:8088 pytest e2e/test_web_ssr.py -v
+
+Contra el sistema completo (P3 · S1), por HTTPS: WEB_SSR_URL=https://localhost:8443.
+El navegador de prueba acepta el certificado de la CA local de desarrollo
+(ignore_https_errors), igual que una persona que confió en gateway/certs/ca.crt.
 """
 
 import os
@@ -26,7 +30,8 @@ from playwright.sync_api import Browser, BrowserContext, Page, expect, sync_play
 # levanta el gateway ni la web) la omite en vez de fallar.
 WEB_ENV = os.getenv("WEB_SSR_URL")
 pytestmark = pytest.mark.skipif(not WEB_ENV, reason="Define WEB_SSR_URL para probar la web SSR (ver docstring).")
-WEB = (WEB_ENV or "http://localhost:8088").rstrip("/")
+WEB = (WEB_ENV or "https://localhost:8443").rstrip("/")
+HTTPS = WEB.startswith("https://")
 PASSWORD = "Password-demo-segura-123!"
 SESSION_COOKIE = "cb_session"
 
@@ -44,7 +49,7 @@ def unique(prefix: str) -> str:
 
 
 def new_context(browser: Browser, errors: list[str], **kw) -> BrowserContext:
-    ctx = browser.new_context(viewport={"width": 1366, "height": 860}, locale="es-CO", **kw)
+    ctx = browser.new_context(viewport={"width": 1366, "height": 860}, locale="es-CO", ignore_https_errors=HTTPS, **kw)
     ctx.on("page", lambda page: page.on("pageerror", lambda e: errors.append(str(e))))
     return ctx
 
@@ -161,6 +166,7 @@ def test_recorrido_web_completo(browser: Browser):
     expect(ana.get_by_role("heading", name="Tus tableros")).to_be_visible()
     cookie = next(c for c in ana_ctx.cookies() if c["name"] == SESSION_COOKIE)
     assert cookie["httpOnly"] and cookie["sameSite"] == "Lax"
+    assert cookie["secure"] == HTTPS, "con HTTPS la cookie de sesión solo viaja cifrada"
     assert ana.evaluate("document.cookie").find(SESSION_COOKIE) == -1, "JavaScript no puede leer la sesión"
 
     # Crea un tablero (BFF) y dibuja (WebSocket de Pizarra por el gateway).

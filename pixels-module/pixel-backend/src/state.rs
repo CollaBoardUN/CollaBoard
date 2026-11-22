@@ -1,7 +1,8 @@
 use dashmap::DashSet;
 use std::collections::VecDeque;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
+use std::time::Duration;
 use tokio::sync::{broadcast, mpsc, RwLock};
 
 use crate::canvas::{palette_index_to_hex, AtomicCanvas, CANVAS_HEIGHT, CANVAS_WIDTH};
@@ -15,6 +16,8 @@ pub struct AppState {
     pub canvas: Arc<AtomicCanvas>,
     pub cooldown: Arc<CooldownManager>,
     pub broadcast_tx: broadcast::Sender<ServerWsMessage>,
+    pub broadcast_raw_tx: broadcast::Sender<Arc<str>>,
+    pub pending_batch: Arc<Mutex<Vec<PixelPoint>>>,
     pub persistence_tx: mpsc::Sender<PixelRecord>,
     pub total_placed: Arc<AtomicUsize>,
     pub unique_contributors: Arc<DashSet<String>>,
@@ -31,10 +34,13 @@ impl AppState {
         persistence_tx: mpsc::Sender<PixelRecord>,
     ) -> Self {
         let (broadcast_tx, _) = broadcast::channel(4096);
+        let (broadcast_raw_tx, _) = broadcast::channel(4096);
         Self {
             canvas: Arc::new(AtomicCanvas::new()),
             cooldown: Arc::new(CooldownManager::new(config.cooldown_seconds)),
             broadcast_tx,
+            broadcast_raw_tx,
+            pending_batch: Arc::new(Mutex::new(Vec::with_capacity(256))),
             persistence_tx,
             total_placed: Arc::new(AtomicUsize::new(0)),
             unique_contributors: Arc::new(DashSet::new()),
@@ -96,21 +102,27 @@ impl AppState {
             }
         }
 
-        // 5. Retransmitir delta en canal broadcast
-        let update_msg = ServerWsMessage::PixelUpdated {
-            pixels: vec![pixel_point.clone()],
-            user_id: user_id.to_string(),
-            timestamp: timestamp.clone(),
-        };
-        let _ = self.broadcast_tx.send(update_msg);
+        // 5. Retransmitir delta en canal broadcast (inmediato o micro-batching)
+        if self.config.batch_interval_ms > 0 {
+            if let Ok(mut buf) = self.pending_batch.lock() {
+                buf.push(pixel_point.clone());
+            }
+        } else {
+            let update_msg = ServerWsMessage::PixelUpdated {
+                pixels: vec![pixel_point.clone()],
+                user_id: user_id.to_string(),
+                timestamp: timestamp.clone(),
+            };
+            let _ = self.broadcast_tx.send(update_msg);
 
-        // 6. Retransmitir estadísticas actualizadas
-        let stats_msg = ServerWsMessage::StatsUpdated {
-            users_online: self.users_online.load(Ordering::Relaxed),
-            total_placed: self.total_placed.load(Ordering::Relaxed),
-            unique_contributors: self.unique_contributors.len(),
-        };
-        let _ = self.broadcast_tx.send(stats_msg);
+            // 6. Retransmitir estadísticas actualizadas
+            let stats_msg = ServerWsMessage::StatsUpdated {
+                users_online: self.users_online.load(Ordering::Relaxed),
+                total_placed: self.total_placed.load(Ordering::Relaxed),
+                unique_contributors: self.unique_contributors.len(),
+            };
+            let _ = self.broadcast_tx.send(stats_msg);
+        }
 
         // 7. Encolar asíncronamente para persistencia desacoplada en MongoDB
         let record = PixelRecord {
@@ -123,6 +135,44 @@ impl AppState {
         let _ = self.persistence_tx.try_send(record);
 
         Ok(pixel_point)
+    }
+
+    pub fn start_batch_broadcaster(&self) -> tokio::task::JoinHandle<()> {
+        let interval_ms = self.config.batch_interval_ms.max(10);
+        let state = self.clone();
+        tokio::spawn(async move {
+            let mut ticker = tokio::time::interval(Duration::from_millis(interval_ms));
+            ticker.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+            loop {
+                ticker.tick().await;
+                let pixels = {
+                    let mut buf = match state.pending_batch.lock() {
+                        Ok(g) => g,
+                        Err(_) => continue,
+                    };
+                    if buf.is_empty() {
+                        continue;
+                    }
+                    std::mem::take(&mut *buf)
+                };
+                let msg = ServerWsMessage::PixelUpdated {
+                    pixels,
+                    user_id: "batch".to_string(),
+                    timestamp: chrono::Utc::now().to_rfc3339(),
+                };
+                if let Ok(json_str) = serde_json::to_string(&msg) {
+                    let _ = state.broadcast_raw_tx.send(Arc::from(json_str));
+                }
+                let stats_msg = ServerWsMessage::StatsUpdated {
+                    users_online: state.users_online.load(Ordering::Relaxed),
+                    total_placed: state.total_placed.load(Ordering::Relaxed),
+                    unique_contributors: state.unique_contributors.len(),
+                };
+                if let Ok(stats_str) = serde_json::to_string(&stats_msg) {
+                    let _ = state.broadcast_raw_tx.send(Arc::from(stats_str));
+                }
+            }
+        })
     }
 
     pub fn get_placed_pixels(&self) -> Vec<PixelPoint> {

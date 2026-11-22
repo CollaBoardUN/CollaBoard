@@ -9,6 +9,7 @@ pub struct AppConfig {
     pub canvas_width: usize,
     pub canvas_height: usize,
     pub cooldown_seconds: f64,
+    pub batch_interval_ms: u64,
 }
 
 impl AppConfig {
@@ -41,6 +42,11 @@ impl AppConfig {
             .and_then(|c| c.parse().ok())
             .unwrap_or(5.0);
 
+        let batch_interval_ms = env::var("PIXELS_BATCH_INTERVAL_MS")
+            .ok()
+            .and_then(|v| v.parse().ok())
+            .unwrap_or(0);
+
         Self {
             mongo_uri,
             database_name,
@@ -49,6 +55,7 @@ impl AppConfig {
             canvas_width,
             canvas_height,
             cooldown_seconds,
+            batch_interval_ms,
         }
     }
 }

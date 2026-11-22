@@ -1,9 +1,10 @@
 // Prueba de WebSocket a través del gateway (Node >= 22, sin dependencias).
-//   node scripts/ws_check.mjs [http://localhost:8088]
+//   NODE_EXTRA_CA_CERTS=gateway/certs/ca.crt node scripts/ws_check.mjs [https://localhost:8443]
+// (con https:// los WebSocket van por wss://; Node confía en la CA de desarrollo).
 // Verifica: (1) cada WS publicado hace el Upgrade 101 y el servicio responde;
 // (2) autenticación por cookie y por Authorization: Bearer (como otros clientes);
 // (3) que /internal/* devuelve 404 desde fuera.
-const base = (process.argv[2] || "http://localhost:8088").replace(/\/$/, "");
+const base = (process.argv[2] || "https://localhost:8443").replace(/\/$/, "");
 const wsBase = base.replace(/^http/, "ws");
 
 let failures = 0;

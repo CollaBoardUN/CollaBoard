@@ -1,0 +1,26 @@
+172.19.0.4 [2026-11-19T23:22:57+00:00] "GET /" 307 rid=ffa86d4864f681ebe5163043680394cb up=172.18.0.5:3000 us=307 rt=0.003
+172.19.0.4 [2026-11-19T23:22:57+00:00] "GET /login" 200 rid=911e3abd88b12ac72356ec692beae83b up=172.18.0.5:3000 us=200 rt=0.009
+172.19.0.4 [2026-11-19T23:22:57+00:00] "GET /" 307 rid=92c27d682ce09c29a55083f95a25f86f up=172.18.0.5:3000 us=307 rt=0.002
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /" 307 rid=e82eeaa7688650bbc377a71ac0087ee8 up=172.18.0.5:3000 us=307 rt=0.003
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /login" 200 rid=6de96dc4b92866ccbe2c95bab82ede2a up=172.18.0.5:3000 us=200 rt=0.010
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/chunks/38r1u9q18fazi.css" 200 rid=cf6ec9b43799a75207bbde248047fe3b up=172.18.0.5:3000 us=200 rt=0.003
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/chunks/turbopack-3-ry682tkyiqk.js" 200 rid=0ac32a007ef7057347cc5a16fe9e15f2 up=172.18.0.5:3000 us=200 rt=0.003
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/chunks/2kzd2bib-2ux6.js" 200 rid=b009cd72df8dfafeb063e8abf33eef00 up=172.18.0.5:3000 us=200 rt=0.004
+2026/11/19 23:23:02 [warn] 84#84: *2149 an upstream response is buffered to a temporary file /var/cache/nginx/proxy_temp/3/00/0000000003 while reading upstream, client: 172.19.0.4, server: _, request: "GET /_next/static/chunks/2nii411saqstq.js HTTP/1.1", upstream: "http://172.18.0.5:3000/_next/static/chunks/2nii411saqstq.js", host: "gateway", referrer: "https://gateway/login"
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/chunks/2nii411saqstq.js" 200 rid=273cd85f30ff963a92cef17ea4aa5f61 up=172.18.0.5:3000 us=200 rt=0.005
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/chunks/3omi9auk_y2-8.js" 200 rid=75e0d94ae90f44bb2d843a9774eddd5b up=172.18.0.5:3000 us=200 rt=0.003
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/chunks/0odalit3w8fzt.js" 200 rid=d7982d833043b7fe6658a5b8c1451e0b up=172.18.0.5:3000 us=200 rt=0.002
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/chunks/1x6obpmlu1_c2.js" 200 rid=a9d54dfd5abf5eb0990d566bf0261167 up=172.18.0.5:3000 us=200 rt=0.004
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/chunks/3i7bb4yv5vlj-.js" 200 rid=8299c8d145bcc3c4cce30d25411e205f up=172.18.0.5:3000 us=200 rt=0.005
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/chunks/1fb2o51k70ui1.js" 200 rid=919a6ce242978402f5f0e5d92a49f9ed up=172.18.0.5:3000 us=200 rt=0.003
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/chunks/3h5ncdwjg9xwm.js" 200 rid=979756348b326ea118bb4d9c06dcf142 up=172.18.0.5:3000 us=200 rt=0.002
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/media/instrument-sans-latin-600-normal.3fqsgcs0cl_0g.woff2" 200 rid=e2934676aa1f7c50ef9c9297cb2d6e9e up=172.18.0.5:3000 us=200 rt=0.004
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/media/instrument-sans-latin-400-normal.3xgfxban9f743.woff2" 200 rid=0459e875247cd93d2d9b99e17d926aeb up=172.18.0.5:3000 us=200 rt=0.005
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /_next/static/media/instrument-sans-latin-500-normal.1eggatm68an7u.woff2" 200 rid=b2bd3ae2f0af6a1b469c7e8145c3da1a up=172.18.0.5:3000 us=200 rt=0.005
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /favicon.svg" 200 rid=e52bc0a1576a06e0a3942f95d59b4f4f up=172.18.0.5:3000 us=200 rt=0.002
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /" 307 rid=d5ad3e07dd8fa17668a4a2f0e66c557f up=172.18.0.5:3000 us=307 rt=0.008
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /register" 200 rid=e96c3506687fe90efbf1f1e24105fd5f up=172.18.0.5:3000 us=200 rt=0.012
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /register" 200 rid=b8880598490fd020edccdd9e216dd0b9 up=172.18.0.5:3000 us=200 rt=0.008
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /login" 307 rid=cdd548ee6d8aaa911babcc037f8d24a2 up=172.18.0.5:3000 us=307 rt=0.009
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /register" 200 rid=08907effcdddac2c7f5ff9db73da2375 up=172.18.0.5:3000 us=200 rt=0.007
+172.19.0.4 [2026-11-19T23:23:02+00:00] "GET /login" 200 rid=7c9d7257f05a82bf811efbbb0149f9e9 up=172.18.0.5:3000 us=200 rt=0.015

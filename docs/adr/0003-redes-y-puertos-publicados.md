@@ -1,6 +1,6 @@
 # ADR 0003 · Redes y puertos publicados
 
-- **Estado:** aceptada · **Fecha:** 2026-10-28 · **Paquete:** F
+- **Estado:** reemplazada en topología interna por [ADR 0013](0013-segmentacion-de-redes-por-zonas.md) (P3 · S3 Network Segmentation) · **Fecha:** 2026-10-28 · **Paquete:** F
 
 ## Contexto
 El P1 publicaba cada servicio y cada base (5432, 27017, 8000, 8001, 8002, 8080…) y compartía una sola base

@@ -1,12 +1,17 @@
 #!/bin/sh
 # Verifica cada prefijo público del gateway y las garantías de seguridad.
-#   sh scripts/gateway_smoke.sh [http://localhost:8088]
+#   CURL_CA_BUNDLE=gateway/certs/ca.crt sh scripts/gateway_smoke.sh [https://localhost:8443]
+# (CURL_CA_BUNDLE: curl confía en la CA de desarrollo que crea el gateway).
 # Códigos esperados: 2xx/401/403/404 propios de cada API cuentan como "enrutado"
 # (la petición llegó al servicio); 502/503 indican upstream caído o mal enrutado.
-BASE="${1:-http://localhost:8088}"
+BASE="${1:-https://localhost:8443}"
 fail=0
+# curl de Git para Windows usa Schannel, que exige consultar la revocación y la CA
+# local de desarrollo no publica CRL: allí se omite esa consulta. Schannel además
+# ignora CURL_CA_BUNDLE, así que se pasa como --cacert.
+case "$(curl -V 2>/dev/null | head -n 1)" in *Schannel*) TLS_OPTS="--ssl-no-revoke${CURL_CA_BUNDLE:+ --cacert $CURL_CA_BUNDLE}" ;; *) TLS_OPTS="" ;; esac
 
-code() { curl -s -o /dev/null -w '%{http_code}' --max-time 8 "$@"; }
+code() { curl -s -o /dev/null -w '%{http_code}' --max-time 8 $TLS_OPTS "$@"; }
 
 check() { # nombre, esperado(s) separados por |, comando curl...
   name="$1"; expected="$2"; shift 2
@@ -36,11 +41,11 @@ for p in /internal/events /internal/boards/x/access /api/internal/x /api/boards/
 done
 
 # X-Request-ID: se genera y se respeta si es válido
-rid=$(curl -s -o /dev/null -D - --max-time 8 "$BASE/healthz" | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
+rid=$(curl -s -o /dev/null -D - --max-time 8 $TLS_OPTS "$BASE/healthz" | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
 if [ -n "$rid" ]; then echo "OK   X-Request-ID generado: $rid"; else echo "FAIL sin X-Request-ID"; fail=1; fi
-echoed=$(curl -s -o /dev/null -D - --max-time 8 -H 'X-Request-ID: prueba-correlacion-123' "$BASE/healthz" | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
+echoed=$(curl -s -o /dev/null -D - --max-time 8 $TLS_OPTS -H 'X-Request-ID: prueba-correlacion-123' "$BASE/healthz" | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
 if [ "$echoed" = "prueba-correlacion-123" ]; then echo "OK   X-Request-ID entrante respetado"; else echo "FAIL X-Request-ID entrante: '$echoed'"; fail=1; fi
-bad=$(curl -s -o /dev/null -D - --max-time 8 -H 'X-Request-ID: malo con espacios y simbolos <>' "$BASE/healthz" | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
+bad=$(curl -s -o /dev/null -D - --max-time 8 $TLS_OPTS -H 'X-Request-ID: malo con espacios y simbolos <>' "$BASE/healthz" | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
 case "$bad" in *" "*|*"<"*|"") echo "FAIL X-Request-ID inválido no sustituido: '$bad'"; fail=1 ;; *) echo "OK   X-Request-ID inválido sustituido: $bad" ;; esac
 
 exit $fail

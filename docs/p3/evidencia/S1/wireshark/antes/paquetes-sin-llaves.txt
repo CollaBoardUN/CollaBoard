@@ -1,0 +1,58 @@
+4	HTTP	GET / HTTP/1.1 
+8	HTTP	GET /login HTTP/1.1 
+159	HTTP	GET /?_rsc=_H_fFy2_Q06N8BA7 HTTP/1.1 
+161	HTTP	GET /register?next=%2F&_rsc=_H_fFy2_Q06N8BA7 HTTP/1.1 
+165	HTTP	GET /login HTTP/1.1 
+175	HTTP	GET /register?next=%2F&_rsc=sW2A7HEmFQnSVIMx HTTP/1.1 
+185	HTTP	GET /register?next=%2F&_rsc=24ANZmzXrKla8zJg HTTP/1.1 
+187	HTTP	GET /login?_rsc=_H_fFy2_Q06N8BA7 HTTP/1.1 
+189	HTTP	GET /register?_rsc=_H_fFy2_Q06N8BA7 HTTP/1.1 
+221	HTTP	GET /login?next=%2F&_rsc=nqYP1k-cQeRiHB3h HTTP/1.1 
+233	HTTP	POST /register?next=%2F HTTP/1.1 
+269	HTTP	GET /bff/api/notifications?limit=20 HTTP/1.1 
+279	HTTP	POST / HTTP/1.1  (text/plain)
+299	HTTP	POST /login HTTP/1.1 
+301	HTTP	GET /?_rsc=_H_fFy2_Q06N8BA7 HTTP/1.1 
+303	HTTP	GET /register?next=%2F&_rsc=_H_fFy2_Q06N8BA7 HTTP/1.1 
+307	HTTP	GET /login HTTP/1.1 
+316	HTTP	GET /login?_rsc=_H_fFy2_Q06N8BA7 HTTP/1.1 
+319	HTTP	GET /register?next=%2F&_rsc=sW2A7HEmFQnSVIMx HTTP/1.1 
+335	HTTP	GET /register?_rsc=_H_fFy2_Q06N8BA7 HTTP/1.1 
+355	HTTP	GET /bff/api/notifications?limit=20 HTTP/1.1 
+359	HTTP/JSON	POST /bff/api/boards HTTP/1.1 , JSON (application/json)
+363	HTTP	GET /boards/d693145c-56a6-4bfe-a060-371cdb826d75?_rsc=2Md0sTUZcnjCijMr HTTP/1.1 
+371	HTTP	GET /boards/d693145c-56a6-4bfe-a060-371cdb826d75?_rsc=5CB68i4pnAekjehf HTTP/1.1 
+441	HTTP	GET /bff/api/notifications?limit=20 HTTP/1.1 
+448	HTTP	GET /ws/chat/boards/d693145c-56a6-4bfe-a060-371cdb826d75 HTTP/1.1 
+452	WebSocket	WebSocket Text [FIN] [MASKED]
+454	WebSocket	WebSocket Text [FIN] [MASKED]
+456	HTTP	GET /bff/api/chat/boards/d693145c-56a6-4bfe-a060-371cdb826d75/messages?limit=30 HTTP/1.1 
+461	HTTP	GET /ws/boards/d693145c-56a6-4bfe-a060-371cdb826d75 HTTP/1.1 
+467	WebSocket	WebSocket Text [FIN] 
+469	WebSocket	WebSocket Text [FIN] 
+471	WebSocket	WebSocket Text [FIN] [MASKED]
+473	WebSocket	WebSocket Text [FIN] [MASKED]
+475	WebSocket	WebSocket Text [FIN] [MASKED]
+477	WebSocket	WebSocket Text [FIN] [MASKED]
+479	WebSocket	WebSocket Text [FIN] [MASKED]
+481	WebSocket	WebSocket Text [FIN] [MASKED]
+483	WebSocket	WebSocket Text [FIN] [MASKED]
+485	WebSocket	WebSocket Text [FIN] [MASKED]
+487	WebSocket	WebSocket Text [FIN] [MASKED]
+489	WebSocket	WebSocket Text [FIN] [MASKED]
+491	WebSocket	WebSocket Text [FIN] [MASKED]
+493	WebSocket	WebSocket Text [FIN] 
+495	WebSocket	WebSocket Text [FIN] 
+497	WebSocket	WebSocket Text [FIN] [MASKED]
+499	WebSocket	WebSocket Text [FIN] [MASKED]
+501	WebSocket	WebSocket Text [FIN] [MASKED]
+503	HTTP/JSON	POST /bff/api/chat/boards/d693145c-56a6-4bfe-a060-371cdb826d75/messages HTTP/1.1 , JSON (application/json)
+505	HTTP	GET /bff/api/notifications?limit=20 HTTP/1.1 
+507	WebSocket	WebSocket Text [FIN] 
+509	WebSocket	WebSocket Text [FIN] [MASKED]
+511	WebSocket	WebSocket Text [FIN] [MASKED]
+517	WebSocket	WebSocket Text [FIN] 
+519	HTTP	GET /bff/api/notifications?limit=20 HTTP/1.1 
+523	WebSocket	WebSocket Connection Close [FIN] [MASKED]
+525	WebSocket	WebSocket Connection Close [FIN] 
+531	WebSocket	WebSocket Connection Close [FIN] [MASKED]

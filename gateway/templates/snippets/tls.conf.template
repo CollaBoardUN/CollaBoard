@@ -1,0 +1,23 @@
+# Canal seguro (P3 · S1 Secure Channel): el TLS termina en el gateway. Se incluye en el
+# servidor público :443. Perfil "intermediate" de Mozilla: TLS 1.2 y 1.3, solo
+# suites AEAD con intercambio ECDHE (secreto hacia adelante).
+ssl_certificate     ${TLS_CERT_DIR}/server.crt;
+ssl_certificate_key ${TLS_CERT_DIR}/server.key;
+
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ecdh_curve X25519:prime256v1:secp384r1;
+ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;
+# Todas las suites admitidas son fuertes: el cliente elige la más rápida para
+# su hardware (p. ej. ChaCha20 en móviles sin AES por hardware).
+ssl_prefer_server_ciphers off;
+
+# Reanudación de sesión con caché en el servidor (compartida entre workers).
+# Sin tickets: su llave no rota sola y, si se filtra, descifra sesiones pasadas.
+ssl_session_cache shared:SSL:10m;
+ssl_session_timeout 1d;
+ssl_session_tickets off;
+
+# HSTS: el navegador no vuelve a intentar http:// en este host durante max-age.
+# Desarrollo: 300 s, para no fijar HTTPS en localhost por meses. Producción:
+# 31536000 (un año), y includeSubDomains si aplica a todo el dominio.
+add_header Strict-Transport-Security "max-age=${TLS_HSTS_MAX_AGE}" always;

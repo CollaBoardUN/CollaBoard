@@ -1,0 +1,25 @@
+$ CURL_CA_BUNDLE=gateway/certs/ca.crt sh scripts/gateway_smoke.sh https://localhost:8443
+OK   /healthz del gateway                           200
+OK   / (web SSR)                                    307
+OK   /login (web SSR)                               200
+OK   /api/auth/me sin sesión                       401
+OK   /api/boards sin sesión                        401
+OK   /api/invites/x                                 401
+OK   /api/canvas/.../state                          401
+OK   /api/canvas/.../versions                       401
+OK   /api/chat/.../messages                         401
+OK   /api/pixels/board                              200
+OK   /api/notifications                             401
+OK   /api/notifications/{id}/read                   401
+OK   bloqueado /internal/events                     404
+OK   bloqueado /internal/boards/x/access            404
+OK   bloqueado /api/internal/x                      404
+OK   bloqueado /api/boards/internal/x               404
+OK   bloqueado /api/chat/internal/x                 404
+OK   bloqueado /api/notifications/internal/events   404
+OK   bloqueado /INTERNAL/x                          404
+OK   bloqueado /ws/internal/x                       404
+OK   X-Request-ID generado: 8814a413f0882ecad2e1b8566f12fca5
+OK   X-Request-ID entrante respetado
+OK   X-Request-ID inválido sustituido: 01521d1d4531678670f65e31b43704d3
+exit=0

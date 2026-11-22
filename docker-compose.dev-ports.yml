@@ -13,4 +13,22 @@ services:
   pixels-nosqldb:
     ports: ["127.0.0.1:27017:27017"]
   rabbitmq:
-    ports: ["127.0.0.1:5672:5672"]
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "${RABBITMQ_CONSOLE_BIND:-127.0.0.1}:15672:15672"
+
+# En depuración local (y nunca en producción/CI), las zonas de datos permiten
+# publicar puertos en 127.0.0.1 para clientes locales (psql, mongosh, consola web).
+networks:
+  net-user:
+    internal: false
+  net-board:
+    internal: false
+  net-canvas:
+    internal: false
+  net-notif:
+    internal: false
+  net-mongo:
+    internal: false
+  net-mq:
+    internal: false

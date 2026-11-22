@@ -199,8 +199,10 @@ jobs:
         run: docker compose -f gateway/tests/compose.test.yml up -d --build --wait
       - name: Validar la configuración renderizada
         run: docker compose -f gateway/tests/compose.test.yml exec -T gateway nginx -t
-      - name: Contrato (rutas reescritas, cabeceras, token del WS, /internal, límite de tasa, 502)
+      - name: Contrato (rutas reescritas, cabeceras, token del WS, /internal, límite de tasa, 502, TLS)
         run: node --test gateway/tests/contract.test.mjs
+        env:
+          NODE_EXTRA_CA_CERTS: gateway/tests/certs/ca.crt
       - if: failure()
         run: docker compose -f gateway/tests/compose.test.yml logs --tail=200
       - if: always()
@@ -214,7 +216,11 @@ jobs:
       # Servicios reales con bases separadas y notificaciones C#.
       COMPOSE_FILE: docker-compose.yml:notifications-module/compose.gateway.yml
       COMPOSE_PATH_SEPARATOR: ":"
-      WEB_SSR_URL: http://localhost:8088
+      WEB_SSR_URL: https://localhost:8443
+      # Canal seguro (P3 · S1): las herramientas confían en la CA de desarrollo
+      # que el gateway crea al arrancar en gateway/certs/.
+      CURL_CA_BUNDLE: gateway/certs/ca.crt
+      NODE_EXTRA_CA_CERTS: gateway/certs/ca.crt
     steps:
       - uses: actions/checkout@v5
       - name: Variables (valores de ejemplo, solo CI)
@@ -224,12 +230,16 @@ jobs:
       - name: Estado de los contenedores
         run: docker compose ps
       - name: Gateway - rutas, /internal/* y X-Request-ID
-        run: sh scripts/gateway_smoke.sh http://localhost:8088
+        run: sh scripts/gateway_smoke.sh https://localhost:8443
       - uses: actions/setup-node@v6
         with:
           node-version: 22
       - name: Gateway - WebSocket de Pizarra, Chat y Pixels
-        run: node scripts/ws_check.mjs http://localhost:8088
+        run: node scripts/ws_check.mjs https://localhost:8443
+      - name: Canal seguro (S1) - redirección, TLS, HSTS, cookie Secure, WSS y captura de red
+        run: python3 security-tests/s1_tls.py
+      - name: Segmentación de red (S3) - matriz de conectividad por zonas y bloqueo de egreso
+        run: python3 security-tests/s3_segmentacion.py
       - name: Detener el consumidor mientras se comprueba el contrato del broker
         run: docker compose stop message-worker
       - name: RabbitMQ - publicar/consumir, mínimo privilegio y DLQ
@@ -250,9 +260,12 @@ jobs:
         run: python -m pytest e2e/test_web_ssr.py e2e/test_notifications.py -v
       - name: Correlación de logs (un X-Request-ID atraviesa gateway y servicios)
         run: |
-          rid=$(curl -s -o /dev/null -D - -H 'X-Request-ID: ci-correlacion-0001' http://localhost:8088/api/boards | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
+          rid=$(curl -s -o /dev/null -D - -H 'X-Request-ID: ci-correlacion-0001' https://localhost:8443/api/boards | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
           test "$rid" = "ci-correlacion-0001"
           docker compose logs gateway | grep 'rid=ci-correlacion-0001'
+      # Al final: su ráfaga (E04) deja agotada unos segundos la zona web del gateway.
+      - name: Reverse Proxy (S2) - catálogo de ataques al borde, us=- y tramo interno
+        run: node security-tests/s2_proxy.mjs --target https://localhost:8443 --ca gateway/certs/ca.crt
       - if: failure()
         run: docker compose logs --tail=200
       - if: always()

@@ -1,0 +1,97 @@
+{
+    "root_group": {
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {},
+        "name": "",
+        "path": ""
+    },
+    "metrics": {
+        "ws_broadcast_latency_ms": {
+            "med": 3,
+            "max": 80,
+            "p(90)": 7,
+            "p(95)": 9,
+            "avg": 3.9564136395867555,
+            "min": 0,
+            "thresholds": {
+                "p(95)<250": false,
+                "p(99)<500": false
+            }
+        },
+        "vus_max": {
+            "value": 100,
+            "min": 100,
+            "max": 100
+        },
+        "ws_session_duration": {
+            "avg": 68111.7565029,
+            "min": 68025.673478,
+            "med": 68091.23679550001,
+            "max": 68179.113951,
+            "p(90)": 68174.89723460001,
+            "p(95)": 68177.29897635
+        },
+        "data_received": {
+            "count": 40068625,
+            "rate": 534225.0479023413
+        },
+        "ws_connecting": {
+            "p(95)": 165.81978264999998,
+            "avg": 90.19462815500003,
+            "min": 4.907297,
+            "med": 86.319368,
+            "max": 182.744651,
+            "p(90)": 164.9708484
+        },
+        "ws_messages_received": {
+            "count": 226860,
+            "rate": 3024.66816286122
+        },
+        "ws_msgs_received": {
+            "count": 303951,
+            "rate": 4052.5033622931796
+        },
+        "ws_msgs_sent": {
+            "count": 1440,
+            "rate": 19.19916316018759
+        },
+        "data_sent": {
+            "count": 513975,
+            "rate": 6852.70130920654
+        },
+        "iterations": {
+            "count": 100,
+            "rate": 1.3332752194574717
+        },
+        "vus": {
+            "max": 100,
+            "value": 100,
+            "min": 100
+        },
+        "ws_errors": {
+            "passes": 0,
+            "fails": 100,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "ws_sessions": {
+            "count": 200,
+            "rate": 2.6665504389149435
+        },
+        "ws_pixels_sent": {
+            "count": 1115,
+            "rate": 14.866018696950809
+        },
+        "iteration_duration": {
+            "p(95)": 68177.99752799999,
+            "avg": 68112.09405513998,
+            "min": 68025.792324,
+            "med": 68092.27512949999,
+            "max": 68179.510667,
+            "p(90)": 68175.871355
+        }
+    }
+}

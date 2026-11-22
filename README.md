@@ -6,7 +6,8 @@ Plataforma colaborativa modular en tiempo real donde varias personas crean, dibu
 
 ## 🚀 Prototipo 2 — arranque desde un clon limpio
 
-Todo el servidor corre en contenedores detrás de **un único gateway Nginx** (`http://localhost:8088`).
+Todo el servidor corre en contenedores detrás de **un único gateway Nginx** (`https://localhost:8443`;
+`http://localhost:8088` solo redirige a HTTPS, ver [HTTPS](#-https-p3--s1-secure-channel)).
 Vista de despliegue y decisiones: [docs/p2-despliegue.md](docs/p2-despliegue.md) · [docs/adr/](docs/adr/) ·
 pendientes con el equipo: [docs/p2-pendientes-coordinacion.md](docs/p2-pendientes-coordinacion.md).
 
@@ -34,20 +35,73 @@ docker compose up -d --build --wait
 
 | Qué | Dónde |
 |---|---|
-| Web SSR, API y WebSockets (mismo origen) | http://localhost:8088 |
-| Consola de RabbitMQ (solo desde esta máquina) | http://localhost:15672 (`RABBITMQ_ADMIN_USER` / `RABBITMQ_ADMIN_PASSWORD` de `.env`) |
-| Interfaz de Pixels (opcional: `docker compose --profile pixels-ui up -d`) | http://localhost:3000 |
-| Bases de datos y brokers | no se publican; para depurar: `-f docker-compose.dev-ports.yml` |
+| Web SSR, API y WebSockets (mismo origen) | https://localhost:8443 (`http://localhost:8088` redirige) |
+| Consola de RabbitMQ y bases (solo depuración local) | `-f docker-compose.dev-ports.yml` → `http://127.0.0.1:15672`, PostgreSQL `15432..15435`, Mongo `27017` |
+| Interfaz de Pixels (detrás del gateway; sin puerto propio desde el P3 · S2) | https://localhost:8443/pixels/ |
+| Redes internas (`app` y `net-*`) | aisladas con `internal: true` (sin puertos al host ni salida a Internet; ver [Segmentación](#-segmentación-de-redes-p3--s3-network-segmentation)) |
 
 **Verificar** (cada comando imprime `OK`/`FAIL` por comprobación):
 
 ```bash
-curl -s localhost:8088/healthz                                   # ok
-sh scripts/gateway_smoke.sh http://localhost:8088                # rutas, /internal/* bloqueado, X-Request-ID
-node scripts/ws_check.mjs http://localhost:8088                  # WebSocket de Pizarra, Chat y Pixels
+export CURL_CA_BUNDLE=gateway/certs/ca.crt NODE_EXTRA_CA_CERTS=gateway/certs/ca.crt   # confiar en la CA local
+curl -s https://localhost:8443/healthz                           # ok
+sh scripts/gateway_smoke.sh https://localhost:8443               # rutas, /internal/* bloqueado, X-Request-ID
+node scripts/ws_check.mjs https://localhost:8443                 # WebSocket (wss://) de Pizarra, Chat y Pixels
+python security-tests/s1_tls.py                                  # S1: redirección, TLS, HSTS, cookie Secure, WSS, captura
+python security-tests/s3_segmentacion.py                         # S3: matriz de conectividad por zonas y bloqueo de salida a Internet
+node security-tests/s2_proxy.mjs --target https://localhost:8443 --ca gateway/certs/ca.crt   # S2: catálogo de ataques al borde
 docker compose --profile tools run --rm rabbit-smoke             # RabbitMQ: publicar/consumir, permisos, DLQ
-node --test gateway/tests/contract.test.mjs                      # contrato del gateway (ver gateway/tests/compose.test.yml)
+NODE_EXTRA_CA_CERTS=gateway/tests/certs/ca.crt node --test gateway/tests/contract.test.mjs   # contrato del gateway (ver gateway/tests/compose.test.yml)
 ```
+
+### 🔒 HTTPS (P3 · S1 Secure Channel)
+
+El TLS termina en el gateway (TLS 1.2 y 1.3, HTTP/2, HSTS). El puerto `8088` solo redirige
+(301) a `https://localhost:8443`; dentro de la red `internal` los servicios siguen en HTTP.
+
+- **Certificado de desarrollo:** al arrancar, el gateway crea `gateway/certs/` (no se versiona) con
+  una CA local y un certificado para `localhost`, `127.0.0.1` y `::1`. La CA solo puede firmar esos
+  nombres (`nameConstraints`) y su llave privada se descarta, así que confiar en ella no habilita
+  certificados para otros sitios. Para regenerarlo, borra `gateway/certs/` y reinicia el gateway.
+- **Confiar en la CA** (una vez, para ver el candado sin advertencias): importa `gateway/certs/ca.crt`
+  como entidad raíz: Windows `certutil -user -addstore Root gateway\certs\ca.crt`; macOS
+  `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain gateway/certs/ca.crt`;
+  Linux/Firefox: *Ajustes → Privacidad y seguridad → Certificados → Importar*.
+- **Desde otra máquina de la LAN:** `TLS_EXTRA_SAN=IP:<ip-del-servidor>` en `.env`, borra
+  `gateway/certs/` y reinicia el gateway; usa `PUBLIC_ORIGIN=https://<ip>:8443` y
+  `CHAT_ALLOWED_ORIGINS` con ese mismo origen.
+- **Producción:** monta el certificado real (`server.crt`, `server.key`) en `gateway/certs/` (el
+  script no lo reemplaza) y sube `TLS_HSTS_MAX_AGE` a `31536000`.
+- **Evidencia con Wireshark** (escenario S1): `python security-tests/s1_wireshark.py --headed --out <carpeta>`
+  captura con Wireshark en la interfaz de loopback mientras un navegador usa la web. Guía para abrir
+  las capturas en Wireshark: [docs/p3/evidencia/S1/wireshark/](docs/p3/evidencia/S1/wireshark/README.md).
+- Si tu `.env` viene del P2, copia de nuevo las variables de *Acceso público* de `.env.example`
+  (`PUBLIC_ORIGIN`, `CHAT_ALLOWED_ORIGINS`, `SESSION_COOKIE_SECURE`, `GATEWAY_TLS_PORT`).
+
+### 🧱 Segmentación de redes (P3 · S3 Network Segmentation)
+
+En lugar de una sola red plana `internal`, los contenedores se reparten en **8 redes** según lo que cada uno necesita ([ADR 0013](docs/adr/0013-segmentacion-de-redes-por-zonas.md)):
+- **`edge`**: única red con salida al host (`gateway` y `pixels-ui`).
+- **`app` (`internal: true`)**: solo `gateway`, `web-ssr` y las 6 APIs HTTP (sin bases de datos, sin RabbitMQ, sin `message-worker` y sin Internet).
+- **6 redes de datos y mensajería (`internal: true`)**: `net-user` (`auth-api` + `user-db`), `net-board` (`collaboration-api` + `board-db`), `net-canvas` (`pizarra-api` + `canvas-db`), `net-notif` (`notification-api` + `message-worker` + `notification-db`), `net-mongo` (`chat-api` + `pixels-api` + `pixels-nosqldb`) y `net-mq` (`notification-api` + `message-worker` + `rabbitmq`).
+- **Verificación de la matriz:** `python security-tests/s3_segmentacion.py` (o `sh scripts/segmentation_check.sh`) inyecta `nicolaka/netshoot` en el namespace de red de cada contenedor para probar todos los pares permitidos y prohibidos más la salida a Internet.
+- **Abrir puertos de bases o la consola de RabbitMQ (`15672`) en local:** como Docker no publica puertos desde redes `internal: true`, añade `-f docker-compose.dev-ports.yml` al levantar si necesitas entrar desde el host.
+- **Prueba de rendimiento de `pixels-api` (Rust) y costo de segmentación:** ver [rendimiento/pixels/README.md](rendimiento/pixels/README.md).
+
+### 🛡️ Reverse Proxy (P3 · S2 gateway endurecido)
+
+El gateway es el único punto de entrada: solo publica `8088`/`8443`, sirve la UI de Pixels en `/pixels/` y aplica una lista blanca de rutas y métodos, la
+validación de `Host`, el saneado de cabeceras, las cabeceras de seguridad (CSP y otras), errores JSON y
+límites por IP. Lo no declarado responde `404` desde el gateway, sin llegar a ningún servicio.
+
+- **Reproducir el escenario:** `node security-tests/s2_proxy.mjs --target https://localhost:8443 --ca gateway/certs/ca.crt`
+  (41 casos de ataque y 5 controles; requiere Docker). Detalle y P2 → P3: [security-tests/README.md](security-tests/README.md).
+- **Variables** (`.env.example`): `GATEWAY_ALLOWED_HOSTS` (Host aceptados; añade aquí la IP o el nombre
+  de `TLS_EXTRA_SAN` si entras desde otra máquina), `RATE_LIMIT_WEB`, `RATE_LIMIT_WEB_BURST`,
+  `LIMIT_CONN_PER_IP` y `LIMIT_CONN_WS_PER_IP`.
+- **Pruebas de carga:** salen de una sola IP; sube esos límites (y los `RATE_LIMIT_*` del P2) en el
+  override de la prueba, p. ej. `LIMIT_CONN_PER_IP=100000`, `RATE_LIMIT_WEB=100000r/s`.
+- Decisión y valores medidos: [ADR 0012](docs/adr/0012-reverse-proxy-endurecido.md).
 
 **Logs correlacionados:** cada petición lleva `X-Request-ID`; el gateway lo escribe en su log
 de acceso (`docker compose logs gateway | grep rid=`) y lo reenvía a los servicios.

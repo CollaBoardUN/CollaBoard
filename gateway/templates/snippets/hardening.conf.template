@@ -1,0 +1,27 @@
+# P3 · S2 Reverse Proxy — endurecimiento de un servidor PÚBLICO (:443 y :80) (ADR 0012).
+# Va en el contexto server, junto a tls.conf (S1). Lo complementan 10-hardening.conf
+# (contexto http) y error-pages.conf (respuestas JSON).
+
+# Clave de los límites por IP (la misma que limit_req en el P2; ver ADR 0006).
+set $rl_key $binary_remote_addr;
+
+# Validate input: un Host fuera de GATEWAY_ALLOWED_HOSTS no llega a ninguna location
+# (ni a la redirección de :80 ni a un servicio): 421 JSON.
+# Excepción: las páginas de error internas (/__gw/*, error-pages.conf). Una petición que
+# llega ahí ya pasó por aquí o falló antes de tener Host; validarla de nuevo daría un 421
+# recursivo con la página HTML de Nginx.
+set $gw_host_ok $gw_host_allowed;
+if ($uri ~ "^/__gw/") {
+  set $gw_host_ok 1;
+}
+if ($gw_host_ok = 0) {
+  return 421;
+}
+
+# Detect service denial: peticiones simultáneas por IP (con HTTP/2, cada stream).
+# Las location de WebSocket declaran su propio límite (conn_ws) y no cuentan aquí.
+limit_conn conn ${LIMIT_CONN_PER_IP};
+
+# Cabeceras que dependen del estado (ver los map de 10-hardening.conf).
+add_header Retry-After $gw_retry_after always;
+add_header Allow       $gw_allow_header always;
