@@ -1,16 +1,105 @@
 # Errores generados por el gateway, en JSON con `detail` (como las APIs).
+# P3 · S2 (ADR 0012): TODO error propio del gateway sale en JSON, nunca la página HTML de
+# Nginx (que delata el producto). Solo afecta a errores del gateway: los 4xx/5xx de los
+# servicios pasan intactos (proxy_intercept_errors está en off).
+# Estas location no declaran add_header: heredan las del servidor (X-Request-ID, Retry-After,
+# Allow, cabeceras de seguridad y el HSTS de S1). Antes declaraban el suyo y perdían el HSTS.
+# «types { }» vacía el mapa de tipos por extensión: sin él, un error sobre /x.js saldría
+# como application/javascript en vez de application/json.
+#
+# 400, 414 y 494 pueden ocurrir al leer la línea de petición, cuando todavía no hay URI:
+# Nginx no puede saltar entonces a una location con nombre ("empty URI in redirect to
+# named location" -> 500 HTML). Esos tres van a una URI interna (/__gw/...), que sí
+# funciona sin URI previa; hardening.conf no vuelve a validar el Host en /__gw/.
+# Sin «=código» se conservaría el original: 494 (y 497) los envía Nginx como 400.
+error_page 400 /__gw/400;
+error_page 497 =400 /__gw/400;
+error_page 414 /__gw/414;
+error_page 494 =431 /__gw/431;
+error_page 403 405 = @method_not_allowed;
+error_page 404 = @not_found;
+error_page 408 = @request_timeout;
+error_page 413 = @payload_too_large;
+error_page 421 = @misdirected_request;
 error_page 429 = @too_many_requests;
+error_page 500 = @internal_error;
 error_page 502 504 = @upstream_unavailable;
+error_page 503 = @service_unavailable;
+
+# internal: desde fuera, /__gw/* responde 404 (no existe para el cliente).
+location = /__gw/400 {
+  internal;
+  types { }
+  default_type application/json;
+  return 400 '{"detail":"Solicitud inválida."}';
+}
+
+location = /__gw/414 {
+  internal;
+  types { }
+  default_type application/json;
+  return 414 '{"detail":"URI demasiado larga."}';
+}
+
+# 494 es interno de Nginx (cabecera o cookie demasiado grande): se responde el estándar 431.
+location = /__gw/431 {
+  internal;
+  types { }
+  default_type application/json;
+  return 431 '{"detail":"Cabeceras de la solicitud demasiado grandes."}';
+}
+
+# 403 solo lo produce limit_except (método no permitido en la ruta): se responde 405.
+location @method_not_allowed {
+  types { }
+  default_type application/json;
+  return 405 '{"detail":"Método no permitido."}';
+}
+
+location @not_found {
+  types { }
+  default_type application/json;
+  return 404 '{"detail":"No encontrado"}';
+}
+
+location @request_timeout {
+  types { }
+  default_type application/json;
+  return 408 '{"detail":"Tiempo de espera agotado."}';
+}
+
+location @payload_too_large {
+  types { }
+  default_type application/json;
+  return 413 '{"detail":"Cuerpo de la solicitud demasiado grande."}';
+}
+
+location @misdirected_request {
+  types { }
+  default_type application/json;
+  return 421 '{"detail":"Host no permitido."}';
+}
 
 location @too_many_requests {
+  types { }
   default_type application/json;
-  add_header Retry-After 1 always;
-  add_header X-Request-ID $collaboard_request_id always;
   return 429 '{"detail":"Demasiadas solicitudes. Intenta de nuevo en un momento."}';
 }
 
-location @upstream_unavailable {
+location @internal_error {
+  types { }
   default_type application/json;
-  add_header X-Request-ID $collaboard_request_id always;
+  return 500 '{"detail":"Error interno del gateway."}';
+}
+
+location @upstream_unavailable {
+  types { }
+  default_type application/json;
   return 502 '{"detail":"Servicio temporalmente no disponible."}';
+}
+
+location @service_unavailable {
+  types { }
+  default_type application/json;
+  return 503 '{"detail":"Servicio temporalmente no disponible."}';
 }

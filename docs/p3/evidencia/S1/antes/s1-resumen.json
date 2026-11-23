@@ -1,0 +1,19 @@
+{
+  "base": "http://localhost:8088",
+  "bytes_capturados": 23499,
+  "apariciones": {
+    "correo": 3,
+    "contraseña": 3,
+    "JWT de sesión": 4,
+    "mensaje de chat": 2
+  },
+  "fallos": [
+    "HTTP plano solo redirige a HTTPS",
+    "el sistema ofrece HTTPS",
+    "cabecera Strict-Transport-Security",
+    "login por la web: cookie de sesión Secure; HttpOnly; SameSite",
+    "WebSocket Pixels por wss://",
+    "WebSocket Chat con cookie por wss://",
+    "captura de red: 0 secretos legibles"
+  ]
+}

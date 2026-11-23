@@ -1,0 +1,741 @@
+TAP version 13
+# Subtest: reescritura de rutas REST hacia cada servicio
+    # Subtest: POST /api/auth/login -> /auth/login
+    ok 1 - POST /api/auth/login -> /auth/login
+      ---
+      duration_ms: 96.2493
+      type: 'test'
+      ...
+    # Subtest: GET /api/auth/me -> /auth/me
+    ok 2 - GET /api/auth/me -> /auth/me
+      ---
+      duration_ms: 11.5139
+      type: 'test'
+      ...
+    # Subtest: GET /api/boards -> /boards
+    ok 3 - GET /api/boards -> /boards
+      ---
+      duration_ms: 3.8907
+      type: 'test'
+      ...
+    # Subtest: POST /api/boards -> /boards
+    ok 4 - POST /api/boards -> /boards
+      ---
+      duration_ms: 4.016
+      type: 'test'
+      ...
+    # Subtest: GET /api/boards/b1 -> /boards/b1
+    ok 5 - GET /api/boards/b1 -> /boards/b1
+      ---
+      duration_ms: 3.9939
+      type: 'test'
+      ...
+    # Subtest: GET /api/boards/b1/members?x=1 -> /boards/b1/members?x=1
+    ok 6 - GET /api/boards/b1/members?x=1 -> /boards/b1/members?x=1
+      ---
+      duration_ms: 3.0855
+      type: 'test'
+      ...
+    # Subtest: POST /api/boards/b1/invite -> /boards/b1/invite
+    ok 7 - POST /api/boards/b1/invite -> /boards/b1/invite
+      ---
+      duration_ms: 3.5255
+      type: 'test'
+      ...
+    # Subtest: GET /api/invites/tok -> /invites/tok
+    ok 8 - GET /api/invites/tok -> /invites/tok
+      ---
+      duration_ms: 2.375
+      type: 'test'
+      ...
+    # Subtest: POST /api/invites/tok/accept -> /invites/tok/accept
+    ok 9 - POST /api/invites/tok/accept -> /invites/tok/accept
+      ---
+      duration_ms: 3.8034
+      type: 'test'
+      ...
+    # Subtest: GET /api/canvas/boards/b1/state -> /boards/b1/state
+    ok 10 - GET /api/canvas/boards/b1/state -> /boards/b1/state
+      ---
+      duration_ms: 2.931
+      type: 'test'
+      ...
+    # Subtest: GET /api/canvas/boards/b1/versions -> /boards/b1/versions
+    ok 11 - GET /api/canvas/boards/b1/versions -> /boards/b1/versions
+      ---
+      duration_ms: 2.0296
+      type: 'test'
+      ...
+    # Subtest: GET /api/canvas/boards/b1/versions/v-1 -> /boards/b1/versions/v-1
+    ok 12 - GET /api/canvas/boards/b1/versions/v-1 -> /boards/b1/versions/v-1
+      ---
+      duration_ms: 1.8681
+      type: 'test'
+      ...
+    # Subtest: POST /api/canvas/boards/b1/versions/v-1/restore -> /boards/b1/versions/v-1/restore
+    ok 13 - POST /api/canvas/boards/b1/versions/v-1/restore -> /boards/b1/versions/v-1/restore
+      ---
+      duration_ms: 2.1424
+      type: 'test'
+      ...
+    # Subtest: GET /api/chat/boards/b1/messages?limit=30&before=abc -> /api/chat/boards/b1/messages?limit=30&before=abc
+    ok 14 - GET /api/chat/boards/b1/messages?limit=30&before=abc -> /api/chat/boards/b1/messages?limit=30&before=abc
+      ---
+      duration_ms: 3.4098
+      type: 'test'
+      ...
+    # Subtest: POST /api/chat/boards/b1/messages -> /api/chat/boards/b1/messages
+    ok 15 - POST /api/chat/boards/b1/messages -> /api/chat/boards/b1/messages
+      ---
+      duration_ms: 1.8641
+      type: 'test'
+      ...
+    # Subtest: GET /api/pixels/board -> /api/pixels/board
+    ok 16 - GET /api/pixels/board -> /api/pixels/board
+      ---
+      duration_ms: 1.9355
+      type: 'test'
+      ...
+    # Subtest: GET /api/notifications?limit=20 -> /api/notifications?limit=20
+    ok 17 - GET /api/notifications?limit=20 -> /api/notifications?limit=20
+      ---
+      duration_ms: 1.6948
+      type: 'test'
+      ...
+    # Subtest: PATCH /api/notifications/n-1/read -> /api/notifications/n-1/read
+    ok 18 - PATCH /api/notifications/n-1/read -> /api/notifications/n-1/read
+      ---
+      duration_ms: 1.6212
+      type: 'test'
+      ...
+    1..18
+ok 1 - reescritura de rutas REST hacia cada servicio
+  ---
+  duration_ms: 156.0468
+  type: 'test'
+  ...
+# Subtest: Authorization, Cookie y Origin llegan al servicio sin modificar
+ok 2 - Authorization, Cookie y Origin llegan al servicio sin modificar
+  ---
+  duration_ms: 2.6213
+  type: 'test'
+  ...
+# Subtest: X-Request-ID: se genera, se respeta si es válido y se reemplaza si no
+ok 3 - X-Request-ID: se genera, se respeta si es válido y se reemplaza si no
+  ---
+  duration_ms: 5.6389
+  type: 'test'
+  ...
+# Subtest: /internal/* nunca se publica
+    # Subtest: /internal/events
+    ok 1 - /internal/events
+      ---
+      duration_ms: 2.5526
+      type: 'test'
+      ...
+    # Subtest: /internal/boards/b1/access
+    ok 2 - /internal/boards/b1/access
+      ---
+      duration_ms: 2.0065
+      type: 'test'
+      ...
+    # Subtest: /api/internal/x
+    ok 3 - /api/internal/x
+      ---
+      duration_ms: 1.8623
+      type: 'test'
+      ...
+    # Subtest: /api/boards/internal/x
+    ok 4 - /api/boards/internal/x
+      ---
+      duration_ms: 1.7613
+      type: 'test'
+      ...
+    # Subtest: /api/boards/b1/internal
+    ok 5 - /api/boards/b1/internal
+      ---
+      duration_ms: 2.3437
+      type: 'test'
+      ...
+    # Subtest: /api/chat/internal/events
+    ok 6 - /api/chat/internal/events
+      ---
+      duration_ms: 2.0709
+      type: 'test'
+      ...
+    # Subtest: /api/notifications/internal/events
+    ok 7 - /api/notifications/internal/events
+      ---
+      duration_ms: 2.0934
+      type: 'test'
+      ...
+    # Subtest: /api/canvas/boards/internal/state
+    ok 8 - /api/canvas/boards/internal/state
+      ---
+      duration_ms: 1.7347
+      type: 'test'
+      ...
+    # Subtest: /INTERNAL/x
+    ok 9 - /INTERNAL/x
+      ---
+      duration_ms: 3.2699
+      type: 'test'
+      ...
+    # Subtest: /ws/internal/x
+    ok 10 - /ws/internal/x
+      ---
+      duration_ms: 1.7055
+      type: 'test'
+      ...
+    # Subtest: //internal/x
+    ok 11 - //internal/x
+      ---
+      duration_ms: 1.6916
+      type: 'test'
+      ...
+    # Subtest: /api/./internal/x
+    ok 12 - /api/./internal/x
+      ---
+      duration_ms: 1.6407
+      type: 'test'
+      ...
+    # Subtest: /%69nternal/events
+    ok 13 - /%69nternal/events
+      ---
+      duration_ms: 1.8581
+      type: 'test'
+      ...
+    1..13
+ok 4 - /internal/* nunca se publica
+  ---
+  duration_ms: 28.2953
+  type: 'test'
+  ...
+# Subtest: rutas de canvas fuera del contrato no llegan a Pizarra
+ok 5 - rutas de canvas fuera del contrato no llegan a Pizarra
+  ---
+  duration_ms: 205.1872
+  type: 'test'
+  ...
+# Subtest: la web SSR recibe las páginas; las APIs no
+ok 6 - la web SSR recibe las páginas; las APIs no
+  ---
+  duration_ms: 2.9937
+  type: 'test'
+  ...
+# Subtest: WS Pizarra: el JWT de Authorization o de la cookie (web) se añade SOLO como ?token= hacia el servicio
+ok 7 - WS Pizarra: el JWT de Authorization o de la cookie (web) se añade SOLO como ?token= hacia el servicio
+  ---
+  duration_ms: 23.0343
+  type: 'test'
+  ...
+# Subtest: WS Pizarra: con PIZARRA_WS_TOKEN_QUERY=off no se añade ningún token a la URL
+ok 8 - WS Pizarra: con PIZARRA_WS_TOKEN_QUERY=off no se añade ningún token a la URL
+  ---
+  duration_ms: 8.4882
+  type: 'test'
+  ...
+# Subtest: WS Chat y Pixels: sin token en la URL; credenciales intactas
+ok 9 - WS Chat y Pixels: sin token en la URL; credenciales intactas
+  ---
+  duration_ms: 15.6145
+  type: 'test'
+  ...
+# Subtest: límite de tasa: /api/auth/ responde 429 con JSON y las demás rutas no se ven afectadas
+ok 10 - límite de tasa: /api/auth/ responde 429 con JSON y las demás rutas no se ven afectadas
+  ---
+  duration_ms: 28.6795
+  type: 'test'
+  ...
+# Subtest: un servicio caído produce 502 JSON y el gateway sigue sirviendo el resto
+ok 11 - un servicio caído produce 502 JSON y el gateway sigue sirviendo el resto
+  ---
+  duration_ms: 2654.9477
+  type: 'test'
+  ...
+# Subtest: /healthz del gateway no depende de los servicios
+ok 12 - /healthz del gateway no depende de los servicios
+  ---
+  duration_ms: 1.3066
+  type: 'test'
+  ...
+# Subtest: HTTP plano solo redirige a HTTPS (301) y no llega a ningún servicio
+    # Subtest: GET /
+    ok 1 - GET /
+      ---
+      duration_ms: 4.3555
+      type: 'test'
+      ...
+    # Subtest: GET /login?next=/boards
+    ok 2 - GET /login?next=/boards
+      ---
+      duration_ms: 3.2321
+      type: 'test'
+      ...
+    # Subtest: POST /api/auth/login
+    ok 3 - POST /api/auth/login
+      ---
+      duration_ms: 0.963
+      type: 'test'
+      ...
+    # Subtest: GET /ws/chat/boards/b1
+    ok 4 - GET /ws/chat/boards/b1
+      ---
+      duration_ms: 1.4102
+      type: 'test'
+      ...
+    1..4
+ok 13 - HTTP plano solo redirige a HTTPS (301) y no llega a ningún servicio
+  ---
+  duration_ms: 11.5759
+  type: 'test'
+  ...
+# Subtest: HTTPS envía HSTS en respuestas propias y de los servicios
+ok 14 - HTTPS envía HSTS en respuestas propias y de los servicios
+  ---
+  duration_ms: 9.9883
+  type: 'test'
+  ...
+# Subtest: TLS: 1.3 por defecto, 1.2 admitido, 1.0 y 1.1 rechazados por el gateway
+ok 15 - TLS: 1.3 por defecto, 1.2 admitido, 1.0 y 1.1 rechazados por el gateway
+  ---
+  duration_ms: 17.0679
+  type: 'test'
+  ...
+# Subtest: S2 lista blanca: lo no declarado -> 404 JSON del gateway, sin upstream
+    # Subtest: /s2-no-existe
+    ok 1 - /s2-no-existe
+      ---
+      duration_ms: 216.0787
+      type: 'test'
+      ...
+    # Subtest: /api/s2-no-existe
+    ok 2 - /api/s2-no-existe
+      ---
+      duration_ms: 209.2568
+      type: 'test'
+      ...
+    # Subtest: /api/auth/
+    ok 3 - /api/auth/
+      ---
+      duration_ms: 216.0407
+      type: 'test'
+      ...
+    # Subtest: /api/boards/
+    ok 4 - /api/boards/
+      ---
+      duration_ms: 216.9859
+      type: 'test'
+      ...
+    # Subtest: /bff/x
+    ok 5 - /bff/x
+      ---
+      duration_ms: 205.6113
+      type: 'test'
+      ...
+    # Subtest: /api/pixels/otra
+    ok 6 - /api/pixels/otra
+      ---
+      duration_ms: 205.7085
+      type: 'test'
+      ...
+    # Subtest: /api/chat/boards/b1/otra
+    ok 7 - /api/chat/boards/b1/otra
+      ---
+      duration_ms: 207.9253
+      type: 'test'
+      ...
+    # Subtest: /_next/otra
+    ok 8 - /_next/otra
+      ---
+      duration_ms: 223.603
+      type: 'test'
+      ...
+    # Subtest: /__gw/400
+    ok 9 - /__gw/400
+      ---
+      duration_ms: 215.3246
+      type: 'test'
+      ...
+    # Subtest: /%2569nternal/events (crudo)
+    ok 10 - /%2569nternal/events (crudo)
+      ---
+      duration_ms: 216.6503
+      type: 'test'
+      ...
+    # Subtest: /api/chat/%2569nternal/events (crudo)
+    ok 11 - /api/chat/%2569nternal/events (crudo)
+      ---
+      duration_ms: 222.6397
+      type: 'test'
+      ...
+    # Subtest: /api/boards/%69nternal/x (crudo)
+    ok 12 - /api/boards/%69nternal/x (crudo)
+      ---
+      duration_ms: 211.9523
+      type: 'test'
+      ...
+    1..12
+ok 16 - S2 lista blanca: lo no declarado -> 404 JSON del gateway, sin upstream
+  ---
+  duration_ms: 2570.0722
+  type: 'test'
+  ...
+# Subtest: S2 lista blanca: las rutas reales de la web y de la UI de Pixels sí llegan a su servicio
+    # Subtest: GET / -> /
+    ok 1 - GET / -> /
+      ---
+      duration_ms: 2.7678
+      type: 'test'
+      ...
+    # Subtest: GET /login?next=/boards -> /login?next=/boards
+    ok 2 - GET /login?next=/boards -> /login?next=/boards
+      ---
+      duration_ms: 1.787
+      type: 'test'
+      ...
+    # Subtest: POST /login -> /login
+    ok 3 - POST /login -> /login
+      ---
+      duration_ms: 1.8572
+      type: 'test'
+      ...
+    # Subtest: GET /register -> /register
+    ok 4 - GET /register -> /register
+      ---
+      duration_ms: 1.7086
+      type: 'test'
+      ...
+    # Subtest: GET /boards/b1 -> /boards/b1
+    ok 5 - GET /boards/b1 -> /boards/b1
+      ---
+      duration_ms: 1.5876
+      type: 'test'
+      ...
+    # Subtest: GET /join/tok_en-43 -> /join/tok_en-43
+    ok 6 - GET /join/tok_en-43 -> /join/tok_en-43
+      ---
+      duration_ms: 1.5887
+      type: 'test'
+      ...
+    # Subtest: GET /session/expired -> /session/expired
+    ok 7 - GET /session/expired -> /session/expired
+      ---
+      duration_ms: 1.6726
+      type: 'test'
+      ...
+    # Subtest: GET /bff/api/boards?x=1 -> /bff/api/boards?x=1
+    ok 8 - GET /bff/api/boards?x=1 -> /bff/api/boards?x=1
+      ---
+      duration_ms: 1.5579
+      type: 'test'
+      ...
+    # Subtest: DELETE /bff/api/boards/b1 -> /bff/api/boards/b1
+    ok 9 - DELETE /bff/api/boards/b1 -> /bff/api/boards/b1
+      ---
+      duration_ms: 1.5054
+      type: 'test'
+      ...
+    # Subtest: GET /_next/static/chunks/a-1.js -> /_next/static/chunks/a-1.js
+    ok 10 - GET /_next/static/chunks/a-1.js -> /_next/static/chunks/a-1.js
+      ---
+      duration_ms: 1.524
+      type: 'test'
+      ...
+    # Subtest: GET /favicon.svg -> /favicon.svg
+    ok 11 - GET /favicon.svg -> /favicon.svg
+      ---
+      duration_ms: 1.5706
+      type: 'test'
+      ...
+    # Subtest: GET /collaboard-logo.svg -> /collaboard-logo.svg
+    ok 12 - GET /collaboard-logo.svg -> /collaboard-logo.svg
+      ---
+      duration_ms: 1.6514
+      type: 'test'
+      ...
+    # Subtest: GET /pixels/ -> /
+    ok 13 - GET /pixels/ -> /
+      ---
+      duration_ms: 1.5347
+      type: 'test'
+      ...
+    # Subtest: GET /pixels/assets/index-x.js -> /assets/index-x.js
+    ok 14 - GET /pixels/assets/index-x.js -> /assets/index-x.js
+      ---
+      duration_ms: 1.5413
+      type: 'test'
+      ...
+    # Subtest: /pixels -> 301 /pixels/ (relativo)
+    ok 15 - /pixels -> 301 /pixels/ (relativo)
+      ---
+      duration_ms: 1.0768
+      type: 'test'
+      ...
+    1..15
+ok 17 - S2 lista blanca: las rutas reales de la web y de la UI de Pixels sí llegan a su servicio
+  ---
+  duration_ms: 26.6647
+  type: 'test'
+  ...
+# Subtest: S2 métodos: fuera de los permitidos -> 405 JSON con Allow, sin upstream; los permitidos llegan
+    # Subtest: DELETE /login
+    ok 1 - DELETE /login
+      ---
+      duration_ms: 202.6808
+      type: 'test'
+      ...
+    # Subtest: PUT /api/auth/login
+    ok 2 - PUT /api/auth/login
+      ---
+      duration_ms: 207.9168
+      type: 'test'
+      ...
+    # Subtest: PUT /api/boards/b1
+    ok 3 - PUT /api/boards/b1
+      ---
+      duration_ms: 206.1281
+      type: 'test'
+      ...
+    # Subtest: POST /_next/static/chunks/a.js
+    ok 4 - POST /_next/static/chunks/a.js
+      ---
+      duration_ms: 221.4434
+      type: 'test'
+      ...
+    # Subtest: PATCH /pixels/
+    ok 5 - PATCH /pixels/
+      ---
+      duration_ms: 208.9636
+      type: 'test'
+      ...
+    # Subtest: POST /api/notifications
+    ok 6 - POST /api/notifications
+      ---
+      duration_ms: 209.8669
+      type: 'test'
+      ...
+    # Subtest: TRACE / (crudo)
+    ok 7 - TRACE / (crudo)
+      ---
+      duration_ms: 7.8172
+      type: 'test'
+      ...
+    # Subtest: PATCH /api/boards/b1 llega
+    ok 8 - PATCH /api/boards/b1 llega
+      ---
+      duration_ms: 2.2419
+      type: 'test'
+      ...
+    # Subtest: DELETE /api/notifications/n-1 llega
+    ok 9 - DELETE /api/notifications/n-1 llega
+      ---
+      duration_ms: 1.6573
+      type: 'test'
+      ...
+    # Subtest: PATCH /api/canvas/boards/b1/versions/v-1 llega
+    ok 10 - PATCH /api/canvas/boards/b1/versions/v-1 llega
+      ---
+      duration_ms: 1.6857
+      type: 'test'
+      ...
+    1..10
+ok 18 - S2 métodos: fuera de los permitidos -> 405 JSON con Allow, sin upstream; los permitidos llegan
+  ---
+  duration_ms: 1272.4435
+  type: 'test'
+  ...
+# Subtest: S2 Host: fuera de GATEWAY_ALLOWED_HOSTS -> 421 JSON en :443 y :80, sin upstream
+    # Subtest: :443 Host falso
+    ok 1 - :443 Host falso
+      ---
+      duration_ms: 214.9935
+      type: 'test'
+      ...
+    # Subtest: :443 forma absoluta
+    ok 2 - :443 forma absoluta
+      ---
+      duration_ms: 218.2373
+      type: 'test'
+      ...
+    # Subtest: :80 Host falso (no redirige a él)
+    ok 3 - :80 Host falso (no redirige a él)
+      ---
+      duration_ms: 206.8238
+      type: 'test'
+      ...
+    # Subtest: Host permitidos: localhost, 127.0.0.1 y gateway
+    ok 4 - Host permitidos: localhost, 127.0.0.1 y gateway
+      ---
+      duration_ms: 19.1747
+      type: 'test'
+      ...
+    1..4
+ok 19 - S2 Host: fuera de GATEWAY_ALLOWED_HOSTS -> 421 JSON en :443 y :80, sin upstream
+  ---
+  duration_ms: 660.1571
+  type: 'test'
+  ...
+# Subtest: S2 saneado: el servicio no recibe IP, identidad ni rutas falsificadas por el cliente
+ok 20 - S2 saneado: el servicio no recibe IP, identidad ni rutas falsificadas por el cliente
+  ---
+  duration_ms: 4.3017
+  type: 'test'
+  ...
+# Subtest: S2 cabeceras de seguridad: una sola vez en respuestas del servicio y en los errores del gateway
+    # Subtest: 200 del servicio
+    ok 1 - 200 del servicio
+      ---
+      duration_ms: 1.7895
+      type: 'test'
+      ...
+    # Subtest: 404 del gateway
+    ok 2 - 404 del gateway
+      ---
+      duration_ms: 6.2349
+      type: 'test'
+      ...
+    # Subtest: 405 del gateway
+    ok 3 - 405 del gateway
+      ---
+      duration_ms: 1.0505
+      type: 'test'
+      ...
+    # Subtest: 502 del gateway
+    ok 4 - 502 del gateway
+      ---
+      duration_ms: 2522.6458
+      type: 'test'
+      ...
+    # Subtest: 421 del gateway (crudo)
+    ok 5 - 421 del gateway (crudo)
+      ---
+      duration_ms: 6.5691
+      type: 'test'
+      ...
+    # Subtest: 400 al leer la ruta (crudo)
+    ok 6 - 400 al leer la ruta (crudo)
+      ---
+      duration_ms: 5.232
+      type: 'test'
+      ...
+    # Subtest: CSP de /pixels/: Google Fonts solo ahí, con la regla estricta en Report-Only
+    ok 7 - CSP de /pixels/: Google Fonts solo ahí, con la regla estricta en Report-Only
+      ---
+      duration_ms: 3.1849
+      type: 'test'
+      ...
+    1..7
+ok 21 - S2 cabeceras de seguridad: una sola vez en respuestas del servicio y en los errores del gateway
+  ---
+  duration_ms: 2547.7599
+  type: 'test'
+  ...
+# Subtest: S2 errores al leer la petición y tamaños: JSON del gateway, sin upstream
+    # Subtest: /%2e%2e/ en la ruta
+    ok 1 - /%2e%2e/ en la ruta
+      ---
+      duration_ms: 5.5164
+      type: 'test'
+      ...
+    # Subtest: CONNECT
+    ok 2 - CONNECT
+      ---
+      duration_ms: 5.1356
+      type: 'test'
+      ...
+    # Subtest: URI de 12 000 bytes
+    ok 3 - URI de 12 000 bytes
+      ---
+      duration_ms: 5.2619
+      type: 'test'
+      ...
+    # Subtest: cabecera de 20 000 bytes
+    ok 4 - cabecera de 20 000 bytes
+      ---
+      duration_ms: 5.2112
+      type: 'test'
+      ...
+    # Subtest: línea plegada (obs-fold)
+    ok 5 - línea plegada (obs-fold)
+      ---
+      duration_ms: 4.9246
+      type: 'test'
+      ...
+    # Subtest: HTTP plano contra el puerto TLS (497)
+    ok 6 - HTTP plano contra el puerto TLS (497)
+      ---
+      duration_ms: 2.3433
+      type: 'test'
+      ...
+    # Subtest: cuerpo de 2 MiB en /api/boards (límite general 1m)
+    ok 7 - cuerpo de 2 MiB en /api/boards (límite general 1m)
+      ---
+      duration_ms: 5220.3434
+      type: 'test'
+      ...
+    # Subtest: cuerpo de 100 KiB en /api/auth/login (límite de la ruta 16k)
+    ok 8 - cuerpo de 100 KiB en /api/auth/login (límite de la ruta 16k)
+      ---
+      duration_ms: 212.8262
+      type: 'test'
+      ...
+    1..8
+ok 22 - S2 errores al leer la petición y tamaños: JSON del gateway, sin upstream
+  ---
+  duration_ms: 5462.8025
+  type: 'test'
+  ...
+# Subtest: S2 límites (variante limited): zona web, peticiones simultáneas por IP y WebSocket por IP
+    # Subtest: zona web: ráfaga contra /login -> 429 JSON con Retry-After; las APIs no se ven afectadas
+    ok 1 - zona web: ráfaga contra /login -> 429 JSON con Retry-After; las APIs no se ven afectadas
+      ---
+      duration_ms: 26.0453
+      type: 'test'
+      ...
+    # Subtest: peticiones simultáneas (LIMIT_CONN_PER_IP=3): la 4.ª en curso -> 429 al instante
+    ok 2 - peticiones simultáneas (LIMIT_CONN_PER_IP=3): la 4.ª en curso -> 429 al instante
+      ---
+      duration_ms: 533.7344
+      type: 'test'
+      ...
+    # Subtest: WebSocket por IP (LIMIT_CONN_WS_PER_IP=1): el 2.º -> 429; las peticiones HTTP no cuentan
+    ok 3 - WebSocket por IP (LIMIT_CONN_WS_PER_IP=1): el 2.º -> 429; las peticiones HTTP no cuentan
+      ---
+      duration_ms: 3234.7355
+      type: 'test'
+      ...
+    1..3
+ok 23 - S2 límites (variante limited): zona web, peticiones simultáneas por IP y WebSocket por IP
+  ---
+  duration_ms: 3795.373
+  type: 'test'
+  ...
+# Subtest: S2 tiempos: cabeceras lentas y cuerpo detenido se cortan a los 10 s (client_header/body_timeout)
+    # Subtest: cabeceras lentas: cierre a los 10 s
+    ok 1 - cabeceras lentas: cierre a los 10 s
+      ---
+      duration_ms: 0.2014
+      type: 'test'
+      ...
+    # Subtest: cuerpo detenido: cierre a los 10.011 s
+    ok 2 - cuerpo detenido: cierre a los 10.011 s
+      ---
+      duration_ms: 0.0807
+      type: 'test'
+      ...
+    1..2
+ok 24 - S2 tiempos: cabeceras lentas y cuerpo detenido se cortan a los 10 s (client_header/body_timeout)
+  ---
+  duration_ms: 10019.1638
+  type: 'test'
+  ...
+1..24
+# tests 120
+# suites 0
+# pass 120
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 29627.2919

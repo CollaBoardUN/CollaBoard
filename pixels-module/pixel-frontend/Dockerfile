@@ -11,10 +11,13 @@ RUN npm install
 ARG VITE_BACKEND_HTTP_URL=http://localhost:8000
 ARG VITE_BACKEND_WS_URL=ws://localhost:8000/ws/pixels
 ARG VITE_PIZARRA_URL=http://localhost:5173
+# Ruta base de la SPA (P3 · S2: /pixels/ cuando se sirve detrás del gateway).
+ARG VITE_BASE_PATH=/
 
 ENV VITE_BACKEND_HTTP_URL=$VITE_BACKEND_HTTP_URL \
     VITE_BACKEND_WS_URL=$VITE_BACKEND_WS_URL \
-    VITE_PIZARRA_URL=$VITE_PIZARRA_URL
+    VITE_PIZARRA_URL=$VITE_PIZARRA_URL \
+    VITE_BASE_PATH=$VITE_BASE_PATH
 
 # Copy source code and build
 COPY . .

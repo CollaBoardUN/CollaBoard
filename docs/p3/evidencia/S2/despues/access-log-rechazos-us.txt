@@ -1,0 +1,65 @@
+# Líneas del access log del gateway (P3) de cada rechazo del catálogo
+# Generado desde docs/p3/evidencia/S2/despues/s2_proxy-p3.json (campo log de cada caso): us=- = el gateway no consultó a ningún upstream.
+
+A01 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:00+00:00] "GET /internal/events" 404 rid=s2-A01-92527f up=- us=- rt=0.000
+A02 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:00+00:00] "POST /internal/boards/b1/access" 404 rid=s2-A02-92527f up=- us=- rt=0.001
+A03 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:00+00:00] "GET /internal/events" 404 rid=s2-A03-92527f up=- us=- rt=0.000
+A04 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:00+00:00] "GET /INTERNAL/events" 404 rid=s2-A04-92527f up=- us=- rt=0.000
+A05 OK · upstream: no (us=- en 1 línea, por ventana de tiempo)
+    172.19.0.1 [2026-11-19T23:19:01+00:00] "GET /__gw/400" 400 rid=116dd2ea4736d5b4b6299d414ee49674 up=- us=- rt=0.001
+A06 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /api/internal/events" 404 rid=s2-A06-92527f up=- us=- rt=0.000
+A07 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /internal/boards/b1/access" 404 rid=s2-A07-92527f up=- us=- rt=0.000
+A08 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /internal/events" 404 rid=s2-A08-92527f up=- us=- rt=0.000
+A09 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /%69nternal/events" 404 rid=s2-A09-92527f up=- us=- rt=0.000
+A10 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /internal/events" 404 rid=s2-A10-92527f up=- us=- rt=0.000
+A11 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /api/chat/%69nternal/events" 404 rid=s2-A11-92527f up=- us=- rt=0.000
+B01 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:02+00:00] "TRACE /" 405 rid=s2-B01-92527f up=- us=- rt=0.000
+B02 OK · upstream: no (us=- en 1 línea, por ventana de tiempo)
+    172.19.0.1 [2026-11-19T23:19:03+00:00] "GET /__gw/400" 400 rid=c928de69afe97cab942e9e3f9f7d06e0 up=- us=- rt=0.001
+B03 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:04+00:00] "DELETE /login" 405 rid=s2-B03-92527f up=- us=- rt=0.000
+B04 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:04+00:00] "PUT /api/auth/login" 405 rid=s2-B04-92527f up=- us=- rt=0.001
+C01 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:04+00:00] "GET /" 421 rid=s2-C01-92527f up=- us=- rt=0.000
+C02 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:04+00:00] "GET /" 421 rid=s2-C02-92527f up=- us=- rt=0.000
+D01 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:09+00:00] "POST /api/boards" 413 rid=s2-D01-92527f up=- us=- rt=5.002
+D02 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:09+00:00] "GET /__gw/431" 431 rid=s2-D02-92527f up=- us=- rt=0.001
+D03 OK · upstream: no (us=- en 1 línea, por ventana de tiempo)
+    172.19.0.1 [2026-11-19T23:19:10+00:00] "GET /__gw/414" 414 rid=e9682207eda06ffdaeadc716762d2e07 up=- us=- rt=0.000
+D04 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:11+00:00] "POST /api/auth/login" 413 rid=s2-D04-92527f up=- us=- rt=0.001
+E02 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:27+00:00] "POST /boards" 408 rid=s2-E02-92527f up=- us=- rt=10.009
+E03 OK · upstream: no (us=- en 60 líneas)
+    172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-60 up=- us=- rt=5.006
+    172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-61 up=- us=- rt=5.001
+    172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-62 up=- us=- rt=4.999
+E04 OK · upstream: no (us=- en 172 líneas)
+    172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-118 up=- us=- rt=0.000
+    172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-119 up=- us=- rt=0.000
+    172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-120 up=- us=- rt=0.000
+E06 OK · upstream: no (us=- en 10 líneas)
+    172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-30 up=- us=- rt=0.000
+    172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-31 up=- us=- rt=0.000
+    172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-32 up=- us=- rt=0.000
+F01 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /s2-no-existe" 404 rid=s2-F01-92527f up=- us=- rt=0.000
+F02 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /api/s2-no-existe" 404 rid=s2-F02-92527f up=- us=- rt=0.000
+F03 OK · upstream: no (us=- en 1 línea)
+    172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /api/canvas/boards/b1/otra-cosa" 404 rid=s2-F03-92527f up=- us=- rt=0.000

@@ -1,6 +1,6 @@
 # ADR 0014 — JWT de corta duración y sesión con refresh rotatorio
 
-**Estado:** Propuesta para revisión y ejecución de pruebas del P3 · **Responsable:** Cristian García
+**Estado:** Aceptada (verificada el 21 de noviembre de 2026) · **Responsable:** Cristian García
 
 ## Contexto
 
@@ -12,7 +12,7 @@ En el P2 `authentication-module/internal/config/config.go` fijaba `TokenTTL: tim
 - Refresh token opaco aleatorio de 256 bits, no un segundo JWT. Se guarda únicamente SHA-256 en `auth.refresh_tokens`, junto con usuario, familia, vencimiento, revocación, reemplazo y agente de usuario.
 - En cada renovación, una transacción bloquea el refresh presentado, lo marca como usado y crea el siguiente. Reutilizar el token anterior revoca la familia completa; el siguiente refresh también deja de servir.
 - `/auth/logout` revoca en PostgreSQL la familia de refresh tokens de la sesión. El BFF mantiene `cb_session` HttpOnly SameSite=Lax Path=/ y `cb_refresh` HttpOnly SameSite=Strict Path=/session; ambas deben usar Secure sobre HTTPS (coordinación S1).
-- La verificación del JWT de acceso sigue siendo local y su revocación no es instantánea: un JWT robado puede seguir válido hasta 15 minutos. Los WebSocket ya abiertos deben implementar política de cierre por expiración o documentarse como limitación pendiente.
+- La verificación del JWT de acceso sigue siendo local y su revocación no es instantánea: un JWT robado puede seguir válido hasta 15 minutos. Los WebSocket ya abiertos no se cierran al vencer el JWT; queda documentado como riesgo residual.
 
 ## Alternativas descartadas
 
@@ -30,7 +30,7 @@ En el P2 `authentication-module/internal/config/config.go` fijaba `TokenTTL: tim
 
 ## Verificación requerida
 
-Comandos: `node security-tests/s4_sesion.mjs` y `cd authentication-module && go test ./...` desde un clon actualizado. Se requiere guardar salida real, estado CI, captura de un refresh reutilizado (401) y comprobar renovación web con TTL de prueba `JWT_ACCESS_TTL=5s`. No se han incorporado resultados de ejecución a esta ADR.
+Comandos: `node security-tests/s4_sesion.mjs` y `cd authentication-module && go test ./...` desde un clon actualizado. Se verifica el refresh reutilizado (401) y la renovación web con TTL de prueba `JWT_ACCESS_TTL=5s`; los resultados están en la sección siguiente.
 
 ## Resultados de verificación P3 — 21 de noviembre de 2026
 

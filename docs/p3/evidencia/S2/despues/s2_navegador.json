@@ -1,0 +1,109 @@
+{
+  "web": "https://localhost:8443",
+  "pasos": [
+    {
+      "paso": "registro desde la web (Server Action)",
+      "ok": true,
+      "s": 0.56,
+      "detalle": ""
+    },
+    {
+      "paso": "crear tablero y verlo en el dashboard",
+      "ok": true,
+      "s": 0.12,
+      "detalle": ""
+    },
+    {
+      "paso": "abrir el tablero (wss://…/ws/boards) y dibujar",
+      "ok": true,
+      "s": 3.64,
+      "detalle": ""
+    },
+    {
+      "paso": "UI de Pixels en /pixels/ (fetch + wss://…/ws/pixels)",
+      "ok": true,
+      "s": 5.44,
+      "detalle": ""
+    },
+    {
+      "paso": "recargar el dashboard 3 veces",
+      "ok": true,
+      "s": 0.2,
+      "detalle": ""
+    }
+  ],
+  "csp_bloqueantes": [],
+  "csp_solo_reportadas": [
+    {
+      "directiva": "style-src-elem",
+      "bloqueado": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+      "origen": "https://localhost:8443/pixels/",
+      "linea": 11,
+      "modo": "report",
+      "paso": "UI de Pixels en /pixels/ (fetch + wss://…/ws/pixels)"
+    },
+    {
+      "directiva": "font-src",
+      "bloqueado": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2",
+      "origen": "",
+      "linea": 0,
+      "modo": "report",
+      "paso": "UI de Pixels en /pixels/ (fetch + wss://…/ws/pixels)"
+    },
+    {
+      "directiva": "font-src",
+      "bloqueado": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2",
+      "origen": "",
+      "linea": 0,
+      "modo": "report",
+      "paso": "UI de Pixels en /pixels/ (fetch + wss://…/ws/pixels)"
+    },
+    {
+      "directiva": "font-src",
+      "bloqueado": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2",
+      "origen": "",
+      "linea": 0,
+      "modo": "report",
+      "paso": "UI de Pixels en /pixels/ (fetch + wss://…/ws/pixels)"
+    },
+    {
+      "directiva": "font-src",
+      "bloqueado": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2",
+      "origen": "",
+      "linea": 0,
+      "modo": "report",
+      "paso": "UI de Pixels en /pixels/ (fetch + wss://…/ws/pixels)"
+    },
+    {
+      "directiva": "font-src",
+      "bloqueado": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2",
+      "origen": "",
+      "linea": 0,
+      "modo": "report",
+      "paso": "UI de Pixels en /pixels/ (fetch + wss://…/ws/pixels)"
+    },
+    {
+      "directiva": "font-src",
+      "bloqueado": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2",
+      "origen": "",
+      "linea": 0,
+      "modo": "report",
+      "paso": "UI de Pixels en /pixels/ (fetch + wss://…/ws/pixels)"
+    },
+    {
+      "directiva": "font-src",
+      "bloqueado": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "origen": "",
+      "linea": 0,
+      "modo": "report",
+      "paso": "UI de Pixels en /pixels/ (fetch + wss://…/ws/pixels)"
+    }
+  ],
+  "csp_consola_bloqueantes": [],
+  "errores_js": [],
+  "peticiones": 141,
+  "max_peticiones_simultaneas": 11,
+  "max_websocket_abiertos": 4,
+  "pico_zona_web_en_1s": 19,
+  "respuestas_429": []
+}

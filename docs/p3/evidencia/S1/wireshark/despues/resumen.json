@@ -1,0 +1,20 @@
+{
+  "base": "https://localhost:8443",
+  "interfaz": "\\Device\\NPF_Loopback",
+  "captura": "captura.pcapng",
+  "protocolos": "===================================================================\nProtocol Hierarchy Statistics\nFilter: \n\nnull                                     frames:526 bytes:508118\n  ipv6                                   frames:526 bytes:508118\n    tcp                                  frames:526 bytes:508118\n      tls                                frames:242 bytes:489798\n        tcp.segments                     frames:29 bytes:275095\n          tls                            frames:25 bytes:262427\n===================================================================",
+  "apariciones": {
+    "sin llaves (atacante)": {
+      "correo": 0,
+      "contraseña": 0,
+      "JWT de sesión": 0,
+      "mensaje de chat": 0
+    },
+    "con las llaves del navegador": {
+      "correo": 16,
+      "contraseña": 24,
+      "JWT de sesión": 90,
+      "mensaje de chat": 36
+    }
+  }
+}

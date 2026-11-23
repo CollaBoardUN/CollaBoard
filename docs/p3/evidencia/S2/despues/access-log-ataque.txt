@@ -1,0 +1,769 @@
+gateway-1  | 2026-11-19T23:19:00.726115520Z 172.19.0.1 [2026-11-19T23:19:00+00:00] "GET /login" 200 rid=5c36c9271bd79107628fe8b418c12fd6 up=172.18.0.5:3000 us=200 rt=0.019
+gateway-1  | 2026-11-19T23:19:00.736965333Z 172.19.0.1 [2026-11-19T23:19:00+00:00] "GET /boards" 401 rid=234213413b2194d633b89f38997a48ac up=172.18.0.9:8000 us=401 rt=0.003
+gateway-1  | 2026-11-19T23:19:00.744404602Z 172.19.0.1 [2026-11-19T23:19:00+00:00] "GET /api/pixels/board" 200 rid=9addddb4bff8a17fa895b6b7056e9d4f up=172.18.0.12:8000 us=200 rt=0.002
+gateway-1  | 2026-11-19T23:19:00.751729029Z 172.19.0.1 [2026-11-19T23:19:00+00:00] "GET /" 200 rid=8446fe38ffb83ec8dd03b57f811fb192 up=172.19.0.3:80 us=200 rt=0.002
+gateway-1  | 2026-11-19T23:19:00.757960546Z 172.19.0.1 [2026-11-19T23:19:00+00:00] "GET /internal/events" 404 rid=s2-A01-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:00.764645483Z 172.19.0.1 [2026-11-19T23:19:00+00:00] "POST /internal/boards/b1/access" 404 rid=s2-A02-92527f up=- us=- rt=0.001
+gateway-1  | 2026-11-19T23:19:00.770475640Z 172.19.0.1 [2026-11-19T23:19:00+00:00] "GET /internal/events" 404 rid=s2-A03-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:00.777123704Z 172.19.0.1 [2026-11-19T23:19:00+00:00] "GET /INTERNAL/events" 404 rid=s2-A04-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:01.168829197Z 172.19.0.1 [2026-11-19T23:19:01+00:00] "GET /__gw/400" 400 rid=116dd2ea4736d5b4b6299d414ee49674 up=- us=- rt=0.001
+gateway-1  | 2026-11-19T23:19:02.162906005Z 172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /api/internal/events" 404 rid=s2-A06-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:02.169078464Z 172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /internal/boards/b1/access" 404 rid=s2-A07-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:02.175431508Z 172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /internal/events" 404 rid=s2-A08-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:02.181943156Z 172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /%69nternal/events" 404 rid=s2-A09-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:02.188658228Z 172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /internal/events" 404 rid=s2-A10-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:02.194611572Z 172.19.0.1 [2026-11-19T23:19:02+00:00] "GET /api/chat/%69nternal/events" 404 rid=s2-A11-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:02.200626608Z 172.19.0.1 [2026-11-19T23:19:02+00:00] "TRACE /" 405 rid=s2-B01-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:03.172737703Z 172.19.0.1 [2026-11-19T23:19:03+00:00] "GET /__gw/400" 400 rid=c928de69afe97cab942e9e3f9f7d06e0 up=- us=- rt=0.001
+gateway-1  | 2026-11-19T23:19:04.160235757Z 172.19.0.1 [2026-11-19T23:19:04+00:00] "DELETE /login" 405 rid=s2-B03-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:04.160260677Z 2026/11/19 23:19:04 [error] 79#79: *796 access forbidden by rule, client: 172.19.0.1, server: _, request: "DELETE /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:04.165891404Z 2026/11/19 23:19:04 [error] 79#79: *797 access forbidden by rule, client: 172.19.0.1, server: _, request: "PUT /api/auth/login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:04.166166160Z 172.19.0.1 [2026-11-19T23:19:04+00:00] "PUT /api/auth/login" 405 rid=s2-B04-92527f up=- us=- rt=0.001
+gateway-1  | 2026-11-19T23:19:04.171538171Z 172.19.0.1 [2026-11-19T23:19:04+00:00] "GET /" 421 rid=s2-C01-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:04.177554266Z 172.19.0.1 [2026-11-19T23:19:04+00:00] "GET /" 421 rid=s2-C02-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:04.185833618Z 172.19.0.1 [2026-11-19T23:19:04+00:00] "GET /boards" 401 rid=645bd75f4fc1970682db3acb2eff5ac9 up=172.18.0.9:8000 us=401 rt=0.003
+gateway-1  | 2026-11-19T23:19:04.192514598Z 172.19.0.1 [2026-11-19T23:19:04+00:00] "GET /__gw/400" 400 rid=s2-C09-92527f up=- us=- rt=0.001
+gateway-1  | 2026-11-19T23:19:04.198886432Z 172.19.0.1 [2026-11-19T23:19:04+00:00] "GET /__gw/400" 400 rid=16b4828b874217b93f3ce8cfdd6afac0 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:04.204809076Z 2026/11/19 23:19:04 [error] 79#79: *804 client intended to send too large body: 2097152 bytes, client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:09.206814185Z 172.19.0.1 [2026-11-19T23:19:09+00:00] "POST /api/boards" 413 rid=s2-D01-92527f up=- us=- rt=5.002
+gateway-1  | 2026-11-19T23:19:09.214881538Z 172.19.0.1 [2026-11-19T23:19:09+00:00] "GET /__gw/431" 431 rid=s2-D02-92527f up=- us=- rt=0.001
+gateway-1  | 2026-11-19T23:19:10.169055174Z 172.19.0.1 [2026-11-19T23:19:10+00:00] "GET /__gw/414" 414 rid=e9682207eda06ffdaeadc716762d2e07 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:11.186514196Z 2026/11/19 23:19:11 [error] 79#79: *808 client intended to send too large body: 102431 bytes, client: 172.19.0.1, server: _, request: "POST /api/auth/login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:11.186690092Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "POST /api/auth/login" 413 rid=s2-D04-92527f up=- us=- rt=0.001
+gateway-1  | 2026-11-19T23:19:11.193133683Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /s2-no-existe" 404 rid=s2-F01-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:11.198828734Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /api/s2-no-existe" 404 rid=s2-F02-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:11.204392278Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /api/canvas/boards/b1/otra-cosa" 404 rid=s2-F03-92527f up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:11.220847694Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /login" 200 rid=2eb206b91dcc3226859b315004dccf8d up=172.18.0.5:3000 us=200 rt=0.011
+gateway-1  | 2026-11-19T23:19:11.230511889Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /boards" 401 rid=46967c1f392320333c887488e71d68a1 up=172.18.0.9:8000 us=401 rt=0.003
+gateway-1  | 2026-11-19T23:19:11.238233031Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /auth/me" 401 rid=dd6db0fb5ab68f8e02f6a34a3db8b07b up=172.18.0.11:8001 us=401 rt=0.001
+gateway-1  | 2026-11-19T23:19:11.245067924Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /api/pixels/board" 200 rid=e756013f4eb4986e9ba1e823bd443cef up=172.18.0.12:8000 us=200 rt=0.001
+gateway-1  | 2026-11-19T23:19:11.262311255Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /api/notifications" 401 rid=40f84342b4df1ae07aed761ab8dcfd03 up=172.18.0.14:8080 us=401 rt=0.011
+gateway-1  | 2026-11-19T23:19:11.272445767Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /api/chat/boards/b1/messages" 401 rid=f2a49bda4ab0d632f42479eecbf89bef up=172.18.0.13:8090 us=401 rt=0.004
+gateway-1  | 2026-11-19T23:19:11.278425120Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /s2-no-existe" 404 rid=c197d7f80fba73a625f162db4e78cf2c up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:11.285070273Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /" 200 rid=72e345e6e14be58019ef48e956be4bd0 up=172.19.0.3:80 us=200 rt=0.001
+gateway-1  | 2026-11-19T23:19:11.301788421Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /login" 200 rid=434ef13c63492c666f6414d72a63dd04 up=172.18.0.5:3000 us=200 rt=0.011
+gateway-1  | 2026-11-19T23:19:11.311372453Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /boards" 401 rid=f6f8ed97e24212bcb436aebd634db2d6 up=172.18.0.9:8000 us=401 rt=0.003
+gateway-1  | 2026-11-19T23:19:11.318572056Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /s2-no-existe" 404 rid=9c33d94fa60f911f8a386e11a2e3cef6 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:11.325335019Z 172.19.0.1 [2026-11-19T23:19:11+00:00] "GET /" 200 rid=4f561c56c84860259e5b5f772399541b up=172.19.0.3:80 us=200 rt=0.001
+gateway-1  | 2026-11-19T23:19:16.170064580Z 172.19.0.1 [2026-11-19T23:19:16+00:00] "GET /boards" 401 rid=s2-C03-92527f up=172.18.0.9:8000 us=401 rt=0.003
+gateway-1  | 2026-11-19T23:19:16.179905216Z 172.19.0.1 [2026-11-19T23:19:16+00:00] "GET /boards" 401 rid=s2-C04-92527f up=172.18.0.9:8000 us=401 rt=0.003
+gateway-1  | 2026-11-19T23:19:16.189543875Z 172.19.0.1 [2026-11-19T23:19:16+00:00] "GET /boards" 401 rid=s2-C05-92527f up=172.18.0.9:8000 us=401 rt=0.003
+gateway-1  | 2026-11-19T23:19:16.199777934Z 172.19.0.1 [2026-11-19T23:19:16+00:00] "GET /boards" 401 rid=s2-C06-92527f up=172.18.0.9:8000 us=401 rt=0.003
+gateway-1  | 2026-11-19T23:19:16.211313775Z 172.19.0.1 [2026-11-19T23:19:16+00:00] "GET /boards" 401 rid=s2-C07-92527f up=172.18.0.9:8000 us=401 rt=0.004
+gateway-1  | 2026-11-19T23:19:17.989343614Z 172.19.0.1 [2026-11-19T23:19:17+00:00] "GET /login" 200 rid=51a9ee6263339d2808390604bf529685 up=172.18.0.5:3000 us=200 rt=0.016
+gateway-1  | 2026-11-19T23:19:18.002715736Z 172.19.0.1 [2026-11-19T23:19:18+00:00] "HEAD /_next/static/chunks/1x6obpmlu1_c2.js" 200 rid=cda6d9a3d7fb287254624f18eab3f0ef up=172.18.0.5:3000 us=200 rt=0.003
+gateway-1  | 2026-11-19T23:19:18.013741312Z 172.19.0.1 [2026-11-19T23:19:18+00:00] "HEAD /_next/static/chunks/0odalit3w8fzt.js" 200 rid=bdbc0506cd8404ed8ec4bc074fff85e7 up=172.18.0.5:3000 us=200 rt=0.002
+gateway-1  | 2026-11-19T23:19:18.027885262Z 172.19.0.1 [2026-11-19T23:19:18+00:00] "HEAD /_next/static/chunks/3i7bb4yv5vlj-.js" 200 rid=835171223af74cf7938d4760641969bd up=172.18.0.5:3000 us=200 rt=0.002
+gateway-1  | 2026-11-19T23:19:18.038902256Z 172.19.0.1 [2026-11-19T23:19:18+00:00] "HEAD /_next/static/chunks/2nii411saqstq.js" 200 rid=39601fc9418e5f8ff2bc7f5a0f4586ca up=172.18.0.5:3000 us=200 rt=0.002
+gateway-1  | 2026-11-19T23:19:18.047973976Z 172.19.0.1 [2026-11-19T23:19:18+00:00] "HEAD /_next/static/chunks/2kzd2bib-2ux6.js" 200 rid=564afc756bda5518ee0e0819d86296ff up=172.18.0.5:3000 us=200 rt=0.001
+gateway-1  | 2026-11-19T23:19:18.057939406Z 172.19.0.1 [2026-11-19T23:19:18+00:00] "HEAD /_next/static/chunks/turbopack-3-ry682tkyiqk.js" 200 rid=68502994cf54d5bebf35293273f29c09 up=172.18.0.5:3000 us=200 rt=0.002
+gateway-1  | 2026-11-19T23:19:18.069842380Z 172.19.0.1 [2026-11-19T23:19:18+00:00] "HEAD /_next/static/chunks/3omi9auk_y2-8.js" 200 rid=2df9476c3dc651ab3213d0ecb2a356ab up=172.18.0.5:3000 us=200 rt=0.003
+gateway-1  | 2026-11-19T23:19:18.079234551Z 172.19.0.1 [2026-11-19T23:19:18+00:00] "HEAD /_next/static/chunks/3h5ncdwjg9xwm.js" 200 rid=3f1a537eaa48350e60378b092923a814 up=172.18.0.5:3000 us=200 rt=0.002
+gateway-1  | 2026-11-19T23:19:18.088724766Z 172.19.0.1 [2026-11-19T23:19:18+00:00] "HEAD /_next/static/chunks/1fb2o51k70ui1.js" 200 rid=a7b78e725af2279f0a678226465572b6 up=172.18.0.5:3000 us=200 rt=0.002
+gateway-1  | 2026-11-19T23:19:18.098121667Z 172.19.0.1 [2026-11-19T23:19:18+00:00] "HEAD /_next/static/chunks/0cz1d0mv5g_q7.js" 200 rid=4331546cd87ca98909154caf4e09f29b up=172.18.0.5:3000 us=200 rt=0.002
+gateway-1  | 2026-11-19T23:19:18.842752967Z 2026/11/19 23:19:18 [warn] 81#81: *876 an upstream response is buffered to a temporary file /var/cache/nginx/proxy_temp/2/00/0000000002 while reading upstream, client: 172.19.0.4, server: _, request: "GET /_next/static/chunks/2nii411saqstq.js HTTP/1.1", upstream: "http://172.18.0.5:3000/_next/static/chunks/2nii411saqstq.js", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:27.962796682Z 172.19.0.1 [2026-11-19T23:19:27+00:00] "GET /login" 408 rid=s2-E01-92527f up=- us=- rt=9.995
+gateway-1  | 2026-11-19T23:19:27.978803851Z 172.19.0.1 [2026-11-19T23:19:27+00:00] "POST /boards" 408 rid=s2-E02-92527f up=- us=- rt=10.009
+gateway-1  | 2026-11-19T23:19:28.840887656Z 172.19.0.4 [2026-11-19T23:19:28+00:00] "GET /_next/static/chunks/2nii411saqstq.js" 200 rid=s2-E05-92527f up=172.18.0.5:3000 us=200 rt=10.002
+gateway-1  | 2026-11-19T23:19:47.540375447Z 2026/11/19 23:19:47 [error] 84#84: *943 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:47.588192560Z 2026/11/19 23:19:47 [error] 84#84: *944 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:47.634505496Z 2026/11/19 23:19:47 [error] 84#84: *945 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:47.682543664Z 2026/11/19 23:19:47 [error] 85#85: *946 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:47.729443559Z 2026/11/19 23:19:47 [error] 85#85: *947 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:47.793067321Z 2026/11/19 23:19:47 [error] 85#85: *948 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:47.840273486Z 2026/11/19 23:19:47 [error] 85#85: *949 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:47.886851731Z 2026/11/19 23:19:47 [error] 85#85: *950 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:47.936078834Z 2026/11/19 23:19:47 [error] 85#85: *951 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:47.980872527Z 2026/11/19 23:19:47 [error] 85#85: *953 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.042934173Z 2026/11/19 23:19:48 [error] 85#85: *954 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.088267864Z 2026/11/19 23:19:48 [error] 85#85: *955 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.131467782Z 2026/11/19 23:19:48 [error] 85#85: *956 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.178973494Z 2026/11/19 23:19:48 [error] 85#85: *957 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.239781724Z 2026/11/19 23:19:48 [error] 85#85: *958 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.285039052Z 2026/11/19 23:19:48 [error] 85#85: *959 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.330870455Z 2026/11/19 23:19:48 [error] 85#85: *960 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.376917417Z 2026/11/19 23:19:48 [error] 85#85: *961 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.442041061Z 2026/11/19 23:19:48 [error] 85#85: *962 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.489844058Z 2026/11/19 23:19:48 [error] 86#86: *963 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.535376409Z 2026/11/19 23:19:48 [error] 86#86: *964 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.584449396Z 2026/11/19 23:19:48 [error] 86#86: *965 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.644389941Z 2026/11/19 23:19:48 [error] 86#86: *966 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.692299246Z 2026/11/19 23:19:48 [error] 86#86: *967 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.739997293Z 2026/11/19 23:19:48 [error] 86#86: *968 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.782915703Z 2026/11/19 23:19:48 [error] 86#86: *969 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.829726126Z 2026/11/19 23:19:48 [error] 86#86: *970 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.891712871Z 2026/11/19 23:19:48 [error] 86#86: *971 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.936070511Z 2026/11/19 23:19:48 [error] 86#86: *972 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:48.983223372Z 2026/11/19 23:19:48 [error] 86#86: *973 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.043581261Z 2026/11/19 23:19:49 [error] 86#86: *974 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.090357003Z 2026/11/19 23:19:49 [error] 86#86: *975 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.136398362Z 2026/11/19 23:19:49 [error] 86#86: *976 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.182985333Z 2026/11/19 23:19:49 [error] 86#86: *977 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.228721228Z 2026/11/19 23:19:49 [error] 86#86: *978 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.292037492Z 2026/11/19 23:19:49 [error] 87#87: *979 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.339463213Z 2026/11/19 23:19:49 [error] 87#87: *980 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.384897975Z 2026/11/19 23:19:49 [error] 87#87: *981 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.431161711Z 2026/11/19 23:19:49 [error] 87#87: *982 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.493952421Z 2026/11/19 23:19:49 [error] 87#87: *983 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.539455242Z 2026/11/19 23:19:49 [error] 87#87: *984 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.585436453Z 2026/11/19 23:19:49 [error] 87#87: *985 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.632260756Z 2026/11/19 23:19:49 [error] 87#87: *986 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.678629935Z 2026/11/19 23:19:49 [error] 87#87: *987 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.740026268Z 2026/11/19 23:19:49 [error] 87#87: *988 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.788112462Z 2026/11/19 23:19:49 [error] 87#87: *989 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.833763420Z 2026/11/19 23:19:49 [error] 87#87: *990 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.880826371Z 2026/11/19 23:19:49 [error] 87#87: *991 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.942922543Z 2026/11/19 23:19:49 [error] 87#87: *992 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:49.990297506Z 2026/11/19 23:19:49 [error] 87#87: *993 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:50.037017321Z 2026/11/19 23:19:50 [error] 87#87: *994 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:50.083527750Z 2026/11/19 23:19:50 [error] 88#88: *995 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:50.132229008Z 2026/11/19 23:19:50 [error] 88#88: *996 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:50.191759635Z 2026/11/19 23:19:50 [error] 88#88: *997 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:50.237445676Z 2026/11/19 23:19:50 [error] 88#88: *998 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:50.284699296Z 2026/11/19 23:19:50 [error] 88#88: *999 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:50.331047536Z 2026/11/19 23:19:50 [error] 88#88: *1000 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:50.391332470Z 2026/11/19 23:19:50 [error] 88#88: *1001 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:50.437318827Z 2026/11/19 23:19:50 [error] 88#88: *1002 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:50.485543981Z 2026/11/19 23:19:50 [error] 88#88: *1003 limiting connections by zone "conn", client: 172.19.0.1, server: _, request: "POST /api/boards HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:52.545591139Z 172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-60 up=- us=- rt=5.006
+gateway-1  | 2026-11-19T23:19:52.588820800Z 172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-61 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:52.634101643Z 172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-62 up=- us=- rt=4.999
+gateway-1  | 2026-11-19T23:19:52.686463590Z 172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-63 up=- us=- rt=5.004
+gateway-1  | 2026-11-19T23:19:52.729722871Z 172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-64 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:52.794037245Z 172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-65 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:52.840316134Z 172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-66 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:52.886579388Z 172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-67 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:52.935852347Z 172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-68 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:52.980308462Z 172.19.0.1 [2026-11-19T23:19:52+00:00] "POST /boards" 429 rid=s2-E03-92527f-69 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.042618363Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-70 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.088818696Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-71 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:53.131083691Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-72 up=- us=- rt=4.999
+gateway-1  | 2026-11-19T23:19:53.178394254Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-73 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.239701091Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-74 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.285932357Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-75 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:53.330224590Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-76 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.376554193Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-77 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.442833683Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-78 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:53.494218602Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-79 up=- us=- rt=5.004
+gateway-1  | 2026-11-19T23:19:53.535547718Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-80 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:53.584809030Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-81 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:53.644068882Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-82 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.692351131Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-83 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:53.739572738Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-84 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.783014446Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-85 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.829450201Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-86 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.891748717Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-87 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:53.936064859Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-88 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:53.983302595Z 172.19.0.1 [2026-11-19T23:19:53+00:00] "POST /boards" 429 rid=s2-E03-92527f-89 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:54.043625857Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-90 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:54.091041931Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-91 up=- us=- rt=5.001
+gateway-1  | 2026-11-19T23:19:54.136063565Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-92 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:54.182355835Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-93 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:54.228650258Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-94 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:54.295463541Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-95 up=- us=- rt=5.004
+gateway-1  | 2026-11-19T23:19:54.339628099Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-96 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:54.384937336Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-97 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:54.431187775Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-98 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:54.493692918Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-99 up=- us=- rt=5.000
+gateway-1  | 2026-11-19T23:19:54.493749209Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-0 up=- us=- rt=9.965
+gateway-1  | 2026-11-19T23:19:54.493760150Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-2 up=- us=- rt=9.866
+gateway-1  | 2026-11-19T23:19:54.493899214Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-1 up=- us=- rt=9.911
+gateway-1  | 2026-11-19T23:19:54.494099029Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-3 up=- us=- rt=9.804
+gateway-1  | 2026-11-19T23:19:54.494252504Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-7 up=- us=- rt=9.606
+gateway-1  | 2026-11-19T23:19:54.494312956Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-4 up=- us=- rt=9.758
+gateway-1  | 2026-11-19T23:19:54.494536512Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-6 up=- us=- rt=9.667
+gateway-1  | 2026-11-19T23:19:54.494555063Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-5 up=- us=- rt=9.712
+gateway-1  | 2026-11-19T23:19:54.494866302Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-8 up=- us=- rt=9.561
+gateway-1  | 2026-11-19T23:19:54.495025285Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-9 up=- us=- rt=9.515
+gateway-1  | 2026-11-19T23:19:54.495067026Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-10 up=- us=- rt=9.453
+gateway-1  | 2026-11-19T23:19:54.495302484Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-11 up=- us=- rt=9.409
+gateway-1  | 2026-11-19T23:19:54.495417398Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-12 up=- us=- rt=9.362
+gateway-1  | 2026-11-19T23:19:54.495806538Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-13 up=- us=- rt=9.316
+gateway-1  | 2026-11-19T23:19:54.495816048Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-16 up=- us=- rt=9.160
+gateway-1  | 2026-11-19T23:19:54.495931892Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-14 up=- us=- rt=9.269
+gateway-1  | 2026-11-19T23:19:54.495940672Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-15 up=- us=- rt=9.206
+gateway-1  | 2026-11-19T23:19:54.496048785Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-17 up=- us=- rt=9.113
+gateway-1  | 2026-11-19T23:19:54.496225411Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-19 up=- us=- rt=9.012
+gateway-1  | 2026-11-19T23:19:54.496276752Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-18 up=- us=- rt=9.065
+gateway-1  | 2026-11-19T23:19:54.496668993Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-20 up=- us=- rt=8.958
+gateway-1  | 2026-11-19T23:19:54.496686863Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-21 up=- us=- rt=8.910
+gateway-1  | 2026-11-19T23:19:54.496940852Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-22 up=- us=- rt=8.863
+gateway-1  | 2026-11-19T23:19:54.497082385Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-25 up=- us=- rt=8.708
+gateway-1  | 2026-11-19T23:19:54.497196149Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-23 up=- us=- rt=8.812
+gateway-1  | 2026-11-19T23:19:54.497368123Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-24 up=- us=- rt=8.757
+gateway-1  | 2026-11-19T23:19:54.497454996Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-26 up=- us=- rt=8.665
+gateway-1  | 2026-11-19T23:19:54.497597880Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-27 up=- us=- rt=8.619
+gateway-1  | 2026-11-19T23:19:54.497838176Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-28 up=- us=- rt=8.557
+gateway-1  | 2026-11-19T23:19:54.497942540Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-29 up=- us=- rt=8.510
+gateway-1  | 2026-11-19T23:19:54.498111564Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-30 up=- us=- rt=8.463
+gateway-1  | 2026-11-19T23:19:54.498211027Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-32 up=- us=- rt=8.370
+gateway-1  | 2026-11-19T23:19:54.498382063Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-31 up=- us=- rt=8.417
+gateway-1  | 2026-11-19T23:19:54.498550678Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-33 up=- us=- rt=8.308
+gateway-1  | 2026-11-19T23:19:54.498747683Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-34 up=- us=- rt=8.263
+gateway-1  | 2026-11-19T23:19:54.498853666Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-35 up=- us=- rt=8.216
+gateway-1  | 2026-11-19T23:19:54.498972449Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-36 up=- us=- rt=8.169
+gateway-1  | 2026-11-19T23:19:54.499171655Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-37 up=- us=- rt=8.107
+gateway-1  | 2026-11-19T23:19:54.499382051Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-39 up=- us=- rt=8.013
+gateway-1  | 2026-11-19T23:19:54.499391631Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-38 up=- us=- rt=8.061
+gateway-1  | 2026-11-19T23:19:54.499652748Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-40 up=- us=- rt=7.967
+gateway-1  | 2026-11-19T23:19:54.499661839Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-41 up=- us=- rt=7.920
+gateway-1  | 2026-11-19T23:19:54.499859535Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-42 up=- us=- rt=7.860
+gateway-1  | 2026-11-19T23:19:54.499985638Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-43 up=- us=- rt=7.815
+gateway-1  | 2026-11-19T23:19:54.500073350Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-47 up=- us=- rt=7.610
+gateway-1  | 2026-11-19T23:19:54.500082581Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-44 up=- us=- rt=7.767
+gateway-1  | 2026-11-19T23:19:54.500305028Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-45 up=- us=- rt=7.721
+gateway-1  | 2026-11-19T23:19:54.500444752Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-48 up=- us=- rt=7.565
+gateway-1  | 2026-11-19T23:19:54.500455102Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-46 up=- us=- rt=7.659
+gateway-1  | 2026-11-19T23:19:54.500558034Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-49 up=- us=- rt=7.518
+gateway-1  | 2026-11-19T23:19:54.500879845Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-51 up=- us=- rt=7.409
+gateway-1  | 2026-11-19T23:19:54.500890065Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-50 up=- us=- rt=7.469
+gateway-1  | 2026-11-19T23:19:54.500894285Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-52 up=- us=- rt=7.363
+gateway-1  | 2026-11-19T23:19:54.501052019Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-54 up=- us=- rt=7.271
+gateway-1  | 2026-11-19T23:19:54.501181472Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-53 up=- us=- rt=7.317
+gateway-1  | 2026-11-19T23:19:54.501332037Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-55 up=- us=- rt=7.210
+gateway-1  | 2026-11-19T23:19:54.501458991Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-56 up=- us=- rt=7.160
+gateway-1  | 2026-11-19T23:19:54.501748125Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-57 up=- us=- rt=7.115
+gateway-1  | 2026-11-19T23:19:54.501868323Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-58 up=- us=- rt=7.068
+gateway-1  | 2026-11-19T23:19:54.502078209Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 400 rid=s2-E03-92527f-59 up=- us=- rt=7.022
+gateway-1  | 2026-11-19T23:19:54.502397868Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-100 up=- us=- rt=4.963
+gateway-1  | 2026-11-19T23:19:54.502527942Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-101 up=- us=- rt=4.918
+gateway-1  | 2026-11-19T23:19:54.502625304Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-102 up=- us=- rt=4.871
+gateway-1  | 2026-11-19T23:19:54.502871722Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-103 up=- us=- rt=4.824
+gateway-1  | 2026-11-19T23:19:54.502993816Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-104 up=- us=- rt=4.763
+gateway-1  | 2026-11-19T23:19:54.503137289Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-105 up=- us=- rt=4.715
+gateway-1  | 2026-11-19T23:19:54.503147479Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-106 up=- us=- rt=4.670
+gateway-1  | 2026-11-19T23:19:54.503348206Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-107 up=- us=- rt=4.623
+gateway-1  | 2026-11-19T23:19:54.503527161Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-108 up=- us=- rt=4.561
+gateway-1  | 2026-11-19T23:19:54.503536961Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-111 up=- us=- rt=4.420
+gateway-1  | 2026-11-19T23:19:54.503621943Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-110 up=- us=- rt=4.467
+gateway-1  | 2026-11-19T23:19:54.503631803Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-112 up=- us=- rt=4.372
+gateway-1  | 2026-11-19T23:19:54.503821029Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-109 up=- us=- rt=4.514
+gateway-1  | 2026-11-19T23:19:54.503846969Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-113 up=- us=- rt=4.312
+gateway-1  | 2026-11-19T23:19:54.503990515Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-114 up=- us=- rt=4.267
+gateway-1  | 2026-11-19T23:19:54.504182579Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-115 up=- us=- rt=4.220
+gateway-1  | 2026-11-19T23:19:54.504272571Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-116 up=- us=- rt=4.174
+gateway-1  | 2026-11-19T23:19:54.504453577Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-118 up=- us=- rt=4.068
+gateway-1  | 2026-11-19T23:19:54.504501338Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-117 up=- us=- rt=4.114
+gateway-1  | 2026-11-19T23:19:54.504705924Z 172.19.0.1 [2026-11-19T23:19:54+00:00] "POST /boards" 429 rid=s2-E03-92527f-119 up=- us=- rt=4.019
+gateway-1  | 2026-11-19T23:19:58.031645817Z 2026/11/19 23:19:58 [error] 90#90: *1065 limiting connections by zone "conn_ws", client: 172.19.0.1, server: _, request: "GET /ws/pixels HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:58.031754029Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-30 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:58.077787243Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-31 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:58.077800369Z 2026/11/19 23:19:58 [error] 90#90: *1066 limiting connections by zone "conn_ws", client: 172.19.0.1, server: _, request: "GET /ws/pixels HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:58.136751112Z 2026/11/19 23:19:58 [error] 90#90: *1068 limiting connections by zone "conn_ws", client: 172.19.0.1, server: _, request: "GET /ws/pixels HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:58.136753812Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-32 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:58.182000192Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-33 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:58.182016252Z 2026/11/19 23:19:58 [error] 90#90: *1069 limiting connections by zone "conn_ws", client: 172.19.0.1, server: _, request: "GET /ws/pixels HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:58.228642335Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-34 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:58.228652564Z 2026/11/19 23:19:58 [error] 90#90: *1070 limiting connections by zone "conn_ws", client: 172.19.0.1, server: _, request: "GET /ws/pixels HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:58.275276894Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-35 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:58.275276274Z 2026/11/19 23:19:58 [error] 90#90: *1071 limiting connections by zone "conn_ws", client: 172.19.0.1, server: _, request: "GET /ws/pixels HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:58.339372293Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-36 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:58.339386613Z 2026/11/19 23:19:58 [error] 90#90: *1072 limiting connections by zone "conn_ws", client: 172.19.0.1, server: _, request: "GET /ws/pixels HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:58.384039648Z 2026/11/19 23:19:58 [error] 90#90: *1073 limiting connections by zone "conn_ws", client: 172.19.0.1, server: _, request: "GET /ws/pixels HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:58.384050698Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-37 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:58.429616697Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-38 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:58.429638838Z 2026/11/19 23:19:58 [error] 90#90: *1074 limiting connections by zone "conn_ws", client: 172.19.0.1, server: _, request: "GET /ws/pixels HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:58.477276398Z 2026/11/19 23:19:58 [error] 91#91: *1075 limiting connections by zone "conn_ws", client: 172.19.0.1, server: _, request: "GET /ws/pixels HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:19:58.477325420Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 429 rid=s2-E06-92527f-39 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:19:58.983406279Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-2 up=172.18.0.12:8000 us=101 rt=2.351
+gateway-1  | 2026-11-19T23:19:58.983612816Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-0 up=172.18.0.12:8000 us=101 rt=2.444
+gateway-1  | 2026-11-19T23:19:58.983623026Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-1 up=172.18.0.12:8000 us=101 rt=2.396
+gateway-1  | 2026-11-19T23:19:58.983778700Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-3 up=172.18.0.12:8000 us=101 rt=2.304
+gateway-1  | 2026-11-19T23:19:58.983787330Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-7 up=172.18.0.12:8000 us=101 rt=2.102
+gateway-1  | 2026-11-19T23:19:58.983883883Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-5 up=172.18.0.12:8000 us=101 rt=2.195
+gateway-1  | 2026-11-19T23:19:58.983953655Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-4 up=172.18.0.12:8000 us=101 rt=2.257
+gateway-1  | 2026-11-19T23:19:58.985517461Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-12 up=172.18.0.12:8000 us=101 rt=1.856
+gateway-1  | 2026-11-19T23:19:58.985618243Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-6 up=172.18.0.12:8000 us=101 rt=2.152
+gateway-1  | 2026-11-19T23:19:58.985627803Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-8 up=172.18.0.12:8000 us=101 rt=2.058
+gateway-1  | 2026-11-19T23:19:58.985805139Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-13 up=172.18.0.12:8000 us=101 rt=1.811
+gateway-1  | 2026-11-19T23:19:58.985898691Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-10 up=172.18.0.12:8000 us=101 rt=1.949
+gateway-1  | 2026-11-19T23:19:58.985967193Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-14 up=172.18.0.12:8000 us=101 rt=1.749
+gateway-1  | 2026-11-19T23:19:58.986193670Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-9 up=172.18.0.12:8000 us=101 rt=2.010
+gateway-1  | 2026-11-19T23:19:58.986351015Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-11 up=172.18.0.12:8000 us=101 rt=1.903
+gateway-1  | 2026-11-19T23:19:58.986547050Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-17 up=172.18.0.12:8000 us=101 rt=1.609
+gateway-1  | 2026-11-19T23:19:58.988536498Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-16 up=172.18.0.12:8000 us=101 rt=1.656
+gateway-1  | 2026-11-19T23:19:58.988546198Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-15 up=172.18.0.12:8000 us=101 rt=1.704
+gateway-1  | 2026-11-19T23:19:58.988551198Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-26 up=172.18.0.12:8000 us=101 rt=1.158
+gateway-1  | 2026-11-19T23:19:58.988555428Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-18 up=172.18.0.12:8000 us=101 rt=1.564
+gateway-1  | 2026-11-19T23:19:58.988559708Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-19 up=172.18.0.12:8000 us=101 rt=1.502
+gateway-1  | 2026-11-19T23:19:58.988665323Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-27 up=172.18.0.12:8000 us=101 rt=1.111
+gateway-1  | 2026-11-19T23:19:58.990028332Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-22 up=172.18.0.12:8000 us=101 rt=1.364
+gateway-1  | 2026-11-19T23:19:58.990375782Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-25 up=172.18.0.12:8000 us=101 rt=1.207
+gateway-1  | 2026-11-19T23:19:58.990386923Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-20 up=172.18.0.12:8000 us=101 rt=1.457
+gateway-1  | 2026-11-19T23:19:58.990391743Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-24 up=172.18.0.12:8000 us=101 rt=1.256
+gateway-1  | 2026-11-19T23:19:58.990395853Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-21 up=172.18.0.12:8000 us=101 rt=1.412
+gateway-1  | 2026-11-19T23:19:58.991672938Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-28 up=172.18.0.12:8000 us=101 rt=1.053
+gateway-1  | 2026-11-19T23:19:58.991682259Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-23 up=172.18.0.12:8000 us=101 rt=1.304
+gateway-1  | 2026-11-19T23:19:58.992479382Z 172.19.0.1 [2026-11-19T23:19:58+00:00] "GET /ws/pixels" 101 rid=s2-E06-92527f-29 up=172.18.0.12:8000 us=101 rt=1.008
+gateway-1  | 2026-11-19T23:20:01.065049912Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-0 up=172.18.0.5:3000 us=200 rt=0.026
+gateway-1  | 2026-11-19T23:20:01.083531018Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-1 up=172.18.0.5:3000 us=200 rt=0.043
+gateway-1  | 2026-11-19T23:20:01.094403643Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-2 up=172.18.0.5:3000 us=200 rt=0.053
+gateway-1  | 2026-11-19T23:20:01.105610597Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-3 up=172.18.0.5:3000 us=200 rt=0.063
+gateway-1  | 2026-11-19T23:20:01.113983511Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-12 up=172.18.0.5:3000 us=200 rt=0.070
+gateway-1  | 2026-11-19T23:20:01.121959552Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-4 up=172.18.0.5:3000 us=200 rt=0.077
+gateway-1  | 2026-11-19T23:20:01.131326483Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-5 up=172.18.0.5:3000 us=200 rt=0.085
+gateway-1  | 2026-11-19T23:20:01.143099834Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-13 up=172.18.0.5:3000 us=200 rt=0.095
+gateway-1  | 2026-11-19T23:20:01.151801056Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-6 up=172.18.0.5:3000 us=200 rt=0.103
+gateway-1  | 2026-11-19T23:20:01.162018983Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-14 up=172.18.0.5:3000 us=200 rt=0.112
+gateway-1  | 2026-11-19T23:20:01.172580449Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-7 up=172.18.0.5:3000 us=200 rt=0.122
+gateway-1  | 2026-11-19T23:20:01.181567689Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-8 up=172.18.0.5:3000 us=200 rt=0.129
+gateway-1  | 2026-11-19T23:20:01.191735564Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-15 up=172.18.0.5:3000 us=200 rt=0.138
+gateway-1  | 2026-11-19T23:20:01.200568331Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-9 up=172.18.0.5:3000 us=200 rt=0.146
+gateway-1  | 2026-11-19T23:20:01.207793189Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-10 up=172.18.0.5:3000 us=200 rt=0.152
+gateway-1  | 2026-11-19T23:20:01.214795292Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-11 up=172.18.0.5:3000 us=200 rt=0.158
+gateway-1  | 2026-11-19T23:20:01.223126084Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-16 up=172.18.0.5:3000 us=200 rt=0.164
+gateway-1  | 2026-11-19T23:20:01.231851917Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-17 up=172.18.0.5:3000 us=200 rt=0.172
+gateway-1  | 2026-11-19T23:20:01.238703516Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-18 up=172.18.0.5:3000 us=200 rt=0.178
+gateway-1  | 2026-11-19T23:20:01.246323008Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-19 up=172.18.0.5:3000 us=200 rt=0.184
+gateway-1  | 2026-11-19T23:20:01.256577144Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-20 up=172.18.0.5:3000 us=200 rt=0.193
+gateway-1  | 2026-11-19T23:20:01.266428249Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-21 up=172.18.0.5:3000 us=200 rt=0.201
+gateway-1  | 2026-11-19T23:20:01.277405608Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-22 up=172.18.0.5:3000 us=200 rt=0.210
+gateway-1  | 2026-11-19T23:20:01.288097177Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-23 up=172.18.0.5:3000 us=200 rt=0.219
+gateway-1  | 2026-11-19T23:20:01.300234268Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-24 up=172.18.0.5:3000 us=200 rt=0.230
+gateway-1  | 2026-11-19T23:20:01.307663584Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-25 up=172.18.0.5:3000 us=200 rt=0.236
+gateway-1  | 2026-11-19T23:20:01.315571544Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-26 up=172.18.0.5:3000 us=200 rt=0.243
+gateway-1  | 2026-11-19T23:20:01.322772303Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-27 up=172.18.0.5:3000 us=200 rt=0.248
+gateway-1  | 2026-11-19T23:20:01.334134802Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-28 up=172.18.0.5:3000 us=200 rt=0.258
+gateway-1  | 2026-11-19T23:20:01.341523186Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-29 up=172.18.0.5:3000 us=200 rt=0.265
+gateway-1  | 2026-11-19T23:20:01.348264751Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-30 up=172.18.0.5:3000 us=200 rt=0.265
+gateway-1  | 2026-11-19T23:20:01.357821969Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-31 up=172.18.0.5:3000 us=200 rt=0.268
+gateway-1  | 2026-11-19T23:20:01.365709177Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-32 up=172.18.0.5:3000 us=200 rt=0.264
+gateway-1  | 2026-11-19T23:20:01.378464745Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-33 up=172.18.0.5:3000 us=200 rt=0.266
+gateway-1  | 2026-11-19T23:20:01.387249701Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-34 up=172.18.0.5:3000 us=200 rt=0.266
+gateway-1  | 2026-11-19T23:20:01.395885672Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-35 up=172.18.0.5:3000 us=200 rt=0.268
+gateway-1  | 2026-11-19T23:20:01.404181853Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-36 up=172.18.0.5:3000 us=200 rt=0.266
+gateway-1  | 2026-11-19T23:20:01.413523063Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-37 up=172.18.0.5:3000 us=200 rt=0.264
+gateway-1  | 2026-11-19T23:20:01.420236452Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-38 up=172.18.0.5:3000 us=200 rt=0.259
+gateway-1  | 2026-11-19T23:20:01.427212548Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-39 up=172.18.0.5:3000 us=200 rt=0.259
+gateway-1  | 2026-11-19T23:20:01.435918972Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-40 up=172.18.0.5:3000 us=200 rt=0.256
+gateway-1  | 2026-11-19T23:20:01.444477730Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-41 up=172.18.0.5:3000 us=200 rt=0.257
+gateway-1  | 2026-11-19T23:20:01.452650018Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-42 up=172.18.0.5:3000 us=200 rt=0.255
+gateway-1  | 2026-11-19T23:20:01.462486262Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-43 up=172.18.0.5:3000 us=200 rt=0.254
+gateway-1  | 2026-11-19T23:20:01.469078183Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-44 up=172.18.0.5:3000 us=200 rt=0.255
+gateway-1  | 2026-11-19T23:20:01.475772187Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-45 up=172.18.0.5:3000 us=200 rt=0.255
+gateway-1  | 2026-11-19T23:20:01.486488147Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-46 up=172.18.0.5:3000 us=200 rt=0.258
+gateway-1  | 2026-11-19T23:20:01.496347433Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-47 up=172.18.0.5:3000 us=200 rt=0.258
+gateway-1  | 2026-11-19T23:20:01.506195589Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-48 up=172.18.0.5:3000 us=200 rt=0.261
+gateway-1  | 2026-11-19T23:20:01.516043364Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-49 up=172.18.0.5:3000 us=200 rt=0.263
+gateway-1  | 2026-11-19T23:20:01.522967355Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-50 up=172.18.0.5:3000 us=200 rt=0.260
+gateway-1  | 2026-11-19T23:20:01.529649758Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-51 up=172.18.0.5:3000 us=200 rt=0.257
+gateway-1  | 2026-11-19T23:20:01.538539596Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-52 up=172.18.0.5:3000 us=200 rt=0.255
+gateway-1  | 2026-11-19T23:20:01.549481173Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-53 up=172.18.0.5:3000 us=200 rt=0.255
+gateway-1  | 2026-11-19T23:20:01.560897595Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-54 up=172.18.0.5:3000 us=200 rt=0.255
+gateway-1  | 2026-11-19T23:20:01.576481516Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-55 up=172.18.0.5:3000 us=200 rt=0.257
+gateway-1  | 2026-11-19T23:20:01.585997771Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-56 up=172.18.0.5:3000 us=200 rt=0.264
+gateway-1  | 2026-11-19T23:20:01.594432136Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-57 up=172.18.0.5:3000 us=200 rt=0.266
+gateway-1  | 2026-11-19T23:20:01.604031294Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-58 up=172.18.0.5:3000 us=200 rt=0.264
+gateway-1  | 2026-11-19T23:20:01.614983962Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-59 up=172.18.0.5:3000 us=200 rt=0.268
+gateway-1  | 2026-11-19T23:20:01.626089023Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-60 up=172.18.0.5:3000 us=200 rt=0.272
+gateway-1  | 2026-11-19T23:20:01.639174762Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-61 up=172.18.0.5:3000 us=200 rt=0.275
+gateway-1  | 2026-11-19T23:20:01.650500741Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-62 up=172.18.0.5:3000 us=200 rt=0.273
+gateway-1  | 2026-11-19T23:20:01.662177049Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-63 up=172.18.0.5:3000 us=200 rt=0.276
+gateway-1  | 2026-11-19T23:20:01.672448073Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-64 up=172.18.0.5:3000 us=200 rt=0.279
+gateway-1  | 2026-11-19T23:20:01.682736015Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-65 up=172.18.0.5:3000 us=200 rt=0.281
+gateway-1  | 2026-11-19T23:20:01.692366614Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-66 up=172.18.0.5:3000 us=200 rt=0.282
+gateway-1  | 2026-11-19T23:20:01.702886469Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-67 up=172.18.0.5:3000 us=200 rt=0.283
+gateway-1  | 2026-11-19T23:20:01.712022555Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-68 up=172.18.0.5:3000 us=200 rt=0.285
+gateway-1  | 2026-11-19T23:20:01.720484920Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-69 up=172.18.0.5:3000 us=200 rt=0.287
+gateway-1  | 2026-11-19T23:20:01.730323134Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-70 up=172.18.0.5:3000 us=200 rt=0.287
+gateway-1  | 2026-11-19T23:20:01.741307404Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-71 up=172.18.0.5:3000 us=200 rt=0.290
+gateway-1  | 2026-11-19T23:20:01.752057574Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-72 up=172.18.0.5:3000 us=200 rt=0.293
+gateway-1  | 2026-11-19T23:20:01.768747519Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-74 up=172.18.0.5:3000 us=200 rt=0.291
+gateway-1  | 2026-11-19T23:20:01.780416277Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-73 up=172.18.0.5:3000 us=200 rt=0.301
+gateway-1  | 2026-11-19T23:20:01.793908778Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-75 up=172.18.0.5:3000 us=200 rt=0.308
+gateway-1  | 2026-11-19T23:20:01.801387145Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-76 up=172.18.0.5:3000 us=200 rt=0.309
+gateway-1  | 2026-11-19T23:20:01.808143261Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-77 up=172.18.0.5:3000 us=200 rt=0.305
+gateway-1  | 2026-11-19T23:20:01.815624998Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-78 up=172.18.0.5:3000 us=200 rt=0.301
+gateway-1  | 2026-11-19T23:20:01.822764054Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-79 up=172.18.0.5:3000 us=200 rt=0.300
+gateway-1  | 2026-11-19T23:20:01.830276892Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-80 up=172.18.0.5:3000 us=200 rt=0.296
+gateway-1  | 2026-11-19T23:20:01.837143932Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-81 up=172.18.0.5:3000 us=200 rt=0.300
+gateway-1  | 2026-11-19T23:20:01.844552080Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-82 up=172.18.0.5:3000 us=200 rt=0.299
+gateway-1  | 2026-11-19T23:20:01.852578227Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-83 up=172.18.0.5:3000 us=200 rt=0.285
+gateway-1  | 2026-11-19T23:20:01.861214338Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-84 up=172.18.0.5:3000 us=200 rt=0.291
+gateway-1  | 2026-11-19T23:20:01.871523106Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-85 up=172.18.0.5:3000 us=200 rt=0.287
+gateway-1  | 2026-11-19T23:20:01.879698104Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-86 up=172.18.0.5:3000 us=200 rt=0.287
+gateway-1  | 2026-11-19T23:20:01.889447397Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-87 up=172.18.0.5:3000 us=200 rt=0.288
+gateway-1  | 2026-11-19T23:20:01.900520523Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-88 up=172.18.0.5:3000 us=200 rt=0.279
+gateway-1  | 2026-11-19T23:20:01.907611783Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-118 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.907643084Z 2026/11/19 23:20:01 [warn] 82#82: *1312 limiting requests, excess: 100.620 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.908655373Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-89 up=172.18.0.5:3000 us=200 rt=0.285
+gateway-1  | 2026-11-19T23:20:01.915341728Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-119 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.915383474Z 2026/11/19 23:20:01 [warn] 82#82: *1313 limiting requests, excess: 100.460 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.916216303Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-90 up=172.18.0.5:3000 us=200 rt=0.272
+gateway-1  | 2026-11-19T23:20:01.916842102Z 2026/11/19 23:20:01 [warn] 83#83: *1314 limiting requests, excess: 100.440 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.916924203Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-120 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.923571346Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-91 up=172.18.0.5:3000 us=200 rt=0.275
+gateway-1  | 2026-11-19T23:20:01.923598137Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-121 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.923615667Z 2026/11/19 23:20:01 [warn] 82#82: *1315 limiting requests, excess: 100.300 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.925211024Z 2026/11/19 23:20:01 [warn] 83#83: *1316 limiting requests, excess: 100.280 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.925344418Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-122 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.925895574Z 2026/11/19 23:20:01 [warn] 84#84: *1317 limiting requests, excess: 100.260 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.925949086Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-123 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.930569299Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-92 up=172.18.0.5:3000 us=200 rt=0.272
+gateway-1  | 2026-11-19T23:20:01.934854472Z 2026/11/19 23:20:01 [warn] 82#82: *1318 limiting requests, excess: 100.080 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.934935085Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-124 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.936231953Z 2026/11/19 23:20:01 [warn] 83#83: *1319 limiting requests, excess: 100.060 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.936249823Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-125 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.938495358Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-93 up=172.18.0.5:3000 us=200 rt=0.269
+gateway-1  | 2026-11-19T23:20:01.939858297Z 2026/11/19 23:20:01 [warn] 83#83: *1321 limiting requests, excess: 100.980 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.939894449Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-127 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.946917383Z 2026/11/19 23:20:01 [warn] 82#82: *1322 limiting requests, excess: 100.840 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.946986165Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-128 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.948437257Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-94 up=172.18.0.5:3000 us=200 rt=0.269
+gateway-1  | 2026-11-19T23:20:01.951109544Z 2026/11/19 23:20:01 [warn] 82#82: *1324 limiting requests, excess: 100.760 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.951205897Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-129 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.952383711Z 2026/11/19 23:20:01 [warn] 82#82: *1325 limiting requests, excess: 100.720 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.952423891Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-130 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.955164641Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-131 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.955186871Z 2026/11/19 23:20:01 [warn] 82#82: *1326 limiting requests, excess: 100.680 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.957209560Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-95 up=172.18.0.5:3000 us=200 rt=0.265
+gateway-1  | 2026-11-19T23:20:01.958083816Z 2026/11/19 23:20:01 [warn] 83#83: *1327 limiting requests, excess: 100.620 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.958127463Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-132 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.967135818Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-96 up=172.18.0.5:3000 us=200 rt=0.267
+gateway-1  | 2026-11-19T23:20:01.967468809Z 2026/11/19 23:20:01 [warn] 83#83: *1328 limiting requests, excess: 100.420 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.967530091Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-133 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.968966462Z 2026/11/19 23:20:01 [warn] 83#83: *1329 limiting requests, excess: 100.400 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.969012862Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-134 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.976644330Z 2026/11/19 23:20:01 [warn] 83#83: *1330 limiting requests, excess: 100.240 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.976702525Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-97 up=172.18.0.5:3000 us=200 rt=0.266
+gateway-1  | 2026-11-19T23:20:01.976714155Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-135 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.978208470Z 2026/11/19 23:20:01 [warn] 83#83: *1331 limiting requests, excess: 100.220 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.978286702Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-136 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.981342830Z 2026/11/19 23:20:01 [warn] 83#83: *1332 limiting requests, excess: 100.160 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.981348001Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-137 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.982593716Z 2026/11/19 23:20:01 [warn] 83#83: *1333 limiting requests, excess: 100.120 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.982636287Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-138 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.984146062Z 2026/11/19 23:20:01 [warn] 84#84: *1334 limiting requests, excess: 100.100 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.984183143Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-139 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.989456895Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-98 up=172.18.0.5:3000 us=200 rt=0.269
+gateway-1  | 2026-11-19T23:20:01.995404118Z 2026/11/19 23:20:01 [warn] 83#83: *1336 limiting requests, excess: 100.860 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.995456868Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-141 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.996795299Z 2026/11/19 23:20:01 [warn] 83#83: *1337 limiting requests, excess: 100.840 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:01.996885171Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 429 rid=s2-E04-92527f-142 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:01.997594322Z 172.19.0.1 [2026-11-19T23:20:01+00:00] "GET /login" 200 rid=s2-E04-92527f-99 up=172.18.0.5:3000 us=200 rt=0.270
+gateway-1  | 2026-11-19T23:20:02.006213321Z 2026/11/19 23:20:02 [warn] 83#83: *1338 limiting requests, excess: 100.660 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.006265023Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-143 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.007408806Z 2026/11/19 23:20:02 [warn] 84#84: *1340 limiting requests, excess: 100.620 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.007427176Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-145 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.008416815Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-100 up=172.18.0.5:3000 us=200 rt=0.272
+gateway-1  | 2026-11-19T23:20:02.008986432Z 2026/11/19 23:20:02 [warn] 84#84: *1341 limiting requests, excess: 100.600 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.009061463Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-146 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.010569857Z 2026/11/19 23:20:02 [warn] 83#83: *1339 limiting requests, excess: 100.560 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.010604728Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-144 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.012027169Z 2026/11/19 23:20:02 [warn] 84#84: *1342 limiting requests, excess: 100.540 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.012026289Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-147 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.014496710Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-148 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.014504280Z 2026/11/19 23:20:02 [warn] 85#85: *1344 limiting requests, excess: 100.480 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.016637823Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-101 up=172.18.0.5:3000 us=200 rt=0.267
+gateway-1  | 2026-11-19T23:20:02.021645789Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-149 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.021661488Z 2026/11/19 23:20:02 [warn] 84#84: *1345 limiting requests, excess: 100.340 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.023536934Z 2026/11/19 23:20:02 [warn] 84#84: *1346 limiting requests, excess: 100.300 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.023629957Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-102 up=172.18.0.5:3000 us=200 rt=0.265
+gateway-1  | 2026-11-19T23:20:02.023642037Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-150 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.025135290Z 2026/11/19 23:20:02 [warn] 84#84: *1347 limiting requests, excess: 100.280 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.025177592Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-151 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.030192225Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-152 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.030192176Z 2026/11/19 23:20:02 [warn] 84#84: *1348 limiting requests, excess: 100.180 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.031950326Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-103 up=172.18.0.5:3000 us=200 rt=0.256
+gateway-1  | 2026-11-19T23:20:02.040148064Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-104 up=172.18.0.5:3000 us=200 rt=0.252
+gateway-1  | 2026-11-19T23:20:02.043461221Z 2026/11/19 23:20:02 [warn] 84#84: *1350 limiting requests, excess: 100.900 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.043535763Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-154 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.044456420Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-155 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.044492301Z 2026/11/19 23:20:02 [warn] 84#84: *1351 limiting requests, excess: 100.880 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.045622084Z 2026/11/19 23:20:02 [warn] 84#84: *1352 limiting requests, excess: 100.860 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.045631324Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-156 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.046801987Z 2026/11/19 23:20:02 [warn] 84#84: *1353 limiting requests, excess: 100.840 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.046803043Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-157 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.047923880Z 2026/11/19 23:20:02 [warn] 84#84: *1354 limiting requests, excess: 100.820 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.047959281Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-105 up=172.18.0.5:3000 us=200 rt=0.248
+gateway-1  | 2026-11-19T23:20:02.047967911Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-158 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.050539785Z 2026/11/19 23:20:02 [warn] 84#84: *1355 limiting requests, excess: 100.760 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.050606617Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-159 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.053173981Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-160 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.053190771Z 2026/11/19 23:20:02 [warn] 85#85: *1356 limiting requests, excess: 100.720 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.054429467Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-161 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.054435949Z 2026/11/19 23:20:02 [warn] 85#85: *1357 limiting requests, excess: 100.680 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.055666294Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-162 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.055733386Z 2026/11/19 23:20:02 [warn] 85#85: *1358 limiting requests, excess: 100.660 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.056059855Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-106 up=172.18.0.5:3000 us=200 rt=0.249
+gateway-1  | 2026-11-19T23:20:02.057098476Z 2026/11/19 23:20:02 [warn] 85#85: *1359 limiting requests, excess: 100.640 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.057110687Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-163 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.065241602Z 2026/11/19 23:20:02 [warn] 86#86: *1360 limiting requests, excess: 100.480 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.065300933Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-164 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.066094157Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-107 up=172.18.0.5:3000 us=200 rt=0.240
+gateway-1  | 2026-11-19T23:20:02.066713734Z 2026/11/19 23:20:02 [warn] 86#86: *1361 limiting requests, excess: 100.440 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.066750615Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-165 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.076074676Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-108 up=172.18.0.5:3000 us=200 rt=0.248
+gateway-1  | 2026-11-19T23:20:02.078671961Z 2026/11/19 23:20:02 [warn] 85#85: *1363 limiting requests, excess: 100.200 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.078700251Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-166 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.086118903Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-109 up=172.18.0.5:3000 us=200 rt=0.255
+gateway-1  | 2026-11-19T23:20:02.093658722Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-168 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.093700037Z 2026/11/19 23:20:02 [warn] 85#85: *1365 limiting requests, excess: 100.900 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.094810650Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-110 up=172.18.0.5:3000 us=200 rt=0.258
+gateway-1  | 2026-11-19T23:20:02.095037485Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-169 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.095082397Z 2026/11/19 23:20:02 [warn] 85#85: *1366 limiting requests, excess: 100.880 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.097249350Z 2026/11/19 23:20:02 [warn] 85#85: *1367 limiting requests, excess: 100.820 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.097304301Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-170 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.098829416Z 2026/11/19 23:20:02 [warn] 85#85: *1368 limiting requests, excess: 100.800 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.098851396Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-171 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.100033530Z 2026/11/19 23:20:02 [warn] 85#85: *1369 limiting requests, excess: 100.780 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.100068546Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-172 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.101110741Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-173 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.101086321Z 2026/11/19 23:20:02 [warn] 85#85: *1370 limiting requests, excess: 100.760 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.102617275Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-111 up=172.18.0.5:3000 us=200 rt=0.260
+gateway-1  | 2026-11-19T23:20:02.103572873Z 2026/11/19 23:20:02 [warn] 85#85: *1371 limiting requests, excess: 100.700 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.103603274Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-174 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.104744497Z 2026/11/19 23:20:02 [warn] 86#86: *1373 limiting requests, excess: 100.680 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.105145358Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-176 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.105907730Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-175 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.105953162Z 2026/11/19 23:20:02 [warn] 85#85: *1372 limiting requests, excess: 100.660 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.107151476Z 2026/11/19 23:20:02 [warn] 86#86: *1374 limiting requests, excess: 100.640 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.107251790Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-177 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.108566157Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-178 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.108568887Z 2026/11/19 23:20:02 [warn] 86#86: *1375 limiting requests, excess: 100.600 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.109728381Z 2026/11/19 23:20:02 [warn] 86#86: *1376 limiting requests, excess: 100.580 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.109771162Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-179 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.110739900Z 2026/11/19 23:20:02 [warn] 86#86: *1377 limiting requests, excess: 100.560 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.110754790Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-180 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.112105681Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-181 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.112123302Z 2026/11/19 23:20:02 [warn] 86#86: *1378 limiting requests, excess: 100.540 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.112153882Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-112 up=172.18.0.5:3000 us=200 rt=0.261
+gateway-1  | 2026-11-19T23:20:02.120301367Z 2026/11/19 23:20:02 [warn] 87#87: *1379 limiting requests, excess: 100.380 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.120360138Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-182 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.120543373Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-113 up=172.18.0.5:3000 us=200 rt=0.261
+gateway-1  | 2026-11-19T23:20:02.123224562Z 2026/11/19 23:20:02 [warn] 87#87: *1380 limiting requests, excess: 100.320 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.123235912Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-183 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.128797724Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-114 up=172.18.0.5:3000 us=200 rt=0.261
+gateway-1  | 2026-11-19T23:20:02.136522788Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-115 up=172.18.0.5:3000 us=200 rt=0.254
+gateway-1  | 2026-11-19T23:20:02.138042141Z 2026/11/19 23:20:02 [warn] 85#85: *1382 limiting requests, excess: 100.020 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.138099114Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-184 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.145588841Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-116 up=172.18.0.5:3000 us=200 rt=0.256
+gateway-1  | 2026-11-19T23:20:02.153398188Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-117 up=172.18.0.5:3000 us=200 rt=0.258
+gateway-1  | 2026-11-19T23:20:02.155531489Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-186 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.155575771Z 2026/11/19 23:20:02 [warn] 86#86: *1384 limiting requests, excess: 100.660 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.156480402Z 2026/11/19 23:20:02 [warn] 86#86: *1385 limiting requests, excess: 100.640 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.156499172Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-187 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.157516356Z 2026/11/19 23:20:02 [warn] 86#86: *1386 limiting requests, excess: 100.620 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.157556528Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-188 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.158705800Z 2026/11/19 23:20:02 [warn] 87#87: *1391 limiting requests, excess: 100.600 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.158726931Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-193 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.159679809Z 2026/11/19 23:20:02 [warn] 86#86: *1387 limiting requests, excess: 100.580 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.159695639Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-189 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.160623126Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-126 up=172.18.0.5:3000 us=200 rt=0.223
+gateway-1  | 2026-11-19T23:20:02.161001167Z 2026/11/19 23:20:02 [warn] 87#87: *1392 limiting requests, excess: 100.560 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.161049678Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-194 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.162685125Z 2026/11/19 23:20:02 [warn] 86#86: *1388 limiting requests, excess: 100.520 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.162708017Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-190 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.164309704Z 2026/11/19 23:20:02 [warn] 87#87: *1393 limiting requests, excess: 100.480 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.164351404Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-195 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.165980961Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-191 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.166004892Z 2026/11/19 23:20:02 [warn] 86#86: *1389 limiting requests, excess: 100.460 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.167638199Z 2026/11/19 23:20:02 [warn] 86#86: *1390 limiting requests, excess: 100.420 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.167785443Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-192 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.169348519Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-140 up=172.18.0.5:3000 us=200 rt=0.176
+gateway-1  | 2026-11-19T23:20:02.169389050Z 2026/11/19 23:20:02 [warn] 87#87: *1394 limiting requests, excess: 100.380 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.169491313Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-196 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.171752469Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-197 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.171784451Z 2026/11/19 23:20:02 [warn] 87#87: *1395 limiting requests, excess: 100.340 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.173061228Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-153 up=172.18.0.5:3000 us=200 rt=0.131
+gateway-1  | 2026-11-19T23:20:02.173085278Z 2026/11/19 23:20:02 [warn] 87#87: *1396 limiting requests, excess: 100.320 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.173156430Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-198 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.174717585Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-199 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.174736776Z 2026/11/19 23:20:02 [warn] 87#87: *1398 limiting requests, excess: 100.280 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.174952451Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-167 up=172.18.0.5:3000 us=200 rt=0.082
+gateway-1  | 2026-11-19T23:20:02.176125766Z 2026/11/19 23:20:02 [warn] 87#87: *1399 limiting requests, excess: 100.260 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.176211848Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-200 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.176733793Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-185 up=172.18.0.5:3000 us=200 rt=0.037
+gateway-1  | 2026-11-19T23:20:02.177459624Z 2026/11/19 23:20:02 [warn] 88#88: *1404 limiting requests, excess: 100.220 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.177513676Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-205 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.178600027Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-201 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.178601157Z 2026/11/19 23:20:02 [warn] 87#87: *1400 limiting requests, excess: 100.200 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.179715999Z 2026/11/19 23:20:02 [warn] 88#88: *1405 limiting requests, excess: 100.180 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.179750010Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-206 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.180702068Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-202 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.180714388Z 2026/11/19 23:20:02 [warn] 87#87: *1401 limiting requests, excess: 100.160 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.182688895Z 2026/11/19 23:20:02 [warn] 87#87: *1402 limiting requests, excess: 100.120 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.182732327Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-203 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.183689355Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-204 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.183704771Z 2026/11/19 23:20:02 [warn] 87#87: *1403 limiting requests, excess: 100.100 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.213972403Z 2026/11/19 23:20:02 [warn] 87#87: *1407 limiting requests, excess: 100.500 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.214005034Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-208 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.215022513Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-209 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.215046609Z 2026/11/19 23:20:02 [warn] 88#88: *1408 limiting requests, excess: 100.480 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.221469760Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-207 up=172.18.0.5:3000 us=200 rt=0.009
+gateway-1  | 2026-11-19T23:20:02.226092524Z 2026/11/19 23:20:02 [warn] 88#88: *1409 limiting requests, excess: 100.260 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.226183066Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-210 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.226558978Z 2026/11/19 23:20:02 [warn] 88#88: *1410 limiting requests, excess: 100.240 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.226603318Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-211 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.228015669Z 2026/11/19 23:20:02 [warn] 88#88: *1411 limiting requests, excess: 100.220 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.228031019Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-212 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.229232525Z 2026/11/19 23:20:02 [warn] 88#88: *1412 limiting requests, excess: 100.200 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.229269326Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-213 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.230462281Z 2026/11/19 23:20:02 [warn] 89#89: *1422 limiting requests, excess: 100.160 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.230503452Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-223 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.231852081Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-214 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.231856852Z 2026/11/19 23:20:02 [warn] 88#88: *1413 limiting requests, excess: 100.140 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.233087737Z 2026/11/19 23:20:02 [warn] 89#89: *1423 limiting requests, excess: 100.120 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.233121988Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-224 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.234107036Z 2026/11/19 23:20:02 [warn] 88#88: *1414 limiting requests, excess: 100.100 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.234122037Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-215 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.235317597Z 2026/11/19 23:20:02 [warn] 89#89: *1424 limiting requests, excess: 100.060 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.235414460Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-225 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.236633810Z 2026/11/19 23:20:02 [warn] 88#88: *1415 limiting requests, excess: 100.040 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.236678211Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-216 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.238193495Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-226 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.238217545Z 2026/11/19 23:20:02 [warn] 89#89: *1425 limiting requests, excess: 100.020 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.241446400Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-227 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.241486250Z 2026/11/19 23:20:02 [warn] 89#89: *1426 limiting requests, excess: 100.940 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.243744595Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-228 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.243762146Z 2026/11/19 23:20:02 [warn] 89#89: *1427 limiting requests, excess: 100.900 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.245116556Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-218 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.245179908Z 2026/11/19 23:20:02 [warn] 88#88: *1417 limiting requests, excess: 100.880 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.246452504Z 2026/11/19 23:20:02 [warn] 89#89: *1428 limiting requests, excess: 100.840 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.246469335Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-229 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.247518395Z 2026/11/19 23:20:02 [warn] 88#88: *1418 limiting requests, excess: 100.820 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.247534445Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-219 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.248888984Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-230 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.248898925Z 2026/11/19 23:20:02 [warn] 89#89: *1429 limiting requests, excess: 100.800 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.249458991Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-217 up=172.18.0.5:3000 us=200 rt=0.010
+gateway-1  | 2026-11-19T23:20:02.250029378Z 2026/11/19 23:20:02 [warn] 89#89: *1431 limiting requests, excess: 100.780 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.250058149Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-231 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.251307305Z 2026/11/19 23:20:02 [warn] 88#88: *1419 limiting requests, excess: 100.740 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.251485580Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-220 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.252433558Z 2026/11/19 23:20:02 [warn] 89#89: *1432 limiting requests, excess: 100.720 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.252448099Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-232 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.253503788Z 2026/11/19 23:20:02 [warn] 89#89: *1433 limiting requests, excess: 100.700 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.253555150Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-233 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.254677032Z 2026/11/19 23:20:02 [warn] 88#88: *1420 limiting requests, excess: 100.680 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.254747500Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-221 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.255958800Z 2026/11/19 23:20:02 [warn] 89#89: *1434 limiting requests, excess: 100.660 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.255992341Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-234 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.257581047Z 2026/11/19 23:20:02 [warn] 88#88: *1421 limiting requests, excess: 100.620 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.257828703Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-222 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.259827552Z 2026/11/19 23:20:02 [warn] 89#89: *1435 limiting requests, excess: 100.580 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.259858689Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-235 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.262232092Z 2026/11/19 23:20:02 [warn] 90#90: *1436 limiting requests, excess: 100.540 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.262274334Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-236 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.294183727Z 2026/11/19 23:20:02 [warn] 90#90: *1440 limiting requests, excess: 100.900 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.294216739Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-239 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.295489005Z 2026/11/19 23:20:02 [warn] 89#89: *1439 limiting requests, excess: 100.860 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.295569968Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-238 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.300398469Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-237 up=172.18.0.5:3000 us=200 rt=0.009
+gateway-1  | 2026-11-19T23:20:02.306459743Z 2026/11/19 23:20:02 [warn] 89#89: *1441 limiting requests, excess: 100.640 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.306513374Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-240 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.307472701Z 2026/11/19 23:20:02 [warn] 90#90: *1442 limiting requests, excess: 100.620 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.307490022Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-241 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.308512172Z 2026/11/19 23:20:02 [warn] 90#90: *1443 limiting requests, excess: 100.600 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.308533013Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-242 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.309587454Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-243 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.309614344Z 2026/11/19 23:20:02 [warn] 90#90: *1444 limiting requests, excess: 100.580 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.310642125Z 2026/11/19 23:20:02 [warn] 90#90: *1445 limiting requests, excess: 100.560 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.310681616Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-244 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.311662405Z 2026/11/19 23:20:02 [warn] 90#90: *1446 limiting requests, excess: 100.540 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.311693455Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-245 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.312733136Z 2026/11/19 23:20:02 [warn] 91#91: *1456 limiting requests, excess: 100.520 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.312761677Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-255 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.313836357Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-246 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.313838393Z 2026/11/19 23:20:02 [warn] 90#90: *1447 limiting requests, excess: 100.500 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.315464074Z 2026/11/19 23:20:02 [warn] 91#91: *1457 limiting requests, excess: 100.460 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.315482855Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-256 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.317067851Z 2026/11/19 23:20:02 [warn] 90#90: *1448 limiting requests, excess: 100.440 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.317109402Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-247 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.318250385Z 2026/11/19 23:20:02 [warn] 91#91: *1458 limiting requests, excess: 100.400 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.318285846Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-257 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.319369797Z 2026/11/19 23:20:02 [warn] 90#90: *1449 limiting requests, excess: 100.380 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.319389588Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-248 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.320449359Z 2026/11/19 23:20:02 [warn] 91#91: *1460 limiting requests, excess: 100.360 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.320464859Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-259 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.321765967Z 2026/11/19 23:20:02 [warn] 90#90: *1450 limiting requests, excess: 100.340 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.321827400Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-249 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.324045363Z 2026/11/19 23:20:02 [warn] 91#91: *1459 limiting requests, excess: 100.300 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.324099484Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-258 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.325141844Z 2026/11/19 23:20:02 [warn] 90#90: *1451 limiting requests, excess: 100.280 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.325164455Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-250 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.326255053Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-260 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.326273618Z 2026/11/19 23:20:02 [warn] 91#91: *1462 limiting requests, excess: 100.240 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.327292167Z 2026/11/19 23:20:02 [warn] 90#90: *1452 limiting requests, excess: 100.220 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.327514434Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-251 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.328496133Z 2026/11/19 23:20:02 [warn] 91#91: *1463 limiting requests, excess: 100.200 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.328530993Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-261 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.329777490Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-252 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.329803940Z 2026/11/19 23:20:02 [warn] 90#90: *1453 limiting requests, excess: 100.180 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.331006535Z 2026/11/19 23:20:02 [warn] 91#91: *1464 limiting requests, excess: 100.160 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.331042516Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-262 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.332108158Z 2026/11/19 23:20:02 [warn] 90#90: *1454 limiting requests, excess: 100.140 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.332143389Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-253 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.333413164Z 2026/11/19 23:20:02 [warn] 91#91: *1465 limiting requests, excess: 100.100 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.333446116Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-263 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.334684461Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-254 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.334718312Z 2026/11/19 23:20:02 [warn] 90#90: *1455 limiting requests, excess: 100.080 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.335899916Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-264 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.335928527Z 2026/11/19 23:20:02 [warn] 91#91: *1466 limiting requests, excess: 100.060 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.337218915Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-265 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.337228005Z 2026/11/19 23:20:02 [warn] 91#91: *1467 limiting requests, excess: 100.040 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.347792632Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-266 up=172.18.0.5:3000 us=200 rt=0.010
+gateway-1  | 2026-11-19T23:20:02.370385707Z 2026/11/19 23:20:02 [warn] 91#91: *1469 limiting requests, excess: 100.360 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.370455789Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-267 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.371706355Z 2026/11/19 23:20:02 [warn] 92#92: *1471 limiting requests, excess: 100.340 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.371741726Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-269 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.372717164Z 2026/11/19 23:20:02 [warn] 91#91: *1470 limiting requests, excess: 100.320 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.372740945Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-268 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.383077775Z 2026/11/19 23:20:02 [warn] 91#91: *1473 limiting requests, excess: 100.120 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.383136591Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-270 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.384475575Z 2026/11/19 23:20:02 [warn] 92#92: *1475 limiting requests, excess: 100.080 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.384493875Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-272 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.385756891Z 2026/11/19 23:20:02 [warn] 91#91: *1474 limiting requests, excess: 100.060 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.385805173Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-271 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.386805692Z 2026/11/19 23:20:02 [warn] 92#92: *1476 limiting requests, excess: 100.040 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.386839663Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-273 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.387879514Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-274 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.387889383Z 2026/11/19 23:20:02 [warn] 92#92: *1477 limiting requests, excess: 100.020 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.390149420Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-276 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.390186150Z 2026/11/19 23:20:02 [warn] 92#92: *1479 limiting requests, excess: 100.980 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.391433886Z 2026/11/19 23:20:02 [warn] 92#92: *1480 limiting requests, excess: 100.940 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.391473307Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-277 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.392568155Z 2026/11/19 23:20:02 [warn] 77#77: *1490 limiting requests, excess: 100.920 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.392570890Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-287 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.393745273Z 2026/11/19 23:20:02 [warn] 92#92: *1481 limiting requests, excess: 100.900 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.393784324Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-278 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.394841624Z 2026/11/19 23:20:02 [warn] 77#77: *1491 limiting requests, excess: 100.880 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.394869425Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-288 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.395792722Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 200 rid=s2-E04-92527f-275 up=172.18.0.5:3000 us=200 rt=0.007
+gateway-1  | 2026-11-19T23:20:02.396097470Z 2026/11/19 23:20:02 [warn] 92#92: *1482 limiting requests, excess: 100.860 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.396116061Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-279 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.397361687Z 2026/11/19 23:20:02 [warn] 77#77: *1493 limiting requests, excess: 100.840 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.397432995Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-290 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.398156410Z 2026/11/19 23:20:02 [warn] 92#92: *1483 limiting requests, excess: 100.820 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.398172521Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-280 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.399217991Z 2026/11/19 23:20:02 [warn] 77#77: *1492 limiting requests, excess: 100.780 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.399232661Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-289 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.400262032Z 2026/11/19 23:20:02 [warn] 92#92: *1484 limiting requests, excess: 100.760 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.400292523Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-281 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.401408726Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-282 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.401433457Z 2026/11/19 23:20:02 [warn] 92#92: *1485 limiting requests, excess: 100.740 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.402597340Z 2026/11/19 23:20:02 [warn] 77#77: *1494 limiting requests, excess: 100.720 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.402632691Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-291 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.405259626Z 2026/11/19 23:20:02 [warn] 92#92: *1486 limiting requests, excess: 100.660 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.405292928Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-283 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.406592611Z 2026/11/19 23:20:02 [warn] 77#77: *1495 limiting requests, excess: 100.640 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.406622836Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-292 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.407826471Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-293 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.407850522Z 2026/11/19 23:20:02 [warn] 77#77: *1496 limiting requests, excess: 100.620 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.409072108Z 2026/11/19 23:20:02 [warn] 92#92: *1487 limiting requests, excess: 100.600 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.409139539Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-284 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.410276502Z 2026/11/19 23:20:02 [warn] 77#77: *1497 limiting requests, excess: 100.560 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.410313044Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-294 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.411734484Z 2026/11/19 23:20:02 [warn] 92#92: *1488 limiting requests, excess: 100.540 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.411776385Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-285 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.412949879Z 2026/11/19 23:20:02 [warn] 77#77: *1498 limiting requests, excess: 100.520 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.412986301Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-295 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.413980740Z 2026/11/19 23:20:02 [warn] 92#92: *1489 limiting requests, excess: 100.500 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.413994390Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-286 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.415230416Z 2026/11/19 23:20:02 [warn] 77#77: *1499 limiting requests, excess: 100.460 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.415266026Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-296 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.423414603Z 2026/11/19 23:20:02 [warn] 77#77: *1501 limiting requests, excess: 100.300 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.423457014Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-297 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.424549435Z 2026/11/19 23:20:02 [warn] 77#77: *1502 limiting requests, excess: 100.280 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"
+gateway-1  | 2026-11-19T23:20:02.424590746Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-298 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.425779101Z 172.19.0.1 [2026-11-19T23:20:02+00:00] "GET /login" 429 rid=s2-E04-92527f-299 up=- us=- rt=0.000
+gateway-1  | 2026-11-19T23:20:02.425789862Z 2026/11/19 23:20:02 [warn] 77#77: *1503 limiting requests, excess: 100.260 by zone "web", client: 172.19.0.1, server: _, request: "GET /login HTTP/1.1", host: "localhost:8443"

@@ -1,6 +1,7 @@
 # ADR 0007 · TLS descartado en el prototipo 2 (mejora futura)
 
-- **Estado:** aceptada (descarte deliberado) · **Fecha:** 2026-10-28 · **Paquete:** F
+- **Estado:** reemplazada en el P3 por el escenario S1 · Secure Channel (TLS terminado en el gateway;
+  ver [docs/p3/fragmentos/S1-canal-seguro.md](../p3/fragmentos/S1-canal-seguro.md)) · **Fecha:** 2026-10-28 · **Paquete:** F
 
 ## Contexto
 Los servicios se demuestran en `localhost`/red local. Gestionar certificados (autofirmados o ACME) añade trabajo y

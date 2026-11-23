@@ -19,7 +19,8 @@ from ..config import OUTBOX_ENABLED
 from ..database import get_db
 from ..models import Board, BoardMember, BoardStatus, Invite, Role, utcnow
 from ..outbox import dispatch_pending_once, enqueue_board_cleanup
-from ..permissions import BoardAccess, require_role
+from ..permissions import BoardAccess, require_action
+from ..policy import Action, is_action_allowed
 from ..schemas import BoardCreate, BoardOut, BoardUpdate, MemberOut, MemberRoleUpdate
 
 router = APIRouter(prefix="/boards", tags=["Tableros"])
@@ -97,7 +98,7 @@ def list_my_boards(
 
 @router.get("/{board_id}", response_model=BoardOut)
 def get_board(
-    access: BoardAccess = Depends(require_role(Role.viewer)),
+    access: BoardAccess = Depends(require_action(Action.board_view)),
     db: Session = Depends(get_db),
 ):
     return _to_out(db, access.board, access.role)
@@ -106,7 +107,7 @@ def get_board(
 @router.patch("/{board_id}", response_model=BoardOut)
 def rename_board(
     data: BoardUpdate,
-    access: BoardAccess = Depends(require_role(Role.owner)),
+    access: BoardAccess = Depends(require_action(Action.board_rename)),
     db: Session = Depends(get_db),
 ):
     board = db.merge(access.board)
@@ -118,7 +119,7 @@ def rename_board(
 @router.delete("/{board_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_board(
     background_tasks: BackgroundTasks,
-    access: BoardAccess = Depends(require_role(Role.owner)),
+    access: BoardAccess = Depends(require_action(Action.board_delete)),
     db: Session = Depends(get_db),
 ):
     """Borrado coordinado (plan P2, secciones 4 y 6):
@@ -154,7 +155,7 @@ def delete_board(
 
 @router.get("/{board_id}/members", response_model=list[MemberOut])
 def list_members(
-    access: BoardAccess = Depends(require_role(Role.viewer)),
+    access: BoardAccess = Depends(require_action(Action.member_list)),
     db: Session = Depends(get_db),
 ):
     return db.scalars(
@@ -177,7 +178,7 @@ def _get_member(db: Session, board_id: str, user_id: str) -> BoardMember:
 def change_member_role(
     user_id: str,
     data: MemberRoleUpdate,
-    access: BoardAccess = Depends(require_role(Role.owner)),
+    access: BoardAccess = Depends(require_action(Action.member_manage)),
     db: Session = Depends(get_db),
 ):
     member = _get_member(db, access.board.id, user_id)
@@ -191,11 +192,11 @@ def change_member_role(
 @router.delete("/{board_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_member(
     user_id: str,
-    access: BoardAccess = Depends(require_role(Role.viewer)),
+    access: BoardAccess = Depends(require_action(Action.board_view)),
     db: Session = Depends(get_db),
 ):
     is_self = user_id == access.user.id
-    if not is_self and access.role != Role.owner:
+    if not is_self and not is_action_allowed(access.role, Action.member_manage):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Solo el dueño puede quitar miembros")
 
     member = _get_member(db, access.board.id, user_id)

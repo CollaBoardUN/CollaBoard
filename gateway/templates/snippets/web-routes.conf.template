@@ -1,0 +1,76 @@
+# P3 · S2 Reverse Proxy — rutas públicas de la web (ADR 0012). Solo en el servidor :443:
+# el interno no sirve páginas. Reemplaza el `location /` del P2, que enviaba a web-ssr
+# cualquier ruta; lo que no se declara aquí ni en api-routes.conf -> 404 JSON del gateway.
+#
+# Rutas extraídas de web-ssr/src/app (App Router) y de su build: páginas, BFF, el route
+# handler de sesión expirada, los estáticos de /_next/static y los dos SVG de public/.
+# Las páginas aceptan POST porque los formularios usan Server Actions (POST a la propia
+# página). /healthz de la web no se publica: lo responde el gateway.
+
+set $pixels_ui_upstream ${PIXELS_UI_UPSTREAM};
+
+# --- Páginas: /, /login, /register, /boards/{id}, /join/{token}
+location ~ "^/(?:login|register|boards/[A-Za-z0-9_-]{1,64}|join/[A-Za-z0-9_-]{1,128})?$" {
+  limit_req zone=web burst=${RATE_LIMIT_WEB_BURST} nodelay;
+  limit_except GET POST { deny all; }
+  client_max_body_size 64k;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$web_upstream;
+}
+
+# --- Route handler de sesión expirada (solo GET)
+location = /session/expired {
+  limit_req zone=web burst=${RATE_LIMIT_WEB_BURST} nodelay;
+  limit_except GET { deny all; }
+  client_max_body_size 1k;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$web_upstream;
+}
+
+# --- Route handlers de renovación y cierre de sesión (S4: GET y POST)
+location ~ "^/session/(?:refresh|logout)$" {
+  limit_req zone=web burst=${RATE_LIMIT_WEB_BURST} nodelay;
+  limit_except GET POST { deny all; }
+  client_max_body_size 4k;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$web_upstream;
+}
+
+# --- BFF del navegador: /bff/<ruta pública de la API>. Mismos métodos y tope de cuerpo
+#     que el propio BFF (web-ssr/src/server/bffPolicy.ts: BFF_METHODS, 256 KiB).
+location ~ "^/bff/api/[A-Za-z0-9_/-]{1,256}$" {
+  limit_req zone=web burst=${RATE_LIMIT_WEB_BURST} nodelay;
+  limit_except GET POST PUT PATCH DELETE { deny all; }
+  client_max_body_size 256k;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$web_upstream;
+}
+
+# --- Estáticos de Next (con hash en el nombre). Sin limit_req: una página pide decenas.
+location ~ "^/_next/static/[A-Za-z0-9_./~-]{1,256}$" {
+  limit_except GET { deny all; }
+  client_max_body_size 1k;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$web_upstream;
+}
+location ~ "^/(?:favicon|collaboard-logo)\.svg$" {
+  limit_except GET { deny all; }
+  client_max_body_size 1k;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$web_upstream;
+}
+
+# --- UI de Pixels (SPA estática de pixels-ui) detrás del gateway, bajo /pixels/ (D1 de S2).
+#     Antes se publicaba aparte en 3000:80, saltándose el gateway. Se quita el prefijo hacia
+#     pixels-ui; la SPA se construye con base /pixels/ (VITE_BASE_PATH).
+location = /pixels {
+  absolute_redirect off;
+  return 301 /pixels/;
+}
+location ~ "^/pixels/(?<pixels_ui_path>[A-Za-z0-9_./-]{0,256})$" {
+  limit_except GET { deny all; }
+  client_max_body_size 1k;
+  rewrite ^ /$pixels_ui_path break;
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$pixels_ui_upstream;
+}

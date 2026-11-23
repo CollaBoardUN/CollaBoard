@@ -1,0 +1,28 @@
+# P3 levantado desde cero
+Commit: 7d7b9cab850975392d593fc8eef2ddb902c0c9fc (rama p3/s2-proxy) · inicio: 2026-11-19T23:15:50Z
+$ docker compose down -v && docker compose up -d --build --wait
+ Volume colaboard_user_db_data Removed 
+ Container colaboard-auth-api-1 Healthy 
+ Container colaboard-canvas-db-1 Healthy 
+ Container colaboard-gateway-1 Healthy 
+exit=0
+fin: 2026-11-19T23:16:14Z
+
+$ docker compose ps
+SERVICE             STATUS                    PORTS
+auth-api            Up 14 seconds (healthy)   8001/tcp
+board-db            Up 18 seconds (healthy)   5432/tcp
+canvas-db           Up 18 seconds (healthy)   5432/tcp
+chat-api            Up 11 seconds (healthy)   8090/tcp
+collaboration-api   Up 14 seconds (healthy)   8000/tcp
+gateway             Up 5 seconds (healthy)    0.0.0.0:8088->80/tcp, [::]:8088->80/tcp, 0.0.0.0:8443->443/tcp, [::]:8443->443/tcp
+message-worker      Up 10 seconds             
+notification-api    Up 11 seconds             
+notification-db     Up 18 seconds (healthy)   5432/tcp
+pixels-api          Up 11 seconds (healthy)   8000/tcp
+pixels-nosqldb      Up 18 seconds (healthy)   27017/tcp
+pixels-ui           Up 5 seconds              80/tcp
+pizarra-api         Up 14 seconds (healthy)   8000/tcp
+rabbitmq            Up 18 seconds (healthy)   127.0.0.1:15672->15672/tcp
+user-db             Up 18 seconds (healthy)   5432/tcp
+web-ssr             Up 18 seconds (healthy)   3000/tcp

@@ -29,15 +29,17 @@ def test_internal_access_roles_owner_editor_viewer(client, ana, beto, caro, boar
         headers=service_headers("ana", "Ana"),
     )
     assert r_owner.status_code == 200
-    assert r_owner.json() == {
-        "board_id": board["id"],
-        "board_name": "Tablero de Ana",
-        "owner_id": "ana",
-        "user_id": "ana",
-        "role": "owner",
-        "exists": True,
-        "board_status": "active",
-    }
+    body_owner = r_owner.json()
+    assert body_owner["board_id"] == board["id"]
+    assert body_owner["board_name"] == "Tablero de Ana"
+    assert body_owner["owner_id"] == "ana"
+    assert body_owner["user_id"] == "ana"
+    assert body_owner["role"] == "owner"
+    assert body_owner["exists"] is True
+    assert body_owner["board_status"] == "active"
+    assert body_owner["allowed"] is True
+    assert "board:delete" in body_owner["permissions"]
+    assert "canvas:edit" in body_owner["permissions"]
 
     r_editor = client.get(
         f"/internal/boards/{board['id']}/access",

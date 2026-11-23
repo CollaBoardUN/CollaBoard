@@ -1,0 +1,15 @@
+## Contrato de 0ac1014 (aserción del P2) contra el gateway de S2
+not ok 1 - rutas de canvas fuera del contrato no llegan a Pizarra
+    + actual - expected
+  expected: '/api/canvas/boards/b1/otra-cosa'
+# pass 0
+# fail 1
+
+## Contrato nuevo (ADR 0012) contra el mismo gateway
+ok 1 - rutas de canvas fuera del contrato no llegan a Pizarra
+# pass 1
+# fail 0
+
+## Línea del access log del banco para la petición del contrato nuevo
+172.20.0.1 [2026-11-19T23:13:07+00:00] "GET /api/canvas/boards/b1/otra-cosa" 404 rid=1ba45212fc8642c5e4170bc6c48be869 up=- us=- rt=0.000
+172.20.0.1 [2026-11-19T23:13:07+00:00] "GET /api/canvas/boards/b1/otra-cosa" 404 rid=contrato-canvas-1795129987458 up=- us=- rt=0.000

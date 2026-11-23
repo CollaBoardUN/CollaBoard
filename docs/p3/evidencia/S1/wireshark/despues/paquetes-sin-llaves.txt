@@ -1,0 +1,12 @@
+4	TLSv1.2	Client Hello (SNI=localhost)
+6	TLSv1.3	Server Hello, Change Cipher Spec, Application Data, Application Data, Application Data, Application Data
+17	TLSv1.2	Client Hello (SNI=localhost)
+19	TLSv1.3	Server Hello, Change Cipher Spec, Application Data, Application Data, Application Data, Application Data
+376	TLSv1.2	Client Hello (SNI=localhost)
+382	TLSv1.3	Server Hello, Change Cipher Spec, Application Data, Application Data
+407	TLSv1.2	Client Hello (SNI=localhost)
+409	TLSv1.3	Server Hello, Change Cipher Spec, Application Data, Application Data
+420	TLSv1.2	Client Hello (SNI=localhost)
+422	TLSv1.3	Server Hello, Change Cipher Spec, Application Data, Application Data, Application Data, Application Data
+435	TLSv1.2	Client Hello (SNI=localhost)
+443	TLSv1.3	Server Hello, Change Cipher Spec, Application Data, Application Data

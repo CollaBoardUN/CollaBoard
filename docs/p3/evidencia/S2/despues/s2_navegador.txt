@@ -1,0 +1,22 @@
+$ WEB_SSR_URL=https://localhost:8443 python security-tests/s2_navegador.py --json docs/p3/evidencia/S2/despues/s2_navegador.json
+OK   registro desde la web (Server Action)
+OK   crear tablero y verlo en el dashboard
+OK   abrir el tablero (wss://…/ws/boards) y dibujar
+OK   UI de Pixels en /pixels/ (fetch + wss://…/ws/pixels)
+OK   recargar el dashboard 3 veces
+{
+  "web": "https://localhost:8443",
+  "csp_bloqueantes": [],
+  "csp_consola_bloqueantes": [],
+  "errores_js": [],
+  "peticiones": 141,
+  "max_peticiones_simultaneas": 11,
+  "max_websocket_abiertos": 4,
+  "pico_zona_web_en_1s": 19,
+  "respuestas_429": [],
+  "csp_solo_reportadas": [
+    "font-src ← https://fonts.gstatic.com/s/inter/…",
+    "style-src-elem ← https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+  ]
+}
+exit=0

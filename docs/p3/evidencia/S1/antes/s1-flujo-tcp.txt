@@ -1,0 +1,102 @@
+== frame 30 stream 2
+
+===================================================================
+Follow: tcp,ascii
+Filter: tcp.stream eq 2
+Node 0: 172.20.0.1:50976
+Node 1: 172.20.0.2:80
+957
+POST /login HTTP/1.1
+Accept-Encoding: identity
+Content-Length: 764
+Content-Type: multipart/form-data; boundary=----s13b93f982cbeb3af1
+Origin: http://localhost:8088
+Host: localhost:8088
+
+------s13b93f982cbeb3af1
+Content-Disposition: form-data; name="$ACTION_REF_1"
+
+
+------s13b93f982cbeb3af1
+Content-Disposition: form-data; name="$ACTION_1:0"
+
+{"id":"60f0fed7af6f506294eb06b5a283eed1439c4dbfd9","bound":"$@1"}
+------s13b93f982cbeb3af1
+Content-Disposition: form-data; name="$ACTION_1:1"
+
+[{"error":null,"fields":{}}]
+------s13b93f982cbeb3af1
+Content-Disposition: form-data; name="$ACTION_KEY"
+
+k69b288688370e46d26a9f8b68d1c1048
+------s13b93f982cbeb3af1
+Content-Disposition: form-data; name="next"
+
+/
+------s13b93f982cbeb3af1
+Content-Disposition: form-data; name="email"
+
+s1-13e38d00@ejemplo.com
+------s13b93f982cbeb3af1
+Content-Disposition: form-data; name="password"
+
+S1-Secreto-13e38d00-Clave!
+------s13b93f982cbeb3af1--
+
+	953
+HTTP/1.1 303 See Other
+Server: nginx
+Date: Wed, 18 Nov 2026 02:43:04 GMT
+Transfer-Encoding: chunked
+Connection: keep-alive
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: same-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+Cross-Origin-Opener-Policy: same-origin
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Set-Cookie: cb_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiUzEgMTNlMzhkMDAiLCJlbWFpbCI6InMxLTEzZTM4ZDAwQGVqZW1wbG8uY29tIiwiaXNzIjoiY29sbGFib2FyZC1hdXRoIiwic3ViIjoiMjliZDAxNzYtOGNlZC00ZjYzLTk4YzUtMDRmYzEzZTUwMjg2IiwiZXhwIjoxNzk0OTczMzg0LCJpYXQiOjE3OTQ5Njk3ODR9.XpPe0GhVNHnhdG7m-UVJm8e55g7YB0vS9_ST-Ygo41I; Path=/; Expires=Wed, 18 Nov 2026 03:43:03 GMT; Max-Age=3599; HttpOnly; SameSite=lax; Priority=high
+Location: /
+X-Request-ID: 89f1437aaa6ea52afb9ece93a3e5f6c6
+== frame 50 stream 4
+
+===================================================================
+Follow: tcp,ascii
+Filter: tcp.stream eq 4
+Node 0: 172.20.0.1:50996
+Node 1: 172.20.0.2:80
+611
+POST /api/chat/boards/ca6da52d-c806-42d4-8442-c18a74ade3d6/messages HTTP/1.1
+Host: localhost:8088
+Accept-Encoding: identity
+Content-Length: 82
+Content-Type: application/json
+Origin: http://localhost:8088
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiUzEgMTNlMzhkMDAiLCJlbWFpbCI6InMxLTEzZTM4ZDAwQGVqZW1wbG8uY29tIiwiaXNzIjoiY29sbGFib2FyZC1hdXRoIiwic3ViIjoiMjliZDAxNzYtOGNlZC00ZjYzLTk4YzUtMDRmYzEzZTUwMjg2IiwiZXhwIjoxNzk0OTczMzg0LCJpYXQiOjE3OTQ5Njk3ODR9.XpPe0GhVNHnhdG7m-UVJm8e55g7YB0vS9_ST-Ygo41I
+
+{"text": "mensaje-confidencial-13e38d00", "client_message_id": "3e27cf6cb9e36bd6"}
+	691
+HTTP/1.1 201 
+Server: nginx
+Date: Wed, 18 Nov 2026 02:43:05 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+Cache-Control: no-store
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: DENY
+X-Request-ID: 427fb3fc935acd5ffb483696105183a3
+
+124
+{"id":"6611904c-41c7-435f-a577-1a3ce1cc78e3","board_id":"ca6da52d-c806-42d4-8442-c18a74ade3d6","sender_id":"29bd0176-8ced-4f63-98c5-04fc13e50286","sender_name":"S1 13e38d00","text":"mensaje-confidencial-13e38d00","client_message_id":"3e27cf6cb9e36bd6","created_at":"2026-11-18T02:43:05.047Z"}
+
+	5
+0
+
+
+===================================================================

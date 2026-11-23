@@ -52,6 +52,20 @@ export function decideBff(input: BffInput): BffDecision {
   return { ok: true, path: withQuery(safe, publicPath) };
 }
 
+/**
+ * Formularios de /session/* (logout, refresh): sin `Origin` se aceptan (navegación
+ * de primer nivel); con `Origin`, debe ser el origen público del sitio o uno permitido.
+ * No se compara con `request.nextUrl.origin`: detrás del gateway (TLS terminado en
+ * Nginx) ese es el origen interno en HTTP y nunca coincide con el del navegador.
+ */
+export function isAllowedFormOrigin(
+  origin: string | null,
+  selfOrigin: string,
+  allowedOrigins: readonly string[],
+): boolean {
+  return !origin || origin === selfOrigin || allowedOrigins.includes(origin);
+}
+
 /** Origen público de la petición, respetando el proxy (gateway) que la reenvía. */
 export function publicOrigin(headers: Headers, fallbackUrl: string): string {
   const forwardedHost = headers.get("x-forwarded-host")?.split(",")[0]?.trim();

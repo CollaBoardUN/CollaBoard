@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // El handler de WS valida cookie/Bearer y cierra con 4401/4403
                 // después del upgrade, como espera el cliente P2.
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/health", "/ws/chat/boards/*").permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/health", "/ws/chat/boards/*", "/internal/chat/boards/*").permitAll().anyRequest().authenticated())
                 .exceptionHandling(errors -> errors.authenticationEntryPoint((request, response, exception) -> {
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);

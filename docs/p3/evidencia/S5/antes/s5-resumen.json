@@ -1,0 +1,31 @@
+{
+  "repo": "CollaBoard-main",
+  "static_checks": {
+    "has_policy_module": false,
+    "chat_uses_internal_pdp": false,
+    "chat_has_cache": false,
+    "chat_recheck_le_5s": false,
+    "chat_has_internal_purge": false,
+    "pizarra_fail_closed": false,
+    "pizarra_has_cache": false
+  },
+  "matrix_passed": 144,
+  "matrix_total": 144,
+  "degrade_ws_latency_seconds": 0.337,
+  "expel_ws_latency_seconds": 0.562,
+  "pdp_calls_per_20_requests": {
+    "without_cache": 20,
+    "with_cache_ttl_3s": 20,
+    "reduction_percent": 0.0
+  },
+  "failures": [
+    "PDP con tabla declarativa única POLICY_MATRIX (colaboracion-module/app/policy.py)",
+    "endpoint interno GET /internal/policy exporta catálogo de acciones RBAC",
+    "PDP evalúa ?action=canvas:edit para viewer y responde allowed=false + permissions",
+    "pizarra-api no expone CRUD duplicado de tableros (GET /boards -> 404)",
+    "PEP de pizarra-api falla cerrado (sin fallback que conceda rol owner)",
+    "PEP de pizarra-api implementa caché de decisiones (Cache-Aside con TTL)",
+    "PEP de chat-api usa /internal/boards con X-Service-Token, caché y recheck <= 5 s",
+    "caché de decisiones en PEP reduce llamadas repetidas al PDP dentro del TTL"
+  ]
+}

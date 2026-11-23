@@ -1,6 +1,6 @@
 # ADR 0006 · Límite de tasa en el gateway
 
-- **Estado:** aceptada · **Fecha:** 2026-10-28 · **Paquete:** F
+- **Estado:** aceptada · ampliada por [0012](0012-reverse-proxy-endurecido.md) · **Fecha:** 2026-10-28 · **Paquete:** F
 
 ## Contexto
 El plan pide «controlar límites básicos» en el gateway. Debe proteger el login de fuerza bruta sin romper el dibujo

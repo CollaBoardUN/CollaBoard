@@ -1,0 +1,44 @@
+S3 · Network Segmentation (proyecto Compose: collaboard, 16 contenedores)
+
+OK   gateway: pares permitidos alcanzan su destino — OK (7/7)
+OK   gateway: movimiento lateral prohibido bloqueado — 0 fugas
+OK   web-ssr: pares permitidos alcanzan su destino — OK (1/1)
+OK   web-ssr: movimiento lateral prohibido bloqueado — 0 fugas
+OK   web-ssr: sin salida a Internet (1.1.1.1:443) — bloqueado
+OK   auth-api: pares permitidos alcanzan su destino — OK (1/1)
+OK   auth-api: movimiento lateral prohibido bloqueado — 0 fugas
+OK   auth-api: sin salida a Internet (1.1.1.1:443) — bloqueado
+OK   collaboration-api: pares permitidos alcanzan su destino — OK (3/3)
+OK   collaboration-api: movimiento lateral prohibido bloqueado — 0 fugas
+OK   collaboration-api: sin salida a Internet (1.1.1.1:443) — bloqueado
+OK   pizarra-api: pares permitidos alcanzan su destino — OK (2/2)
+OK   pizarra-api: movimiento lateral prohibido bloqueado — 0 fugas
+OK   pizarra-api: sin salida a Internet (1.1.1.1:443) — bloqueado
+OK   chat-api: pares permitidos alcanzan su destino — OK (3/3)
+OK   chat-api: movimiento lateral prohibido bloqueado — 0 fugas
+OK   chat-api: sin salida a Internet (1.1.1.1:443) — bloqueado
+OK   pixels-api: pares permitidos alcanzan su destino — OK (1/1)
+OK   pixels-api: movimiento lateral prohibido bloqueado — 0 fugas
+OK   pixels-api: sin salida a Internet (1.1.1.1:443) — bloqueado
+OK   notification-api: pares permitidos alcanzan su destino — OK (2/2)
+OK   notification-api: movimiento lateral prohibido bloqueado — 0 fugas
+OK   notification-api: sin salida a Internet (1.1.1.1:443) — bloqueado
+OK   message-worker: pares permitidos alcanzan su destino — OK (2/2)
+OK   message-worker: movimiento lateral prohibido bloqueado — 0 fugas
+OK   message-worker: sin salida a Internet (1.1.1.1:443) — bloqueado
+OK   user-db: zona de datos sin salida a Internet — bloqueado
+OK   board-db: zona de datos sin salida a Internet — bloqueado
+OK   canvas-db: zona de datos sin salida a Internet — bloqueado
+OK   notification-db: zona de datos sin salida a Internet — bloqueado
+OK   pixels-nosqldb: zona de datos sin salida a Internet — bloqueado
+OK   rabbitmq: zona de datos sin salida a Internet — bloqueado
+OK   topología red 'edge' — internal=False, miembros=2
+OK   topología red 'app' — internal=True, miembros=8
+OK   topología red 'net-user' — internal=True, miembros=2
+OK   topología red 'net-board' — internal=True, miembros=2
+OK   topología red 'net-canvas' — internal=True, miembros=2
+OK   topología red 'net-notif' — internal=True, miembros=3
+OK   topología red 'net-mongo' — internal=True, miembros=3
+OK   topología red 'net-mq' — internal=True, miembros=3
+
+Resumen S3 — Permitidos: 22/22 | Bloqueados datos/broker: 45/45 | Bloqueados worker->app: 8/8 | Sin egreso a Internet: 14/14

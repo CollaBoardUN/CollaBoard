@@ -98,7 +98,7 @@ abiertos pueden requerir una política adicional de expiración.
 
 ### 8. Rendimiento
 
-Ensayo de notificaciones asíncronas. Hipótesis: aumentar workers de 1 a 2/4 incrementa throughput hasta que la outbox, el broker o PostgreSQL sature; añadir 200 ms al procesamiento aumenta el backlog pero **no debería** aumentar proporcionalmente el p95 del API productor. Patrones: Queue-Based Load Leveling, Competing Consumers. Banco de pruebas: `rendimiento/notificaciones`. Los resultados medidos y la evaluación de integridad están disponibles en el informe P3 enlazado al final del documento; las repeticiones y el cálculo formal de la ley de Little quedan pendientes.
+Ensayo de notificaciones asíncronas. Hipótesis: aumentar workers de 1 a 2/4 incrementa throughput hasta que la outbox, el broker o PostgreSQL sature; añadir 200 ms al procesamiento aumenta el backlog pero **no debería** aumentar proporcionalmente el p95 del API productor. Patrones: Queue-Based Load Leveling, Competing Consumers. Banco de pruebas: `rendimiento/notificaciones`. Los resultados medidos y la evaluación de integridad están disponibles en el informe P3 enlazado al final del documento. El estudio es exploratorio: una corrida de 60 s por nivel de carga, sin campaña estadística de tres repeticiones (ver amenazas a la validez en el informe).
 
 ## Complemento experimental final P3
 

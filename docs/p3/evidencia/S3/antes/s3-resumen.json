@@ -1,0 +1,459 @@
+{
+  "project": "collaboard",
+  "allowed": {
+    "ok": 22,
+    "total": 22
+  },
+  "denied_data": {
+    "blocked": 0,
+    "total": 45
+  },
+  "denied_worker_app": {
+    "blocked": 0,
+    "total": 9
+  },
+  "egress": {
+    "blocked": 0,
+    "total": 14
+  },
+  "networks": {
+    "edge": {
+      "full_name": "collaboard_edge",
+      "driver": "bridge",
+      "internal": false,
+      "containers": [
+        "collaboard-gateway-1",
+        "collaboard-pixels-ui-1"
+      ]
+    },
+    "internal": {
+      "full_name": "collaboard_internal",
+      "driver": "bridge",
+      "internal": false,
+      "containers": [
+        "collaboard-auth-api-1",
+        "collaboard-board-db-1",
+        "collaboard-canvas-db-1",
+        "collaboard-chat-api-1",
+        "collaboard-collaboration-api-1",
+        "collaboard-gateway-1",
+        "collaboard-message-worker-1",
+        "collaboard-notification-api-1",
+        "collaboard-notification-db-1",
+        "collaboard-pixels-api-1",
+        "collaboard-pixels-nosqldb-1",
+        "collaboard-pizarra-api-1",
+        "collaboard-rabbitmq-1",
+        "collaboard-user-db-1",
+        "collaboard-web-ssr-1"
+      ]
+    }
+  },
+  "matrix": {
+    "gateway": {
+      "targets": {
+        "web-ssr:3000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "auth-api:8001": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "collaboration-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "pizarra-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "chat-api:8090": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "pixels-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "notification-api:8080": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "user-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": null
+    },
+    "web-ssr": {
+      "targets": {
+        "gateway:8081": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "user-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": true
+    },
+    "auth-api": {
+      "targets": {
+        "user-db:5432": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "board-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": true
+    },
+    "collaboration-api": {
+      "targets": {
+        "pizarra-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "notification-api:8080": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "user-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "canvas-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": true
+    },
+    "pizarra-api": {
+      "targets": {
+        "collaboration-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "user-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": true
+    },
+    "chat-api": {
+      "targets": {
+        "collaboration-api:8000": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "notification-api:8080": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "user-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": true
+    },
+    "pixels-api": {
+      "targets": {
+        "user-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "DENY"
+        }
+      },
+      "egress_open": true
+    },
+    "notification-api": {
+      "targets": {
+        "user-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "ALLOW"
+        }
+      },
+      "egress_open": true
+    },
+    "message-worker": {
+      "targets": {
+        "gateway:80": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "gateway:8081": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "web-ssr:3000": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "auth-api:8001": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "collaboration-api:8000": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "pizarra-api:8000": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "chat-api:8090": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "pixels-api:8000": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "notification-api:8080": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "user-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "board-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "canvas-db:5432": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "notification-db:5432": {
+          "open": true,
+          "expected": "ALLOW"
+        },
+        "pixels-nosqldb:27017": {
+          "open": true,
+          "expected": "DENY"
+        },
+        "rabbitmq:5672": {
+          "open": true,
+          "expected": "ALLOW"
+        }
+      },
+      "egress_open": true
+    },
+    "user-db": {
+      "targets": {},
+      "egress_open": true
+    },
+    "board-db": {
+      "targets": {},
+      "egress_open": true
+    },
+    "canvas-db": {
+      "targets": {},
+      "egress_open": true
+    },
+    "notification-db": {
+      "targets": {},
+      "egress_open": true
+    },
+    "pixels-nosqldb": {
+      "targets": {},
+      "egress_open": true
+    },
+    "rabbitmq": {
+      "targets": {},
+      "egress_open": true
+    }
+  },
+  "fallos": [
+    "gateway: movimiento lateral prohibido bloqueado",
+    "web-ssr: movimiento lateral prohibido bloqueado",
+    "web-ssr: sin salida a Internet (1.1.1.1:443)",
+    "auth-api: movimiento lateral prohibido bloqueado",
+    "auth-api: sin salida a Internet (1.1.1.1:443)",
+    "collaboration-api: movimiento lateral prohibido bloqueado",
+    "collaboration-api: sin salida a Internet (1.1.1.1:443)",
+    "pizarra-api: movimiento lateral prohibido bloqueado",
+    "pizarra-api: sin salida a Internet (1.1.1.1:443)",
+    "chat-api: movimiento lateral prohibido bloqueado",
+    "chat-api: sin salida a Internet (1.1.1.1:443)",
+    "pixels-api: movimiento lateral prohibido bloqueado",
+    "pixels-api: sin salida a Internet (1.1.1.1:443)",
+    "notification-api: movimiento lateral prohibido bloqueado",
+    "notification-api: sin salida a Internet (1.1.1.1:443)",
+    "message-worker: movimiento lateral prohibido bloqueado",
+    "message-worker: sin salida a Internet (1.1.1.1:443)",
+    "user-db: zona de datos sin salida a Internet",
+    "board-db: zona de datos sin salida a Internet",
+    "canvas-db: zona de datos sin salida a Internet",
+    "notification-db: zona de datos sin salida a Internet",
+    "pixels-nosqldb: zona de datos sin salida a Internet",
+    "rabbitmq: zona de datos sin salida a Internet",
+    "red Docker 'app' existe",
+    "red Docker 'net-user' existe",
+    "red Docker 'net-board' existe",
+    "red Docker 'net-canvas' existe",
+    "red Docker 'net-notif' existe",
+    "red Docker 'net-mongo' existe",
+    "red Docker 'net-mq' existe"
+  ]
+}

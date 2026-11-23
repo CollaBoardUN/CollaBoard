@@ -66,20 +66,28 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    @Scheduled(fixedDelayString = "${collaboard.websocket.recheck-ms:15000}",
-            initialDelayString = "${collaboard.websocket.recheck-ms:15000}")
+    @Scheduled(fixedDelayString = "${collaboard.websocket.recheck-ms:3000}",
+            initialDelayString = "${collaboard.websocket.recheck-ms:3000}")
     public void revalidate() {
         connections.values().forEach(this::authorized);
+    }
+
+    public void closeBoardConnections(String boardId) {
+        for (Connection connection : connections.values()) {
+            if (connection.boardId().equals(boardId)) {
+                close(connection.socket(), 4403, "Tablero eliminado");
+            }
+        }
     }
 
     private boolean authorized(Connection connection) {
         try {
             jwt.authenticate(connection.user().token());
-            permissions.requireBoard(connection.user().token(), connection.boardId());
+            permissions.requireAction(connection.user().token(), connection.boardId(), "chat:connect");
             return true;
         } catch (JwtException invalid) {
             close(connection.socket(), 4401, "Sesión vencida");
-        } catch (BoardUnavailableException denied) {
+        } catch (BoardUnavailableException | edu.collaboard.chat.service.CollaborationClient.ActionForbiddenException denied) {
             close(connection.socket(), 4403, "Sin acceso al tablero");
         } catch (CollaborationUnavailableException unavailable) {
             send(connection, Map.of("type", "error", "code", "unavailable", "message", "Colaboración no responde"));

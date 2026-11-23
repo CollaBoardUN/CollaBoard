@@ -1,0 +1,11 @@
+$ WEB_SSR_URL=https://localhost:8443 python -m pytest e2e/test_web_ssr.py e2e/test_notifications.py -v
+============================= test session starts =============================
+collecting ... collected 4 items
+
+e2e/test_web_ssr.py::test_ssr_real_y_privado_sin_javascript PASSED       [ 25%]
+e2e/test_web_ssr.py::test_recorrido_web_completo PASSED                  [ 50%]
+e2e/test_web_ssr.py::test_roles_y_cierre_de_sesion PASSED                [ 75%]
+e2e/test_notifications.py::test_notifications_and_chat_read_receipts PASSED [100%]
+
+============================= 4 passed in 14.97s ==============================
+exit=0
