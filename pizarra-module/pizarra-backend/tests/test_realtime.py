@@ -165,7 +165,11 @@ def test_presencia_al_entrar_y_salir(client, shared):
             next_of(b, "sync")
             entra = next_of(a, "presence")
             assert {p["user_id"] for p in entra["peers"]} == {"ana", "beto"}
-        sale = next_of(a, "presence")
+            # Beto se desconecta y la presencia se espera DENTRO del `with`: al salir de él,
+            # el cliente de pruebas de Starlette >= 1.0 cancela la tarea de la app de inmediato,
+            # y el aviso de salida (que el servidor difunde tras la desconexión) se perdería.
+            b.close()
+            sale = next_of(a, "presence")
     assert [p["user_id"] for p in sale["peers"]] == ["ana"]
 
 
