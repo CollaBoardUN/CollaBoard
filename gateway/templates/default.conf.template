@@ -1,27 +1,18 @@
-# Tres servidores:
-#  - :443  público con TLS (P3 · S1 Secure Channel). Sirve las APIs y la web SSR.
-#  - :80   público solo para redirigir a HTTPS (301). Conserva /healthz para el
-#          healthcheck del contenedor.
-#  - :${GATEWAY_INTERNAL_PORT} interno, SOLO en la red `internal`: el servidor
-#    SSR/BFF lo usa para consultar las APIs. No tiene `location /`, así el SSR
-#    nunca vuelve a pedirse páginas a sí mismo (sin bucles), y no limita tasa:
-#    todas sus peticiones salen de una sola IP. Va en HTTP dentro de la red
-#    aislada: el canal cifrado termina en el gateway (P3 · S1 Secure Channel).
+# API Gateway interno de CollaBoard (solo en red `app`, sin puertos al host ni TLS):
+#  - :80   recibe peticiones /api/* y /ws/* desde el Reverse Proxy (rate-limit por IP real del cliente).
+#  - :${GATEWAY_INTERNAL_PORT} (8081) recibe peticiones internas desde web-ssr (BFF, sin rate-limit).
 
 server {
-  listen 443 ssl default_server;
-  http2 on;
+  listen 80 default_server;
   server_name _;
   access_log /dev/stdout collaboard;
   client_max_body_size ${CLIENT_MAX_BODY_SIZE};
 
-  include /etc/nginx/conf.d/snippets/tls.conf;
-  # P3 · S2 Reverse Proxy: Host, límites por IP y cabeceras de seguridad (ADR 0012).
-  include /etc/nginx/conf.d/snippets/hardening.conf;
-  include /etc/nginx/conf.d/snippets/security-headers.conf;
-
-  set $rl_key $binary_remote_addr;
+  # Rate-limit usando la IP real del cliente propagada por el Reverse Proxy (X-Real-IP)
+  set $rl_key $gw_client_ip;
   add_header X-Request-ID $collaboard_request_id always;
+  add_header Retry-After  $gw_retry_after always;
+  add_header Allow        $gw_allow_header always;
 
   include /etc/nginx/conf.d/snippets/error-pages.conf;
   location = /healthz {
@@ -31,38 +22,9 @@ server {
   }
 
   include /etc/nginx/conf.d/snippets/api-routes.conf;
-  # P3 · S2: páginas, BFF, estáticos de la web y UI de Pixels (lista blanca).
-  include /etc/nginx/conf.d/snippets/web-routes.conf;
 
-  # P3 · S2: lo no declarado en api-routes ni en web-routes -> 404 JSON del gateway,
-  # sin llegar a ningún servicio (en el P2 todo esto iba a la web SSR; ADR 0012).
   location / {
     return 404;
-  }
-}
-
-server {
-  listen 80 default_server;
-  server_name _;
-  access_log /dev/stdout collaboard;
-  # P3 · S2: el Host se valida antes de redirigir (así $host no puede ser ajeno),
-  # errores en JSON y mismas cabeceras de seguridad que en :443 (ADR 0012).
-  include /etc/nginx/conf.d/snippets/hardening.conf;
-  include /etc/nginx/conf.d/snippets/security-headers.conf;
-  include /etc/nginx/conf.d/snippets/error-pages.conf;
-  add_header X-Request-ID $collaboard_request_id always;
-
-  location = /healthz {
-    access_log off;
-    default_type text/plain;
-    return 200 "ok\n";
-  }
-
-  # HTTP plano no sirve contenido: cualquier petición se redirige a HTTPS antes
-  # de llegar a un servicio (las credenciales que el cliente ya envió en claro
-  # no se reenvían a ningún upstream).
-  location / {
-    return 301 https://$host:${GATEWAY_TLS_PORT}$request_uri;
   }
 }
 
@@ -74,6 +36,7 @@ server {
 
   set $rl_key "";
   add_header X-Request-ID $collaboard_request_id always;
+  add_header Allow        $gw_allow_header always;
 
   include /etc/nginx/conf.d/snippets/error-pages.conf;
   location = /healthz {

@@ -1,0 +1,93 @@
+# P3 · S2 Reverse Proxy — contexto http del endurecimiento (ADR 0012).
+# Se renderiza a /etc/nginx/conf.d/10-hardening.conf y nginx.conf lo incluye en http {}
+# después de 00-http.conf (mapas del P2, formato de log y zonas de limit_req).
+
+# --- Tiempos y búferes (todos los servidores). Detect service denial: una conexión
+# lenta (slowloris) no retiene un worker más que esto.
+#  - client_header_timeout: tiempo TOTAL para recibir las cabeceras (el temporizador
+#    no se reinicia con cada byte).
+#  - client_body_timeout / send_timeout: tiempo máximo ENTRE dos lecturas/escrituras.
+client_header_timeout 10s;
+client_body_timeout   10s;
+send_timeout          10s;
+# Línea de petición o cabecera > 8 KiB -> 414 / 431 JSON (error-pages.conf).
+client_header_buffer_size   1k;
+large_client_header_buffers 4 8k;
+
+# --- Lista blanca de Host (GATEWAY_ALLOWED_HOSTS; la regex la arma allowed-hosts.envsh).
+# $host = Host sin puerto, o el host de la línea de petición en forma absoluta.
+map $host $gw_host_allowed {
+  default 0;
+  "~${GATEWAY_ALLOWED_HOSTS_RE}" 1;
+}
+
+# --- Saneado de entrada: IP del cliente que ven los servicios. En los servidores
+# públicos ($rl_key = IP) se ignora lo que mande el cliente; en el interno ($rl_key
+# vacío: solo web-ssr, en la red interna) se conserva la cadena que reenvía la web.
+map $rl_key $gw_xff {
+  ""      $proxy_add_x_forwarded_for;
+  default $remote_addr;
+}
+map $http_x_real_ip $gw_internal_real_ip {
+  ""      $remote_addr;
+  default $http_x_real_ip;
+}
+map $rl_key $gw_real_ip {
+  ""      $gw_internal_real_ip;
+  default $remote_addr;
+}
+
+# --- Cabeceras que dependen del estado de la respuesta. Van en el server (add_header
+# con valor vacío no se envía), así las ubicaciones de error no declaran add_header
+# propio y heredan todas las del servidor (HSTS de S1 incluido).
+map "$status:$upstream_http_retry_after" $gw_retry_after {
+  "429:"  1;
+  default "";
+}
+# Allow en los 405 del gateway: los métodos de cada familia de rutas, IGUALES a su
+# limit_except (api-routes.conf y web-routes.conf; el contrato lo comprueba). No puede
+# fijarse con `set` en la location: con un método denegado, limit_except cambia a su
+# configuración interna antes del rewrite y el `set` no se ejecuta. Por lo mismo, $uri es
+# aquí la ruta original (el rewrite de la location tampoco corre).
+map $uri $gw_allow_by_route {
+  "~^/api/(?:boards/|canvas/)"                       "GET, HEAD, POST, PATCH, DELETE";
+  "~^/api/notifications"                             "GET, HEAD, PATCH, DELETE";
+  "~^/bff/"                                          "GET, HEAD, POST, PUT, PATCH, DELETE";
+  "~^/(?:ws/|_next/static/|pixels/|session/expired$|favicon\.svg$|collaboard-logo\.svg$)" "GET, HEAD";
+  default                                            "GET, HEAD, POST";
+}
+# El valor de un map se evalúa solo en la rama elegida: la tabla anterior se lee solo en los 405.
+map $status $gw_allow_header {
+  405     $gw_allow_by_route;
+  default "";
+}
+
+# --- CSP por ruta (security-headers.conf). La UI de Pixels (P1) carga la hoja de Google
+# Fonts desde su index.html (pixels-module/pixel-frontend/index.html): solo en /pixels/ la
+# política bloqueante admite fonts.googleapis.com (estilos) y fonts.gstatic.com (fuentes), y
+# una política Report-Only con la regla estricta deja constancia de ese uso en la consola.
+# Se usa $request_uri (la ruta original): /pixels/ se reescribe hacia pixels-ui.
+map $request_uri $gw_csp_style_src {
+  "~^/pixels/" "'self' 'unsafe-inline' https://fonts.googleapis.com";
+  default      "'self' 'unsafe-inline'";
+}
+map $request_uri $gw_csp_font_src {
+  "~^/pixels/" "'self' data: https://fonts.gstatic.com";
+  default      "'self' data:";
+}
+map $request_uri $gw_csp_report_only {
+  "~^/pixels/" "style-src 'self' 'unsafe-inline'; font-src 'self' data:";
+  default      "";
+}
+
+# --- Límites nuevos por IP (ADR 0012, amplía la 0006). Misma clave que limit_req:
+# $rl_key vacío = servidor interno, sin límite. Se suben por variable para las pruebas
+# de rendimiento (RATE_LIMIT_WEB*, LIMIT_CONN_PER_IP, LIMIT_CONN_WS_PER_IP).
+#  - web: páginas de la web SSR y su BFF (no los estáticos /_next/static).
+#  - conn: peticiones simultáneas por IP; con HTTP/2 cada stream cuenta como una.
+#  - conn_ws: WebSocket abiertos por IP (cada uno ocupa su conexión mientras dure).
+limit_req_zone  $rl_key zone=web:10m rate=${RATE_LIMIT_WEB};
+limit_conn_zone $rl_key zone=conn:10m;
+limit_conn_zone $rl_key zone=conn_ws:10m;
+limit_conn_status 429;
+limit_conn_log_level error;

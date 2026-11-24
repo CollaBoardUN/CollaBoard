@@ -27,7 +27,42 @@ x-python-health: &python-health
   start_period: 20s
 
 services:
-  # ---------------------------------------------------------------- Entrada pública
+  # ---------------------------------------------------------------- Borde público (Reverse Proxy)
+  reverse-proxy:
+    <<: [*restart, *logging]
+    build:
+      context: ./reverse-proxy
+    environment:
+      API_GATEWAY_UPSTREAM: gateway:80
+      WEB_SSR_UPSTREAM: web-ssr:3000
+      PIXELS_UI_UPSTREAM: pixels-ui:80
+      # Canal seguro (P3 · S1 Secure Channel): puerto público HTTPS al que redirige :80.
+      GATEWAY_TLS_PORT: ${GATEWAY_TLS_PORT:-8443}
+      TLS_HSTS_MAX_AGE: ${TLS_HSTS_MAX_AGE:-300}
+      TLS_EXTRA_SAN: ${TLS_EXTRA_SAN:-}
+      # Reverse Proxy endurecido (P3 · S2): Host aceptados y límites por IP (ADR 0012).
+      GATEWAY_ALLOWED_HOSTS: ${GATEWAY_ALLOWED_HOSTS:-localhost,127.0.0.1,gateway,reverse-proxy}
+      RATE_LIMIT_WEB: ${RATE_LIMIT_WEB:-20r/s}
+      RATE_LIMIT_WEB_BURST: ${RATE_LIMIT_WEB_BURST:-100}
+      LIMIT_CONN_PER_IP: ${LIMIT_CONN_PER_IP:-60}
+      LIMIT_CONN_WS_PER_IP: ${LIMIT_CONN_WS_PER_IP:-30}
+    ports:
+      - "${GATEWAY_PORT:-8088}:80"
+      - "${GATEWAY_TLS_PORT:-8443}:443"
+    volumes:
+      # Certificado de desarrollo (se crea al arrancar si no existe). ca.crt
+      # queda aquí para importarlo en el navegador; las llaves no se versionan.
+      - ./gateway/certs:/etc/nginx/certs
+    depends_on:
+      gateway:
+        condition: service_healthy
+      web-ssr:
+        condition: service_healthy
+      pixels-ui:
+        condition: service_started
+    networks: [edge, app]
+
+  # ---------------------------------------------------------------- API Gateway interno
   gateway:
     <<: [*restart, *logging]
     build:
@@ -42,26 +77,8 @@ services:
       RATE_LIMIT_API_BURST: ${RATE_LIMIT_API_BURST:-60}
       RATE_LIMIT_AUTH: ${RATE_LIMIT_AUTH:-5r/s}
       RATE_LIMIT_AUTH_BURST: ${RATE_LIMIT_AUTH_BURST:-10}
-      # Canal seguro (P3 · S1 Secure Channel): puerto público HTTPS al que redirige :80.
-      GATEWAY_TLS_PORT: ${GATEWAY_TLS_PORT:-8443}
-      TLS_HSTS_MAX_AGE: ${TLS_HSTS_MAX_AGE:-300}
-      TLS_EXTRA_SAN: ${TLS_EXTRA_SAN:-}
-      # Reverse Proxy endurecido (P3 · S2): Host aceptados y límites nuevos por IP (ADR 0012).
-      GATEWAY_ALLOWED_HOSTS: ${GATEWAY_ALLOWED_HOSTS:-localhost,127.0.0.1,gateway}
-      RATE_LIMIT_WEB: ${RATE_LIMIT_WEB:-20r/s}
-      RATE_LIMIT_WEB_BURST: ${RATE_LIMIT_WEB_BURST:-100}
-      LIMIT_CONN_PER_IP: ${LIMIT_CONN_PER_IP:-60}
       LIMIT_CONN_WS_PER_IP: ${LIMIT_CONN_WS_PER_IP:-30}
-    ports:
-      - "${GATEWAY_PORT:-8088}:80"
-      - "${GATEWAY_TLS_PORT:-8443}:443"
-    volumes:
-      # Certificado de desarrollo (se crea al arrancar si no existe). ca.crt
-      # queda aquí para importarlo en el navegador; las llaves no se versionan.
-      - ./gateway/certs:/etc/nginx/certs
     depends_on:
-      web-ssr:
-        condition: service_healthy
       auth-api:
         condition: service_healthy
       collaboration-api:
@@ -72,7 +89,7 @@ services:
         condition: service_healthy
       pixels-api:
         condition: service_healthy
-    networks: [edge, app]
+    networks: [app]
 
   # ---------------------------------------------------------------- Presentación web
   web-ssr:
@@ -359,11 +376,9 @@ services:
         VITE_BACKEND_HTTP_URL: https://localhost:${GATEWAY_TLS_PORT:-8443}
         VITE_BACKEND_WS_URL: wss://localhost:${GATEWAY_TLS_PORT:-8443}/ws/pixels
         VITE_PIZARRA_URL: ${PUBLIC_ORIGIN:-https://localhost:8443}
-        # P3 · S2: se sirve solo detrás del gateway (https://localhost:8443/pixels/), sin puerto propio.
+        # P3 · S2: se sirve solo detrás del reverse-proxy (https://localhost:8443/pixels/), sin puerto propio ni exposición en edge.
         VITE_BASE_PATH: /pixels/
-    depends_on:
-      - gateway
-    networks: [edge]
+    networks: [app]
 
 volumes:
   user_db_data:
@@ -374,10 +389,10 @@ volumes:
   rabbitmq_data:
 
 networks:
-  # Única red perimetral con salida al host: solo gateway y pixels-ui.
+  # Única red perimetral con salida al host: únicamente reverse-proxy.
   edge:
     driver: bridge
-  # Zona de aplicación (internal: true): comunicación HTTP/WS entre gateway, SSR y APIs sin salida a Internet.
+  # Zona de aplicación (internal: true): comunicación HTTP/WS entre reverse-proxy, gateway (API Gateway), SSR, pixels-ui y APIs sin salida a Internet.
   app:
     driver: bridge
     internal: true

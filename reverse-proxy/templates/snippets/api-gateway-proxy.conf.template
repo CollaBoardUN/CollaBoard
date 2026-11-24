@@ -1,0 +1,35 @@
+# Reenvío desde el Reverse Proxy hacia el API Gateway interno (${API_GATEWAY_UPSTREAM}).
+# El Reverse Proxy valida Host, TLS, cabeceras y límites de conexión; el API Gateway
+# aplica la lista blanca exacta por microservicio, reescritura de rutas y rate-limit de APIs.
+
+set $web_upstream          ${WEB_SSR_UPSTREAM};
+set $api_gateway_upstream  ${API_GATEWAY_UPSTREAM};
+
+# Defensa en profundidad: /internal/* bloqueado ya en el borde público.
+location ~* (^|/)internal(/|$) {
+  types { }
+  default_type application/json;
+  return 404 '{"detail":"No encontrado"}';
+}
+
+# Auth con cuerpo máximo estricto (16 KiB)
+location ~ "^/api/auth/" {
+  client_max_body_size ${CLIENT_MAX_BODY_SIZE_AUTH};
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$api_gateway_upstream;
+}
+
+# Resto de rutas /api/* -> API Gateway
+location ~ "^/api/" {
+  include /etc/nginx/snippets/proxy-common.conf;
+  proxy_pass http://$api_gateway_upstream;
+}
+
+# WebSockets /ws/* -> API Gateway (con límite de conexiones WS por IP en el borde)
+location ~ "^/ws/" {
+  limit_conn conn_ws ${LIMIT_CONN_WS_PER_IP};
+  limit_except GET { deny all; }
+  client_max_body_size 1k;
+  include /etc/nginx/snippets/proxy-ws.conf;
+  proxy_pass http://$api_gateway_upstream;
+}

@@ -38,9 +38,11 @@ PROBE_IMAGE = "nicolaka/netshoot"
 
 # Todos los endpoints TCP internos evaluados
 TARGETS = [
+    ("reverse-proxy", 80),
     ("gateway", 80),
     ("gateway", 8081),
     ("web-ssr", 3000),
+    ("pixels-ui", 80),
     ("auth-api", 8001),
     ("collaboration-api", 8000),
     ("pizarra-api", 8000),
@@ -65,9 +67,11 @@ DATA_AND_BROKER = {
 }
 
 APP_SERVICES = {
+    ("reverse-proxy", 80),
     ("gateway", 80),
     ("gateway", 8081),
     ("web-ssr", 3000),
+    ("pixels-ui", 80),
     ("auth-api", 8001),
     ("collaboration-api", 8000),
     ("pizarra-api", 8000),
@@ -76,10 +80,14 @@ APP_SERVICES = {
     ("notification-api", 8080),
 }
 
-# Matriz oficial (REPARTO_P3.md, sección S3.C.1)
+# Matriz oficial (separación Reverse Proxy + API Gateway, pixels-ui fuera de edge)
 ALLOWED_MATRIX = {
-    "gateway": {
+    "reverse-proxy": {
+        ("gateway", 80),
         ("web-ssr", 3000),
+        ("pixels-ui", 80),
+    },
+    "gateway": {
         ("auth-api", 8001),
         ("collaboration-api", 8000),
         ("pizarra-api", 8000),
@@ -122,7 +130,9 @@ ALLOWED_MATRIX = {
 
 # Contenedores internos cuyo egreso a Internet (1.1.1.1:443) debe estar bloqueado
 INTERNAL_ONLY_ORIGINS = [
+    "gateway",
     "web-ssr",
+    "pixels-ui",
     "auth-api",
     "collaboration-api",
     "pizarra-api",
@@ -140,12 +150,14 @@ INTERNAL_ONLY_ORIGINS = [
 
 # Topología de redes esperada en P3
 EXPECTED_NETWORKS_P3 = {
-    "edge": {"internal": False, "members": {"gateway", "pixels-ui"}},
+    "edge": {"internal": False, "members": {"reverse-proxy"}},
     "app": {
         "internal": True,
         "members": {
+            "reverse-proxy",
             "gateway",
             "web-ssr",
+            "pixels-ui",
             "auth-api",
             "collaboration-api",
             "pizarra-api",
@@ -322,6 +334,7 @@ def main():
 
     # 1. Probar matriz TCP desde cada contenedor origen de aplicación
     origins = [
+        "reverse-proxy",
         "gateway",
         "web-ssr",
         "auth-api",

@@ -1,0 +1,57 @@
+# Reverse Proxy público (borde en red `edge` + puente hacia `app`):
+#  - :443  público con TLS (P3 · S1 Secure Channel). Sirve rutas web/estáticos y reenvía /api/* y /ws/* al API Gateway.
+#  - :80   público solo para redirigir a HTTPS (301). Conserva /healthz para el healthcheck.
+
+server {
+  listen 443 ssl default_server;
+  http2 on;
+  server_name _;
+  access_log /dev/stdout collaboard;
+  client_max_body_size ${CLIENT_MAX_BODY_SIZE};
+
+  include /etc/nginx/conf.d/snippets/tls.conf;
+  # P3 · S2 Reverse Proxy: Host, límites por IP y cabeceras de seguridad (ADR 0012).
+  include /etc/nginx/conf.d/snippets/hardening.conf;
+  include /etc/nginx/conf.d/snippets/security-headers.conf;
+
+  set $rl_key $binary_remote_addr;
+  add_header X-Request-ID $collaboard_request_id always;
+
+  include /etc/nginx/conf.d/snippets/error-pages.conf;
+  location = /healthz {
+    access_log off;
+    default_type text/plain;
+    return 200 "ok\n";
+  }
+
+  # Rutas de API y WebSocket delegadas al componente API Gateway interno (gateway:80 en red app)
+  include /etc/nginx/conf.d/snippets/api-gateway-proxy.conf;
+
+  # Páginas SSR, BFF, estáticos de la web y UI de Pixels (lista blanca en red app).
+  include /etc/nginx/conf.d/snippets/web-routes.conf;
+
+  # Lo no declarado en api-gateway-proxy ni en web-routes -> 404 JSON del Reverse Proxy.
+  location / {
+    return 404;
+  }
+}
+
+server {
+  listen 80 default_server;
+  server_name _;
+  access_log /dev/stdout collaboard;
+  include /etc/nginx/conf.d/snippets/hardening.conf;
+  include /etc/nginx/conf.d/snippets/security-headers.conf;
+  include /etc/nginx/conf.d/snippets/error-pages.conf;
+  add_header X-Request-ID $collaboard_request_id always;
+
+  location = /healthz {
+    access_log off;
+    default_type text/plain;
+    return 200 "ok\n";
+  }
+
+  location / {
+    return 301 https://$host:${GATEWAY_TLS_PORT}$request_uri;
+  }
+}

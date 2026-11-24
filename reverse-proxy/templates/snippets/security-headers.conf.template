@@ -1,0 +1,22 @@
+# P3 · S2 Reverse Proxy — cabeceras de seguridad de TODA respuesta del borde (ADR 0012).
+# El gateway es su dueño único: proxy-sanitize.conf oculta las que envían los servicios
+# (web-ssr ya mandaba X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy y COOP)
+# y aquí se emiten una sola vez, con «always» para que también salgan en 4xx/5xx.
+#
+# Herencia de add_header: solo se heredan si la location no declara ninguno. Por eso
+# ninguna location del gateway declara add_header (ni las de error): todas heredan
+# estas, X-Request-ID y el HSTS de tls.conf (S1, que no se duplica aquí).
+#
+# CSP: la web es Next.js con SSR, que inserta scripts en línea para hidratar; sin nonce
+# (exigiría tocar web-ssr) hace falta script-src 'unsafe-inline' (riesgo residual,
+# ver ADR 0012). connect-src: mismo origen y los WebSocket del mismo host por wss.
+# style-src y font-src dependen de la ruta (10-hardening.conf): Google Fonts solo en /pixels/,
+# con la regla estricta en Report-Only (cabecera vacía en el resto = no se envía).
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src $gw_csp_style_src; img-src 'self' data: blob:; font-src $gw_csp_font_src; connect-src 'self' wss://$host:${GATEWAY_TLS_PORT}; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'" always;
+add_header Content-Security-Policy-Report-Only $gw_csp_report_only always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-Frame-Options "DENY" always;
+add_header Referrer-Policy "same-origin" always;
+add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+add_header Cross-Origin-Opener-Policy "same-origin" always;
+add_header Cross-Origin-Resource-Policy "same-origin" always;

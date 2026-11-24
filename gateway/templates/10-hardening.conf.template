@@ -21,20 +21,22 @@ map $host $gw_host_allowed {
   "~${GATEWAY_ALLOWED_HOSTS_RE}" 1;
 }
 
-# --- Saneado de entrada: IP del cliente que ven los servicios. En los servidores
-# públicos ($rl_key = IP) se ignora lo que mande el cliente; en el interno ($rl_key
-# vacío: solo web-ssr, en la red interna) se conserva la cadena que reenvía la web.
-map $rl_key $gw_xff {
-  ""      $proxy_add_x_forwarded_for;
-  default $remote_addr;
-}
-map $http_x_real_ip $gw_internal_real_ip {
+# --- Propagación de IP real y protocolo desde el Reverse Proxy (en red interna `app`).
+map $http_x_real_ip $gw_client_ip {
   ""      $remote_addr;
   default $http_x_real_ip;
 }
+map $http_x_forwarded_proto $gw_xfp {
+  ""      $scheme;
+  default $http_x_forwarded_proto;
+}
+map $rl_key $gw_xff {
+  ""      $proxy_add_x_forwarded_for;
+  default $proxy_add_x_forwarded_for;
+}
 map $rl_key $gw_real_ip {
-  ""      $gw_internal_real_ip;
-  default $remote_addr;
+  ""      $gw_client_ip;
+  default $gw_client_ip;
 }
 
 # --- Cabeceras que dependen del estado de la respuesta. Van en el server (add_header
