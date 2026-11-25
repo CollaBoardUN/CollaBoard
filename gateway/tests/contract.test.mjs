@@ -25,12 +25,23 @@ const BENCH = fileURLToPath(new URL("./compose.test.yml", import.meta.url));
 const CA = process.env.NODE_EXTRA_CA_CERTS ? fs.readFileSync(process.env.NODE_EXTRA_CA_CERTS) : undefined;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/** Valores de us= de las líneas del access log con ese X-Request-ID (espera hasta 3 s a que aparezcan). */
+/** Valores de us= de las líneas del access log con ese X-Request-ID (espera hasta 3 s a que aparezcan).
+ * Con la arquitectura separada (reverse-proxy -> api-gateway), un rechazo en /api/* puede ocurrir en
+ * api-gateway (us=- allí, sin llegar a ningún microservicio/echo). */
 async function upstreamOf(rid, service = "gateway") {
+  const readUs = (svc) => {
+    const log = execFileSync("docker", ["compose", "-f", BENCH, "logs", "--no-color", "--no-log-prefix", svc], { encoding: "utf8" });
+    return log.split(/\r?\n/).filter((l) => l.includes(`rid=${rid} `)).map((l) => /us=(\S+)/.exec(l)?.[1]);
+  };
   for (let i = 0; i < 15; i++) {
-    const log = execFileSync("docker", ["compose", "-f", BENCH, "logs", "--no-color", "--no-log-prefix", service], { encoding: "utf8" });
-    const found = log.split(/\r?\n/).filter((l) => l.includes(`rid=${rid} `)).map((l) => /us=(\S+)/.exec(l)?.[1]);
-    if (found.length) return found;
+    const found = readUs(service);
+    if (found.length) {
+      if (service === "gateway" && found.some((u) => u !== "-")) {
+        const apiFound = readUs("api-gateway");
+        if (apiFound.length) return apiFound;
+      }
+      return found;
+    }
     await sleep(200);
   }
   return [];

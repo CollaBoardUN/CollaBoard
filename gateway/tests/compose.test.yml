@@ -1,19 +1,17 @@
-# Banco de pruebas del gateway con un único upstream "eco" (ver contract.test.mjs):
+# Banco de pruebas del borde (reverse-proxy + api-gateway) con un único upstream "eco" (ver contract.test.mjs):
 #   docker compose -f gateway/tests/compose.test.yml up -d --build --wait
 #   NODE_EXTRA_CA_CERTS=gateway/tests/certs/ca.crt node --test gateway/tests/contract.test.mjs
 #   docker compose -f gateway/tests/compose.test.yml down
-# Los gateways comparten el certificado de desarrollo de ./certs (lo crea el
+# Los reverse-proxy comparten el certificado de desarrollo de ./certs (lo crea el
 # primero que arranca); las pruebas confían en su CA con NODE_EXTRA_CA_CERTS.
 
-x-gateway: &gateway
+x-api-gateway: &api-gateway
   build:
     context: ..
   depends_on:
     echo:
       condition: service_healthy
-  volumes:
-    - ./certs:/etc/nginx/certs
-  environment: &upstreams
+  environment: &api-upstreams
     WEB_SSR_UPSTREAM: echo:4000
     AUTH_API_UPSTREAM: echo:4000
     COLLABORATION_API_UPSTREAM: echo:4000
@@ -21,6 +19,15 @@ x-gateway: &gateway
     CHAT_API_UPSTREAM: echo:4000
     PIXELS_API_UPSTREAM: echo:4000
     NOTIFICATION_API_UPSTREAM: echo:4000
+    PIXELS_UI_UPSTREAM: echo:4000
+
+x-reverse-proxy: &reverse-proxy
+  build:
+    context: ../../reverse-proxy
+  volumes:
+    - ./certs:/etc/nginx/certs
+  environment: &edge-upstreams
+    WEB_SSR_UPSTREAM: echo:4000
     PIXELS_UI_UPSTREAM: echo:4000
 
 services:
@@ -36,28 +43,71 @@ services:
       timeout: 2s
       retries: 20
 
+  # --- API Gateways internos (uno por variante de prueba) ---
+  api-gateway:
+    <<: *api-gateway
+
+  api-gateway-notoken:
+    <<: *api-gateway
+    environment:
+      <<: *api-upstreams
+      PIZARRA_WS_TOKEN_QUERY: "off"
+
+  api-gateway-limited:
+    <<: *api-gateway
+    environment:
+      <<: *api-upstreams
+      RATE_LIMIT_AUTH: 1r/s
+      RATE_LIMIT_AUTH_BURST: "2"
+      LIMIT_CONN_WS_PER_IP: "1"
+
+  api-gateway-down:
+    <<: *api-gateway
+    environment:
+      <<: *api-upstreams
+      CHAT_API_UPSTREAM: servicio-que-no-existe:9
+
+  # --- Reverse Proxies de borde (conservan los nombres de servicio que esperan CI y contract.test.mjs) ---
   # Configuración por defecto (token hacia Pizarra: on).
   gateway:
-    <<: *gateway
+    <<: *reverse-proxy
+    depends_on:
+      echo:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
     environment:
-      <<: *upstreams
+      <<: *edge-upstreams
+      API_GATEWAY_UPSTREAM: api-gateway:80
       GATEWAY_TLS_PORT: "18443"
     ports: ["18088:80", "18443:443"]
 
   # Sin traducción de credencial a ?token= (cuando Pizarra lea cabecera/cookie).
   gateway-notoken:
-    <<: *gateway
+    <<: *reverse-proxy
+    depends_on:
+      echo:
+        condition: service_healthy
+      api-gateway-notoken:
+        condition: service_healthy
     environment:
-      <<: *upstreams
+      <<: *edge-upstreams
+      API_GATEWAY_UPSTREAM: api-gateway-notoken:80
       PIZARRA_WS_TOKEN_QUERY: "off"
     ports: ["18444:443"]
 
   # Límite de tasa estricto para comprobar el 429.
   # P3 · S2: también la zona web y los límites de conexiones simultáneas (HTTP y WebSocket).
   gateway-limited:
-    <<: *gateway
+    <<: *reverse-proxy
+    depends_on:
+      echo:
+        condition: service_healthy
+      api-gateway-limited:
+        condition: service_healthy
     environment:
-      <<: *upstreams
+      <<: *edge-upstreams
+      API_GATEWAY_UPSTREAM: api-gateway-limited:80
       RATE_LIMIT_AUTH: 1r/s
       RATE_LIMIT_AUTH_BURST: "2"
       RATE_LIMIT_WEB: 1r/s
@@ -68,8 +118,13 @@ services:
 
   # Chat inexistente: el gateway debe responder 502 JSON y seguir vivo.
   gateway-down:
-    <<: *gateway
+    <<: *reverse-proxy
+    depends_on:
+      echo:
+        condition: service_healthy
+      api-gateway-down:
+        condition: service_healthy
     environment:
-      <<: *upstreams
-      CHAT_API_UPSTREAM: servicio-que-no-existe:9
+      <<: *edge-upstreams
+      API_GATEWAY_UPSTREAM: api-gateway-down:80
     ports: ["18446:443"]
