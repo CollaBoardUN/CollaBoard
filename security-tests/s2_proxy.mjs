@@ -274,23 +274,46 @@ function compose(dir, args, opts = {}) {
 const LOG_RE = /^(\S+) \[([^\]]+)\] "(\S*) ?([^"]*)" (\d{3}) rid=(\S+) up=(.*?) us=(.*?) rt=(\S+)$/;
 // Error log de Nginx (stderr del contenedor): "2026/11/19 21:46:50 [error] 32#32: *123 limiting connections by zone ..."
 const ERR_RE = /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}:\d{2}:\d{2}) \[(\w+)\] .*?(limiting (?:requests|connections))(?:.*?by zone "(\w+)")?/;
+function edgeService(dir) {
+  const rp = compose(dir, ["ps", "-q", "reverse-proxy"]).trim();
+  return rp ? { name: "reverse-proxy", id: rp } : { name: "gateway", id: compose(dir, ["ps", "-q", "gateway"]).trim() };
+}
+
 function readGatewayLog(dir, sinceMs) {
-  const text = compose(dir, ["logs", "--no-color", "--no-log-prefix", "--since", new Date(sinceMs - 5000).toISOString(), "gateway"]);
-  const rows = text.split(/\r?\n/).map((l) => l.trim());
-  const access = rows
-    .map((line) => {
-      const m = LOG_RE.exec(line);
-      return m && { line, ip: m[1], time: Date.parse(m[2]), method: m[3], uri: m[4], status: Number(m[5]), rid: m[6], up: m[7], us: m[8] };
-    })
-    .filter(Boolean);
-  // El contenedor usa UTC (igual que $time_iso8601 del access log).
-  const errors = rows
-    .map((line) => {
-      const m = ERR_RE.exec(line);
-      return m && { line, time: Date.parse(`${m[1]}-${m[2]}-${m[3]}T${m[4]}Z`), kind: m[6], zone: m[7] || null };
-    })
-    .filter(Boolean);
-  return { access, errors };
+  const since = new Date(sinceMs - 5000).toISOString();
+  const parse = (svc) => {
+    const text = compose(dir, ["logs", "--no-color", "--no-log-prefix", "--since", since, svc]);
+    const rows = text.split(/\r?\n/).map((l) => l.trim());
+    const access = rows
+      .map((line) => {
+        const m = LOG_RE.exec(line);
+        return m && { line, ip: m[1], time: Date.parse(m[2]), method: m[3], uri: m[4], status: Number(m[5]), rid: m[6], up: m[7], us: m[8] };
+      })
+      .filter(Boolean);
+    // El contenedor usa UTC (igual que $time_iso8601 del access log).
+    const errors = rows
+      .map((line) => {
+        const m = ERR_RE.exec(line);
+        return m && { line, time: Date.parse(`${m[1]}-${m[2]}-${m[3]}T${m[4]}Z`), kind: m[6], zone: m[7] || null };
+      })
+      .filter(Boolean);
+    return { access, errors };
+  };
+  const edge = edgeService(dir);
+  const edgeLog = parse(edge.name);
+  if (edge.name === "gateway") return edgeLog;
+  const apiLog = parse("gateway");
+  const apiByRid = new Map();
+  for (const r of apiLog.access) {
+    if (!apiByRid.has(r.rid)) apiByRid.set(r.rid, []);
+    apiByRid.get(r.rid).push(r);
+  }
+  const access = [];
+  for (const r of edgeLog.access) {
+    if (r.us !== "-" && apiByRid.has(r.rid)) access.push(...apiByRid.get(r.rid));
+    else access.push(r);
+  }
+  return { access, errors: [...edgeLog.errors, ...apiLog.errors] };
 }
 
 async function startCapture(dir, tag) {
@@ -575,8 +598,8 @@ function makeRunners(ctx) {
         if (!best || len > best.len) best = { path: c, len };
       }
       if (!best || best.len < 50000) return { ok: false, detail: `no hay un estático de ≥ 50 KB para la prueba (${best ? best.len : 0} B)` };
-      const gw = compose(o.composeDir, ["ps", "-q", "gateway"]).trim();
-      const nets = JSON.parse(execFileSync("docker", ["inspect", gw, "--format", "{{json .NetworkSettings.Networks}}"], { encoding: "utf8" }));
+      const edgeSvc = edgeService(o.composeDir);
+      const nets = JSON.parse(execFileSync("docker", ["inspect", edgeSvc.id, "--format", "{{json .NetworkSettings.Networks}}"], { encoding: "utf8" }));
       const edge = Object.keys(nets).find((n) => n.endsWith("_edge")) || Object.keys(nets)[0];
       const py = [
         "import json,socket,ssl,sys,time",
@@ -594,7 +617,7 @@ function makeRunners(ctx) {
       // Asíncrono: execFileSync bloquearía el event loop y falsearía E01/E02, que corren en paralelo.
       const { stdout: out } = await execFileP(
         "docker",
-        ["run", "--rm", "--network", edge, "python:3.12-slim", "python", "-c", py, "gateway", String(T.https ? 443 : 80), T.https ? "1" : "0", T.host, best.path, rid(id), String(o.slowWait)],
+        ["run", "--rm", "--network", edge, "python:3.12-slim", "python", "-c", py, edgeSvc.name, String(T.https ? 443 : 80), T.https ? "1" : "0", T.host, best.path, rid(id), String(o.slowWait)],
         { encoding: "utf8", timeout: (o.slowWait + 60) * 1000 },
       );
       const r = JSON.parse(out.trim().split(/\r?\n/).pop());

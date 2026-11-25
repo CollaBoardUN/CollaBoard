@@ -249,10 +249,10 @@ def check_wss(base, ca, token, board_id):
 
 
 class Capture:
-    """tcpdump en el espacio de red del gateway (nicolaka/netshoot): ve lo mismo que un sniffer en la LAN."""
+    """tcpdump en el espacio de red del borde público (nicolaka/netshoot): ve lo mismo que un sniffer en la LAN."""
 
-    def __init__(self, container, out_dir):
-        self.container, self.dir, self.name = container, out_dir, "s1-captura-" + secrets.token_hex(3)
+    def __init__(self, container, out_dir, bpf="tcp port 443"):
+        self.container, self.dir, self.bpf, self.name = container, out_dir, bpf, "s1-captura-" + secrets.token_hex(3)
 
     def __enter__(self):
         self.dir.mkdir(parents=True, exist_ok=True)
@@ -281,7 +281,7 @@ class Capture:
                 "0",
                 "-w",
                 "/cap/s1.pcap",
-                "tcp port 80 or tcp port 443",
+                self.bpf,
             ],
             check=True,
             capture_output=True,
@@ -303,8 +303,11 @@ class Capture:
 
 
 def gateway_container():
-    out = subprocess.run(["docker", "compose", "ps", "-q", "gateway"], check=False, capture_output=True, text=True)
-    return out.stdout.strip().splitlines()[0] if out.returncode == 0 and out.stdout.strip() else ""
+    for svc in ("reverse-proxy", "gateway"):
+        out = subprocess.run(["docker", "compose", "ps", "-q", svc], check=False, capture_output=True, text=True)
+        if out.returncode == 0 and out.stdout.strip():
+            return out.stdout.strip().splitlines()[0]
+    return ""
 
 
 def main():
@@ -373,7 +376,8 @@ def main():
         cookie, detail, ids = session_flow()
         captured = None
     else:
-        with Capture(container, evidence) as cap:
+        bpf = "tcp port 443" if base.startswith("https") else "tcp port 80"
+        with Capture(container, evidence, bpf=bpf) as cap:
             cookie, detail, ids = session_flow()
         captured = cap.read()
 
