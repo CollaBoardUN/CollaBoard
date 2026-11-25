@@ -155,6 +155,34 @@ jobs:
       - run: cargo test --locked
       - run: cargo build --locked --release
 
+  pixels-frontend:
+    name: Pixels UI (build TypeScript + Vite)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: pixels-module/pixel-frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build
+
+  rbac-s5:
+    name: Seguridad S5 · RBAC Authorizer (PDP/PEP + matriz 144 celdas)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Instalar dependencias de Colaboración y Pizarra
+        run: |
+          pip install -r colaboracion-module/requirements-dev.txt -r pizarra-module/pizarra-backend/requirements-dev.txt
+      - name: Ejecutar batería S5 (11 comprobaciones + matriz 144 celdas)
+        run: python3 security-tests/s5_rbac.py --mode inprocess --evidence /tmp/s5-ci
+
   chat-java:
     name: Chat Java (Maven + MongoDB)
     runs-on: ubuntu-24.04
@@ -200,8 +228,10 @@ jobs:
           node-version: 22
       - name: Levantar el gateway contra un upstream de eco
         run: docker compose -f gateway/tests/compose.test.yml up -d --build --wait
-      - name: Validar la configuración renderizada
-        run: docker compose -f gateway/tests/compose.test.yml exec -T gateway nginx -t
+      - name: Validar la configuración renderizada (reverse-proxy y api-gateway)
+        run: |
+          docker compose -f gateway/tests/compose.test.yml exec -T gateway nginx -t
+          docker compose -f gateway/tests/compose.test.yml exec -T api-gateway nginx -t
       - name: Contrato (rutas reescritas, cabeceras, token del WS, /internal, límite de tasa, 502, TLS)
         run: node --test gateway/tests/contract.test.mjs
         env:
@@ -212,23 +242,23 @@ jobs:
         run: docker compose -f gateway/tests/compose.test.yml down -v
 
   stack:
-    name: Sistema completo (Compose + gateway + web)
+    name: Sistema completo (Compose + reverse-proxy + gateway + web)
     runs-on: ubuntu-24.04
-    needs: [backend, authentication, collaboration, notifications-csharp, gateway, chat-java, pixels, web-ssr]
+    needs: [backend, authentication, collaboration, notifications-csharp, gateway, chat-java, pixels, pixels-frontend, rbac-s5, web-ssr]
     env:
       # Servicios reales con bases separadas y notificaciones C#.
       COMPOSE_FILE: docker-compose.yml:notifications-module/compose.gateway.yml
       COMPOSE_PATH_SEPARATOR: ":"
       WEB_SSR_URL: https://localhost:8443
       # Canal seguro (P3 · S1): las herramientas confían en la CA de desarrollo
-      # que el gateway crea al arrancar en gateway/certs/.
+      # que el reverse-proxy crea al arrancar en gateway/certs/.
       CURL_CA_BUNDLE: gateway/certs/ca.crt
       NODE_EXTRA_CA_CERTS: gateway/certs/ca.crt
     steps:
       - uses: actions/checkout@v5
       - name: Variables (valores de ejemplo, solo CI)
         run: cp .env.example .env
-      - name: Construir y levantar los 15 servicios (espera a que estén sanos)
+      - name: Construir y levantar los 17 servicios (espera a que estén sanos)
         run: docker compose up -d --build --wait --wait-timeout 600
       - name: Estado de los contenedores
         run: docker compose ps
@@ -243,6 +273,10 @@ jobs:
         run: python3 security-tests/s1_tls.py
       - name: Segmentación de red (S3) - matriz de conectividad por zonas y bloqueo de egreso
         run: python3 security-tests/s3_segmentacion.py
+      - name: Sesión JWT y refresh rotatorio (S4) - rotación, replay, logout y alg=none
+        run: node security-tests/s4_sesion.mjs
+        env:
+          BASE_URL: https://localhost:8443
       - name: Detener el consumidor mientras se comprueba el contrato del broker
         run: docker compose stop message-worker
       - name: RabbitMQ - publicar/consumir, mínimo privilegio y DLQ
@@ -261,10 +295,11 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Web SSR de punta a punta (navegador real)
         run: python -m pytest e2e/test_web_ssr.py e2e/test_notifications.py -v
-      - name: Correlación de logs (un X-Request-ID atraviesa gateway y servicios)
+      - name: Correlación de logs (un X-Request-ID atraviesa reverse-proxy, gateway y servicios)
         run: |
           rid=$(curl -s -o /dev/null -D - -H 'X-Request-ID: ci-correlacion-0001' https://localhost:8443/api/boards | tr -d '\r' | awk -F': ' 'tolower($1)=="x-request-id"{print $2}')
           test "$rid" = "ci-correlacion-0001"
+          docker compose logs reverse-proxy | grep 'rid=ci-correlacion-0001'
           docker compose logs gateway | grep 'rid=ci-correlacion-0001'
       # Al final: su ráfaga (E04) deja agotada unos segundos la zona web del gateway.
       - name: Reverse Proxy (S2) - catálogo de ataques al borde, us=- y tramo interno

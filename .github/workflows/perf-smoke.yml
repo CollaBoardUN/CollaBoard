@@ -1,0 +1,75 @@
+name: Rendimiento (Smoke k6)
+
+on:
+  workflow_dispatch:
+    inputs:
+      vus:
+        description: "Usuarios virtuales para la ráfaga de humo"
+        required: false
+        default: "25"
+      duration:
+        description: "Duración de la ráfaga (ej. 15s, 30s)"
+        required: false
+        default: "15s"
+
+jobs:
+  perf-smoke:
+    name: Smoke de rendimiento (k6 contra stack P3)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      COMPOSE_FILE: docker-compose.yml:notifications-module/compose.gateway.yml
+      COMPOSE_PATH_SEPARATOR: ":"
+      CURL_CA_BUNDLE: gateway/certs/ca.crt
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configurar .env para prueba de carga desde una sola IP
+        run: |
+          cp .env.example .env
+          cat >> .env << 'EOF'
+          RATE_LIMIT_API=10000r/s
+          RATE_LIMIT_API_BURST=10000
+          RATE_LIMIT_WEB=10000r/s
+          RATE_LIMIT_WEB_BURST=10000
+          LIMIT_CONN_PER_IP=10000
+          LIMIT_CONN_WS_PER_IP=10000
+          EOF
+      - name: Levantar stack completo (17 servicios)
+        run: docker compose up -d --build --wait --wait-timeout 600
+      - name: Ejecutar ráfaga corta k6 (/healthz + /api/boards autenticado)
+        run: |
+          TOKEN=$(curl -sf -X POST https://localhost:8443/api/auth/register \
+            -H "Content-Type: application/json" \
+            -d '{"name":"CI Perf","email":"ci-perf@example.com","password":"Perf-Password-2026!","confirm_password":"Perf-Password-2026!"}' \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+          cat > /tmp/k6_smoke.js << 'EOF'
+          import http from "k6/http";
+          import { check, sleep } from "k6";
+          export const options = {
+            vus: Number(__ENV.VUS || 25),
+            duration: __ENV.DURATION || "15s",
+            thresholds: {
+              http_req_failed: ["rate<0.01"],
+              http_req_duration: ["p(95)<2000"],
+            },
+          };
+          export default function () {
+            const r1 = http.get("https://localhost:8443/healthz");
+            check(r1, { "healthz 200": (r) => r.status === 200 });
+            const r2 = http.get("https://localhost:8443/api/boards", {
+              headers: { Authorization: `Bearer ${__ENV.TOKEN}` },
+            });
+            check(r2, { "boards 200": (r) => r.status === 200 });
+            sleep(0.2);
+          }
+          EOF
+          docker run --rm --network host \
+            -e VUS="${{ inputs.vus }}" \
+            -e DURATION="${{ inputs.duration }}" \
+            -e TOKEN="$TOKEN" \
+            -v /tmp/k6_smoke.js:/script.js:ro \
+            grafana/k6 run --insecure-skip-tls-verify /script.js
+      - if: failure()
+        run: docker compose logs --tail=150 reverse-proxy gateway collaboration-api
+      - if: always()
+        run: docker compose down -v
