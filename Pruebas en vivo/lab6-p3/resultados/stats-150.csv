@@ -1,0 +1,25 @@
+ts,name,cpu_pct,mem_usage
+1795490044,collaboard-gateway-1,4.26%,39.88MiB / 512MiB
+1795490044,collaboard-collaboration-api-1,65.08%,85.79MiB / 512MiB
+1795490044,collaboard-board-db-1,14.86%,49.17MiB / 1GiB
+1795490048,collaboard-gateway-1,7.49%,40.28MiB / 512MiB
+1795490048,collaboard-collaboration-api-1,102.24%,73.71MiB / 512MiB
+1795490048,collaboard-board-db-1,20.62%,49.21MiB / 1GiB
+1795490053,collaboard-gateway-1,6.08%,40.43MiB / 512MiB
+1795490053,collaboard-collaboration-api-1,99.07%,74.14MiB / 512MiB
+1795490053,collaboard-board-db-1,21.67%,48.49MiB / 1GiB
+1795490056,collaboard-gateway-1,7.08%,40.62MiB / 512MiB
+1795490056,collaboard-collaboration-api-1,99.11%,83.32MiB / 512MiB
+1795490056,collaboard-board-db-1,19.15%,49.07MiB / 1GiB
+1795490060,collaboard-gateway-1,7.10%,41.03MiB / 512MiB
+1795490060,collaboard-collaboration-api-1,100.63%,74.13MiB / 512MiB
+1795490060,collaboard-board-db-1,16.01%,48.99MiB / 1GiB
+1795490063,collaboard-gateway-1,5.58%,40.38MiB / 512MiB
+1795490063,collaboard-collaboration-api-1,98.46%,74.18MiB / 512MiB
+1795490063,collaboard-board-db-1,14.41%,48.89MiB / 1GiB
+1795490068,collaboard-gateway-1,9.71%,41.15MiB / 512MiB
+1795490068,collaboard-collaboration-api-1,99.97%,74.72MiB / 512MiB
+1795490068,collaboard-board-db-1,16.66%,48.76MiB / 1GiB
+1795490072,collaboard-gateway-1,8.87%,40.71MiB / 512MiB
+1795490072,collaboard-collaboration-api-1,100.57%,74.4MiB / 512MiB
+1795490072,collaboard-board-db-1,18.94%,49.19MiB / 1GiB

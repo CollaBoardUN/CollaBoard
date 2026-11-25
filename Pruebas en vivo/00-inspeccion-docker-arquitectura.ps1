@@ -1,4 +1,4 @@
-# Prueba en vivo 00 · Inspeccion de arquitectura Docker (16 contenedores, puertos, 8 redes, recursos)
+# Prueba en vivo 00 - Inspeccion de arquitectura Docker (16 contenedores, puertos, 8 redes, recursos)
 # Util cuando el profesor pregunta como dockerizan, por que esos contenedores y como estan aislados.
 # Uso: powershell -ExecutionPolicy Bypass -File ".\Pruebas en vivo\00-inspeccion-docker-arquitectura.ps1"
 param(
@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = "Continue"
 
 Write-Host "==================================================================" -ForegroundColor Cyan
-Write-Host " PRUEBA EN VIVO 00 · ARQUITECTURA DOCKER (CONTENEDORES Y REDES)" -ForegroundColor Cyan
+Write-Host " PRUEBA EN VIVO 00 - ARQUITECTURA DOCKER (CONTENEDORES Y REDES)" -ForegroundColor Cyan
 Write-Host "==================================================================" -ForegroundColor Cyan
 
 Write-Host "`n[1/4] Contenedores activos y puertos publicados (solo gateway debe publicar :8088 y :8443):" -ForegroundColor Yellow

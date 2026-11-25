@@ -1,4 +1,4 @@
-# Prueba en vivo 04 · Costo HTTP de segmentacion S3 (GET /api/pixels/stats con k6)
+# Prueba en vivo 04 - Costo HTTP de segmentacion S3 (GET /api/pixels/stats con k6)
 # Pide por consola la cantidad de VUs y duracion.
 # Uso:
 #   powershell -ExecutionPolicy Bypass -File ".\Pruebas en vivo\04-perf-segmentacion-http.ps1"
@@ -18,7 +18,7 @@ New-Item -ItemType Directory -Force -Path $CertsDir | Out-Null
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host " PRUEBA EN VIVO 04 · COSTO HTTP DE SEGMENTACION S3 (k6)" -ForegroundColor Cyan
+Write-Host " PRUEBA EN VIVO 04 - COSTO HTTP DE SEGMENTACION S3 (k6)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 if ($Vus -le 0) {

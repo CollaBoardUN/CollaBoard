@@ -1,0 +1,408 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="vista-capas-p3" name="Vista de Capas P3">
+    <mxGraphModel dx="1422" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1420" pageHeight="1545" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="5. Edge Infrastructure Tier" style="rounded=1;arcSize=tier;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.3;verticalAlign=top;align=left;spacingTop=10;spacingLeft=22;fontSize=13;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="20" width="1360" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="&lt;b&gt;reverse-proxy&lt;/b&gt; &lt;span style='font-size:10px;'&gt;(Nginx Alpine — Único contenedor en red edge · Puertos :8088→80 y :8443→443)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="290" y="44" width="840" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="&lt;b&gt;TLS y Seguridad de Borde&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;tls.conf (TLS 1.2/1.3, HSTS) · security-headers.conf · hardening.conf&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="314" y="76" width="380" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="&lt;b&gt;Saneado y Despacho de Borde&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;proxy-sanitize.conf · web-routes.conf (/, /pixels/) · api-gateway-proxy.conf&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="726" y="76" width="380" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="694" y="100" as="sourcePoint" />
+            <mxPoint x="726" y="100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7" value="Allow to use  (HTTP interno en app · / y /pixels/)" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.3;fontSize=10.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710.0" y="150" as="sourcePoint" />
+            <mxPoint x="710.0" y="198" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8" value="4. Presentation Tier" style="rounded=1;arcSize=tier;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.3;verticalAlign=top;align=left;spacingTop=10;spacingLeft=22;fontSize=13;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="198" width="1360" height="166" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="&lt;b&gt;web-ssr&lt;/b&gt; &lt;span style='font-size:10px;'&gt;(Node.js / TypeScript · Next.js 16 · red app)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="180" y="226" width="630" height="122" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="&lt;b&gt;app/&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9px;'&gt;Páginas SSR,&lt;br/&gt;Actions, BFF&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="196" y="258" width="130" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="11" value="&lt;b&gt;ui/&lt;/b&gt; &lt;span style='font-size:9px;'&gt;(board, canvas, chat)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="356" y="258" width="180" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="12" value="&lt;b&gt;server/&lt;/b&gt; &lt;span style='font-size:9px;'&gt;(session, dal, gateway)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="356" y="300" width="180" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="&lt;b&gt;core/&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9px;'&gt;domain, api, realtime (WS),&lt;br/&gt;stores, transport&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="566" y="258" width="228" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="326" y="275" as="sourcePoint" />
+            <mxPoint x="356" y="275" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="15" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="326" y="317" as="sourcePoint" />
+            <mxPoint x="356" y="317" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="16" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="536" y="275" as="sourcePoint" />
+            <mxPoint x="566" y="275" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="17" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="536" y="317" as="sourcePoint" />
+            <mxPoint x="566" y="317" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="18" value="&lt;b&gt;pixels-ui&lt;/b&gt; &lt;span style='font-size:10px;'&gt;(Frontend SPA · React / Vite · red app)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="870" y="226" width="370" height="122" as="geometry" />
+        </mxCell>
+        <mxCell id="19" value="&lt;b&gt;UI / Canvas&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9px;'&gt;PixelCanvas,&lt;br/&gt;Palette&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="886" y="264" width="102" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="20" value="&lt;b&gt;Realtime&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9px;'&gt;hooks,&lt;br/&gt;wsClient&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="1006" y="264" width="106" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="21" value="&lt;b&gt;API&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9px;'&gt;apiClient&lt;br/&gt;REST&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="264" width="94" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="22" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="988" y="297" as="sourcePoint" />
+            <mxPoint x="1006" y="297" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="23" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1112" y="297" as="sourcePoint" />
+            <mxPoint x="1130" y="297" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="24" value="Allow to use  (BFF → :8081 · SPA vía reverse-proxy → :80)" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.3;fontSize=10.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710.0" y="364" as="sourcePoint" />
+            <mxPoint x="710.0" y="414" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="25" value="3. Communication Tier" style="rounded=1;arcSize=tier;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.3;verticalAlign=top;align=left;spacingTop=10;spacingLeft=22;fontSize=13;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="414" width="1360" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="26" value="&lt;b&gt;gateway&lt;/b&gt; &lt;span style='font-size:10px;'&gt;(Nginx Alpine — API Gateway interno en red app, sin exposición en edge)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="330" y="438" width="760" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="27" value="&lt;b&gt;Enrutamiento de APIs y WS (:80)&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;api-routes.conf (/api/*, /ws/*, X-Request-ID)&lt;br/&gt;bloqueo /internal/* · rate limits API/Auth/WS&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="354" y="470" width="340" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="28" value="&lt;b&gt;Canal Interno BFF (:8081)&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;default.conf (solo red app, Authorization: Bearer)&lt;br/&gt;proxy-common.conf · proxy-ws.conf&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontSize=9.5;" vertex="1" parent="1">
+          <mxGeometry x="726" y="470" width="340" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="29" value="Allow to use  (HTTP / WS en red app · solo 6 APIs)" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.3;fontSize=10.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710.0" y="544" as="sourcePoint" />
+            <mxPoint x="710.0" y="594" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="30" value="2. Logic Tier" style="rounded=1;arcSize=tier;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.3;verticalAlign=top;align=left;spacingTop=12;spacingLeft=22;fontSize=13;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="594" width="1360" height="652" as="geometry" />
+        </mxCell>
+        <mxCell id="31" value="&lt;b&gt;auth&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:10px;'&gt;Go&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="52" y="640" width="314" height="244" as="geometry" />
+        </mxCell>
+        <mxCell id="32" value="API HTTP&lt;br/&gt;&lt;span style='font-size:9px;'&gt;httpapi&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="62.0" y="682" width="294.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="33" value="Seguridad&lt;br/&gt;&lt;span style='font-size:9px;'&gt;security (JWT, refresh)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="62.0" y="754" width="143.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="34" value="Usuarios&lt;br/&gt;&lt;span style='font-size:9px;'&gt;users&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="212.5" y="754" width="143.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="35" value="Conexión y migraciones&lt;br/&gt;&lt;span style='font-size:9px;'&gt;database&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="62.0" y="826" width="294.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="36" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="209.0" y="728" as="sourcePoint" />
+            <mxPoint x="209.0" y="754" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="37" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="209.0" y="800" as="sourcePoint" />
+            <mxPoint x="209.0" y="826" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="38" value="&lt;b&gt;collaboration&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:10px;'&gt;Python / FastAPI&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="386" y="640" width="314" height="244" as="geometry" />
+        </mxCell>
+        <mxCell id="39" value="API REST&lt;br/&gt;&lt;span style='font-size:9px;'&gt;routers (boards, invites, internal)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="396.0" y="682" width="294.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="40" value="Autenticación&lt;br/&gt;&lt;span style='font-size:9px;'&gt;auth&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="396.0" y="754" width="93.3" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="41" value="&lt;b&gt;Política PDP&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9px;'&gt;policy, permissions&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="496.3" y="754" width="93.3" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="42" value="Outbox&lt;br/&gt;&lt;span style='font-size:9px;'&gt;outbox&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="596.7" y="754" width="93.3" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="43" value="Modelos y BD&lt;br/&gt;&lt;span style='font-size:9px;'&gt;models, database&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="396.0" y="826" width="294.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="44" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="543.0" y="728" as="sourcePoint" />
+            <mxPoint x="543.0" y="754" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="45" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="543.0" y="800" as="sourcePoint" />
+            <mxPoint x="543.0" y="826" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="46" value="&lt;b&gt;pizarra&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:10px;'&gt;Python / FastAPI&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="720" y="640" width="314" height="244" as="geometry" />
+        </mxCell>
+        <mxCell id="47" value="API REST y WebSocket&lt;br/&gt;&lt;span style='font-size:9px;'&gt;routers (ws, versions, internal)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="730.0" y="682" width="294.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="48" value="Auth / Salas&lt;br/&gt;&lt;span style='font-size:9px;'&gt;auth, realtime&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="730.0" y="754" width="143.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="49" value="&lt;b&gt;Permisos PEP&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9px;'&gt;internal_client (cache 2s)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="880.5" y="754" width="143.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="50" value="Persistencia y versiones&lt;br/&gt;&lt;span style='font-size:9px;'&gt;persistence, database&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="730.0" y="826" width="294.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="51" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="877.0" y="728" as="sourcePoint" />
+            <mxPoint x="877.0" y="754" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="52" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="877.0" y="800" as="sourcePoint" />
+            <mxPoint x="877.0" y="826" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="53" value="&lt;b&gt;chat&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:10px;'&gt;Java / Spring Boot&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1054" y="640" width="314" height="244" as="geometry" />
+        </mxCell>
+        <mxCell id="54" value="API REST&lt;br/&gt;&lt;span style='font-size:9px;'&gt;api&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1064.0" y="682" width="93.3" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="55" value="WebSocket&lt;br/&gt;&lt;span style='font-size:9px;'&gt;realtime&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1164.3" y="682" width="93.3" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="56" value="Seguridad JWT&lt;br/&gt;&lt;span style='font-size:9px;'&gt;security&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1264.7" y="682" width="93.3" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="57" value="Servicio de chat&lt;br/&gt;&lt;span style='font-size:9px;'&gt;ChatService&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1064.0" y="754" width="93.3" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="58" value="&lt;b&gt;Permisos PEP&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9px;'&gt;BoardPermissions&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1164.3" y="754" width="93.3" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="59" value="Outbox&lt;br/&gt;&lt;span style='font-size:9px;'&gt;NotificationOutbox&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1264.7" y="754" width="93.3" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="60" value="Repositorios MongoDB&lt;br/&gt;&lt;span style='font-size:9px;'&gt;data (ChatMessageRepository)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1064.0" y="826" width="294.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="61" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1211.0" y="728" as="sourcePoint" />
+            <mxPoint x="1211.0" y="754" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="62" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1211.0" y="800" as="sourcePoint" />
+            <mxPoint x="1211.0" y="826" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="63" value="Relajación PEP → PDP (X-Service-Token)" style="endArrow=classic;html=1;dashed=1;strokeColor=#333333;strokeWidth=1.2;fontSize=9;fontColor=#222222;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="884" as="sourcePoint" />
+            <mxPoint x="606" y="884" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="810" y="908" />
+              <mxPoint x="606" y="908" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="64" value="Relajación PEP → PDP (X-Service-Token)" style="endArrow=classic;html=1;dashed=1;strokeColor=#333333;strokeWidth=1.2;fontSize=9;fontColor=#222222;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1129" y="884" as="sourcePoint" />
+            <mxPoint x="543" y="884" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1129" y="934" />
+              <mxPoint x="543" y="934" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="65" value="&lt;b&gt;pixels&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:10px;'&gt;Rust / Axum&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="179" y="972" width="330" height="244" as="geometry" />
+        </mxCell>
+        <mxCell id="66" value="API REST&lt;br/&gt;&lt;span style='font-size:9px;'&gt;routes&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="189.0" y="1014" width="151.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="67" value="WebSocket&lt;br/&gt;&lt;span style='font-size:9px;'&gt;ws&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="347.5" y="1014" width="151.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="68" value="Estado / difusión&lt;br/&gt;&lt;span style='font-size:9px;'&gt;state (batch 50ms)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="189.0" y="1086" width="98.7" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="69" value="Lienzo&lt;br/&gt;&lt;span style='font-size:9px;'&gt;canvas&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="294.7" y="1086" width="98.7" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="70" value="Cooldown&lt;br/&gt;&lt;span style='font-size:9px;'&gt;cooldown&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="400.3" y="1086" width="98.7" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="71" value="Persistencia diferida&lt;br/&gt;&lt;span style='font-size:9px;'&gt;db (MongoDB async)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="189.0" y="1158" width="310.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="72" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="344.0" y="1060" as="sourcePoint" />
+            <mxPoint x="344.0" y="1086" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="73" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="344.0" y="1132" as="sourcePoint" />
+            <mxPoint x="344.0" y="1158" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="74" value="&lt;b&gt;notification&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:10px;'&gt;C# / .NET 8&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="545" y="972" width="330" height="244" as="geometry" />
+        </mxCell>
+        <mxCell id="75" value="API HTTP&lt;br/&gt;&lt;span style='font-size:9px;'&gt;Program (REST + /internal/events)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="555.0" y="1014" width="310.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="76" value="Validación de eventos&lt;br/&gt;&lt;span style='font-size:9px;'&gt;Contracts&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="555.0" y="1086" width="151.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="77" value="Outbox dispatcher&lt;br/&gt;&lt;span style='font-size:9px;'&gt;OutboxDispatcher&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="713.5" y="1086" width="151.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="78" value="Base de notificaciones&lt;br/&gt;&lt;span style='font-size:9px;'&gt;NotificationDatabase&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="555.0" y="1158" width="151.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="79" value="Mensajería (RabbitMQ)&lt;br/&gt;&lt;span style='font-size:9px;'&gt;Broker&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="713.5" y="1158" width="151.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="80" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710.0" y="1060" as="sourcePoint" />
+            <mxPoint x="710.0" y="1086" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="81" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710.0" y="1132" as="sourcePoint" />
+            <mxPoint x="710.0" y="1158" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="82" value="&lt;b&gt;message-worker&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:10px;'&gt;C# / .NET 8 · Worker asíncrono (fuera de app)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;dashed=1;verticalAlign=top;align=center;spacingTop=6;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="911" y="972" width="330" height="244" as="geometry" />
+        </mxCell>
+        <mxCell id="83" value="Consumidor AMQP&lt;br/&gt;&lt;span style='font-size:9px;'&gt;NotificationConsumer&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="921.0" y="1014" width="310.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="84" value="Validación de eventos&lt;br/&gt;&lt;span style='font-size:9px;'&gt;Contracts&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="921.0" y="1086" width="310.0" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="85" value="Base de notificaciones&lt;br/&gt;&lt;span style='font-size:9px;'&gt;NotificationDatabase&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="921.0" y="1158" width="151.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="86" value="Mensajería (RabbitMQ)&lt;br/&gt;&lt;span style='font-size:9px;'&gt;Broker&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;fontSize=9.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1079.5" y="1158" width="151.5" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="87" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1076.0" y="1060" as="sourcePoint" />
+            <mxPoint x="1076.0" y="1086" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="88" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.0;fontSize=8.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1076.0" y="1132" as="sourcePoint" />
+            <mxPoint x="1076.0" y="1158" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="89" value="Outbox (/internal/events)" style="endArrow=classic;html=1;dashed=1;strokeColor=#333333;strokeWidth=1.2;fontSize=9;fontColor=#222222;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="476" y="884" as="sourcePoint" />
+            <mxPoint x="645" y="972" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="476" y="956" />
+              <mxPoint x="645" y="956" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="90" value="Outbox (/internal/events)" style="endArrow=classic;html=1;dashed=1;strokeColor=#333333;strokeWidth=1.2;fontSize=9;fontColor=#222222;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1249" y="884" as="sourcePoint" />
+            <mxPoint x="790" y="972" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1249" y="956" />
+              <mxPoint x="790" y="956" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="91" value="&lt;b&gt;Convenciones&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:8.5px;'&gt;—► Allow to use&lt;br/&gt;- -► Relajación&lt;br/&gt;horizontal (X-Service-Token)&lt;br/&gt;&lt;br/&gt;Borde punteado:&lt;br/&gt;worker asíncrono&lt;br/&gt;(vía RabbitMQ)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=0.9;align=left;verticalAlign=top;spacingTop=6;spacingLeft=6;fontSize=9;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1255" y="1043" width="122" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="92" value="Allow to use" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.3;fontSize=11;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710.0" y="1246" as="sourcePoint" />
+            <mxPoint x="710.0" y="1296" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="93" value="1. Data Tier" style="rounded=1;arcSize=tier;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.3;verticalAlign=top;align=left;spacingTop=12;spacingLeft=22;fontSize=13;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1296" width="1360" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="94" value="user-db&lt;br/&gt;PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="160" y="1358" width="140" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="95" value="board-db&lt;br/&gt;PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="335" y="1358" width="140" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="96" value="canvas-db&lt;br/&gt;PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1358" width="140" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="97" value="notification-db&lt;br/&gt;PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="685" y="1358" width="140" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="98" value="pixels-nosqldb&lt;br/&gt;(MongoDB)" style="whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="865" y="1350" width="120" height="106" as="geometry" />
+        </mxCell>
+        <mxCell id="99" value="rabbitmq&lt;br/&gt;RabbitMQ" style="shape=process;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1025" y="1366" width="185" height="74" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

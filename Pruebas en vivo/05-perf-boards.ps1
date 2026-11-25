@@ -1,4 +1,4 @@
-# Prueba en vivo 05 · Rendimiento GET /api/boards (k6 boards_list.js)
+# Prueba en vivo 05 - Rendimiento GET /api/boards (k6 boards_list.js)
 # Pide por consola la cantidad de VUs, variante (Original o Pool) y duracion.
 # Uso:
 #   powershell -ExecutionPolicy Bypass -File ".\Pruebas en vivo\05-perf-boards.ps1"
@@ -25,7 +25,7 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 }
 
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host " PRUEBA EN VIVO 05 · RENDIMIENTO GET /api/boards (k6)" -ForegroundColor Cyan
+Write-Host " PRUEBA EN VIVO 05 - RENDIMIENTO GET /api/boards (k6)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 if ($Vus -le 0) {

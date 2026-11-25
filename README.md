@@ -4,11 +4,17 @@ Plataforma colaborativa modular en tiempo real donde varias personas crean, dibu
 
 ---
 
-## 🚀 Prototipo 2 — arranque desde un clon limpio
+## 🚀 Prototipo 3 (`correciones-proxy-y-edge`) — arranque desde un clon limpio
 
-Todo el servidor corre en contenedores detrás de **un único gateway Nginx** (`https://localhost:8443`;
-`http://localhost:8088` solo redirige a HTTPS, ver [HTTPS](#-https-p3--s1-secure-channel)).
-Vista de despliegue y decisiones: [docs/p2-despliegue.md](docs/p2-despliegue.md) · [docs/adr/](docs/adr/).
+Todo el servidor corre en **17 contenedores** repartidos en **8 redes** detrás de un **`reverse-proxy` Nginx endurecido** (`https://localhost:8443`; `http://localhost:8088` solo redirige a HTTPS, ver [HTTPS](#-https-p3--s1-secure-channel)) que despacha hacia el **`gateway` interno** (API Gateway en red `app`), `web-ssr` y `pixels-ui`.
+Documentación P3, informe, diagramas y ADRs: [docs/p3/README.md](docs/p3/README.md) · [docs/adr/](docs/adr/) · [rendimiento/README.md](rendimiento/README.md).
+
+**Mapa rápido del repositorio:**
+- **Componentes (servicios y datos):** `reverse-proxy/`, `gateway/`, `web-ssr/`, `authentication-module/`, `colaboracion-module/`, `pizarra-module/`, `chat-module/`, `pixels-module/`, `notifications-module/`, `mongo/`, `rabbitmq/`, `stubs/`.
+- [`docs/`](docs/README.md): documentación unificada en 4 carpetas — [`p3/`](docs/p3/README.md) (informe final, guía de sustentación, `Entrega-P3-CollaBoard.zip`, diagramas finales/por-escenario, escenarios S1–S5 y evidencias), [`adr/`](docs/adr/), [`especificaciones/`](docs/especificaciones/) e [`historico/`](docs/historico/).
+- [`rendimiento/`](rendimiento/README.md): estudios de carga y estrés (`boards`, `pizarra-ws`, `pixels`, `tls`, `notificaciones`, `rbac`).
+- [`Pruebas en vivo/`](Pruebas%20en%20vivo/README.md): scripts PowerShell + `k6` listos para ejecutar durante la sustentación.
+- [`security-tests/`](security-tests/README.md), [`scripts/`](scripts/) y [`e2e/`](e2e/): pruebas automatizadas de seguridad S1–S5, humo y E2E.
 
 **Prerrequisitos:** Docker Desktop / Engine con Compose v2.24+ (el stack completo usa ≈1 GiB de RAM en reposo; dale al menos 4 GiB a Docker para compilar),
 Node.js 20+ (solo para las pruebas de WebSocket) y Python 3.12 (solo para el E2E web).
@@ -17,7 +23,7 @@ Node.js 20+ (solo para las pruebas de WebSocket) y Python 3.12 (solo para el E2E
 git clone https://github.com/CollaBoardUN/CollaBoard.git && cd CollaBoard
 
 cp .env.example .env                           # valores SOLO de desarrollo; cámbialos fuera de tu máquina
-docker compose up -d --build --wait            # construye e inicia los 15 servicios, espera a que estén sanos
+docker compose up -d --build --wait            # construye e inicia los 17 servicios, espera a que estén sanos
 docker compose ps                              # todos deben aparecer "healthy"
 ```
 
@@ -73,8 +79,8 @@ El TLS termina en el gateway (TLS 1.2 y 1.3, HTTP/2, HSTS). El puerto `8088` sol
 ### 🧱 Segmentación de redes (P3 · S3 Network Segmentation)
 
 En lugar de una sola red plana `internal`, los contenedores se reparten en **8 redes** según lo que cada uno necesita ([ADR 0013](docs/adr/0013-segmentacion-de-redes-por-zonas.md)):
-- **`edge`**: única red con salida al host (`gateway` y `pixels-ui`).
-- **`app` (`internal: true`)**: solo `gateway`, `web-ssr` y las 6 APIs HTTP (sin bases de datos, sin RabbitMQ, sin `message-worker` y sin Internet).
+- **`edge`**: única red con salida al host (**solo `reverse-proxy`**; `pixels-ui` vive en `app`).
+- **`app` (`internal: true`)**: `reverse-proxy`, `gateway`, `web-ssr`, `pixels-ui` y las 6 APIs HTTP (sin bases de datos, sin RabbitMQ, sin `message-worker` y sin Internet).
 - **6 redes de datos y mensajería (`internal: true`)**: `net-user` (`auth-api` + `user-db`), `net-board` (`collaboration-api` + `board-db`), `net-canvas` (`pizarra-api` + `canvas-db`), `net-notif` (`notification-api` + `message-worker` + `notification-db`), `net-mongo` (`chat-api` + `pixels-api` + `pixels-nosqldb`) y `net-mq` (`notification-api` + `message-worker` + `rabbitmq`).
 - **Verificación de la matriz:** `python security-tests/s3_segmentacion.py` (o `sh scripts/segmentation_check.sh`) inyecta `nicolaka/netshoot` en el namespace de red de cada contenedor para probar todos los pares permitidos y prohibidos más la salida a Internet.
 - **Abrir puertos de bases o la consola de RabbitMQ (`15672`) en local:** como Docker no publica puertos desde redes `internal: true`, añade `-f docker-compose.dev-ports.yml` al levantar si necesitas entrar desde el host.

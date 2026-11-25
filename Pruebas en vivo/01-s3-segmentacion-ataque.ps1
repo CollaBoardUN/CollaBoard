@@ -1,4 +1,4 @@
-# Prueba en vivo 01 · S3 Network Segmentation (ataque desde contenedor comprometido)
+# Prueba en vivo 01 - S3 Network Segmentation (ataque desde contenedor comprometido)
 # Uso: powershell -ExecutionPolicy Bypass -File ".\Pruebas en vivo\01-s3-segmentacion-ataque.ps1"
 param(
     [string]$Project = "collaboard"
@@ -7,7 +7,7 @@ param(
 $ErrorActionPreference = "Continue"
 
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host " PRUEBA EN VIVO 01 · S3 NETWORK SEGMENTATION (ATAQUE VIVO)" -ForegroundColor Cyan
+Write-Host " PRUEBA EN VIVO 01 - S3 NETWORK SEGMENTATION (ATAQUE VIVO)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 Write-Host "`n[1/3] Verificando las 8 redes Docker y atributo Internal=true..." -ForegroundColor Yellow

@@ -1,0 +1,24 @@
+# Override estilo Laboratorio 6 sobre el stack P3 (1 CPU en gateway, collaboration-api y board-db)
+# Usa la imagen derivada pool-lab6 (pool 25+25 + outbox 2+0 + db.rollback() tras materializar)
+services:
+  gateway:
+    cpu_period: 100000
+    cpu_quota: 100000
+    mem_limit: 512m
+    environment:
+      RATE_LIMIT_API: "100000r/s"
+      RATE_LIMIT_API_BURST: "100000"
+      LIMIT_CONN_PER_IP: "10000"
+      RATE_LIMIT_AUTH: "100r/s"
+      RATE_LIMIT_AUTH_BURST: "200"
+
+  collaboration-api:
+    image: collaboard-perf_collaboration-api:pool-lab6
+    cpu_period: 100000
+    cpu_quota: 100000
+    mem_limit: 512m
+
+  board-db:
+    cpu_period: 100000
+    cpu_quota: 100000
+    mem_limit: 1g

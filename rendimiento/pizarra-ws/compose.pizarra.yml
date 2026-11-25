@@ -1,0 +1,21 @@
+# Override para analisis de concurrencia WebSocket de pizarra-api (1 CPU, sin limite WS por IP)
+services:
+  gateway:
+    cpu_period: 100000
+    cpu_quota: 100000
+    mem_limit: 512m
+    environment:
+      RATE_LIMIT_API: "100000r/s"
+      RATE_LIMIT_API_BURST: "100000"
+      LIMIT_CONN_PER_IP: "10000"
+      LIMIT_CONN_WS_PER_IP: "10000"
+      RATE_LIMIT_AUTH: "100r/s"
+      RATE_LIMIT_AUTH_BURST: "200"
+
+  pizarra-api:
+    cpu_period: 100000
+    cpu_quota: 100000
+    mem_limit: 512m
+
+  collaboration-api:
+    image: collaboard-perf_collaboration-api:pool-lab6

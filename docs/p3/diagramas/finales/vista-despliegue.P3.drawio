@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="vista-capas-p3" name="Vista de Capas P3">
+    <mxGraphModel dx="1422" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1420" pageHeight="1120" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="&lt;b&gt;LAN · Docker Host (Node 1 — 17 contenedores, 8 redes)&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.4;verticalAlign=top;align=left;spacingTop=8;spacingLeft=14;fontSize=13;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="20" y="16" width="1380" height="1084" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="&lt;b&gt;Red: edge&lt;/b&gt; &lt;span style='font-size:10px;'&gt;(internal: false — única zona expuesta al host · 1 miembro: reverse-proxy)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.2;dashed=1;verticalAlign=top;align=left;spacingTop=6;spacingLeft=12;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="48" y="56" width="1324" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="&lt;b&gt;reverse-proxy&lt;/b&gt; (Nginx Alpine)&lt;br/&gt;&lt;span style='font-size:10px;'&gt;Puertos publicados: &lt;b&gt;8088→80&lt;/b&gt; (301→HTTPS) · &lt;b&gt;8443→443&lt;/b&gt; (TLS 1.2/1.3, HSTS)&lt;br/&gt;Política de borde S2 · redes: edge + app&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.4;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="430" y="88" width="560" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="&lt;b&gt;Red: app&lt;/b&gt; &lt;span style='font-size:10px;'&gt;(internal: true — sin salida a Internet · 10 miembros: reverse-proxy, gateway, web-ssr, pixels-ui y 6 APIs HTTP)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.2;dashed=1;verticalAlign=top;align=left;spacingTop=6;spacingLeft=12;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="48" y="200" width="1324" height="344" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="&lt;b&gt;web-ssr&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:10px;'&gt;Node.js 24 / Next.js 16 · :3000 (interno)&lt;br/&gt;SSR + BFF (llama a gateway:8081)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.2;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="80" y="238" width="340" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="&lt;b&gt;gateway&lt;/b&gt; (API Gateway interno · Nginx Alpine)&lt;br/&gt;&lt;span style='font-size:10px;'&gt;Puertos internos: :80 (desde reverse-proxy) · :8081 (desde web-ssr)&lt;br/&gt;Sin puertos publicados · solo red app&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.4;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="500" y="238" width="420" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="&lt;b&gt;pixels-ui&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:10px;'&gt;Nginx / React SPA · :80 (interno)&lt;br/&gt;Servida en /pixels/ vía reverse-proxy · solo red app&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.2;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="238" width="340" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="HTTP :3000" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.2;fontSize=9.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="160" as="sourcePoint" />
+            <mxPoint x="250" y="238" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="10" value="HTTP/WS :80" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.3;fontSize=9.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710" y="160" as="sourcePoint" />
+            <mxPoint x="710" y="238" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="11" value="HTTP :80 (/pixels/)" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.2;fontSize=9.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="860" y="160" as="sourcePoint" />
+            <mxPoint x="1170" y="238" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="12" value="BFF :8081" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;fontSize=9;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="276" as="sourcePoint" />
+            <mxPoint x="500" y="276" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="13" value="&lt;b&gt;auth-api&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;Go 1.23 · :8001&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.2;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="76" y="444" width="196" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="&lt;b&gt;collaboration-api&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;Python / FastAPI · :8000&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.2;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="288" y="444" width="206" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="15" value="&lt;b&gt;pizarra-api&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;Python / FastAPI · :8000&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.2;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="510" y="444" width="206" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="16" value="&lt;b&gt;chat-api&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;Java 21 / Spring · :8090&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.2;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="732" y="444" width="196" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="17" value="&lt;b&gt;pixels-api&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;Rust / Axum · :8000&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.2;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="944" y="444" width="196" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="18" value="&lt;b&gt;notification-api&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;.NET 8 / C# · :8080&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.2;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="1156" y="444" width="196" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="19" value="HTTP / WS (app)" style="endArrow=none;html=1;strokeColor=#000000;strokeWidth=1.2;fontSize=9.5;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710" y="314" as="sourcePoint" />
+            <mxPoint x="710" y="386" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="20" value="" style="endArrow=none;html=1;strokeColor=#000000;strokeWidth=1.2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="174.0" y="386" as="sourcePoint" />
+            <mxPoint x="1254.0" y="386" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="21" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="174.0" y="386" as="sourcePoint" />
+            <mxPoint x="174.0" y="444" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="22" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="391.0" y="386" as="sourcePoint" />
+            <mxPoint x="391.0" y="444" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="23" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="613.0" y="386" as="sourcePoint" />
+            <mxPoint x="613.0" y="444" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="24" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830.0" y="386" as="sourcePoint" />
+            <mxPoint x="830.0" y="444" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="25" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1042.0" y="386" as="sourcePoint" />
+            <mxPoint x="1042.0" y="444" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="26" value="" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1254.0" y="386" as="sourcePoint" />
+            <mxPoint x="1254.0" y="444" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="27" value="&lt;b&gt;Red: net-user&lt;/b&gt; &lt;span style='font-size:9.5px;'&gt;(internal: true)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;dashed=1;verticalAlign=top;align=left;spacingTop=6;spacingLeft=10;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="48" y="598" width="216" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="28" value="&lt;b&gt;user-db&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;PostgreSQL 16&lt;br/&gt;:5432&lt;/span&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="81.0" y="650" width="150" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="29" value="&lt;b&gt;Red: net-board&lt;/b&gt; &lt;span style='font-size:9.5px;'&gt;(internal: true)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;dashed=1;verticalAlign=top;align=left;spacingTop=6;spacingLeft=10;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="276" y="598" width="216" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="30" value="&lt;b&gt;board-db&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;PostgreSQL 16&lt;br/&gt;:5432&lt;/span&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="309.0" y="650" width="150" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="31" value="&lt;b&gt;Red: net-canvas&lt;/b&gt; &lt;span style='font-size:9.5px;'&gt;(internal: true)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;dashed=1;verticalAlign=top;align=left;spacingTop=6;spacingLeft=10;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="504" y="598" width="216" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="32" value="&lt;b&gt;canvas-db&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;PostgreSQL 16&lt;br/&gt;:5432&lt;/span&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="537.0" y="650" width="150" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="33" value="&lt;b&gt;Red: net-mongo&lt;/b&gt; &lt;span style='font-size:9.5px;'&gt;(internal: true)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;dashed=1;verticalAlign=top;align=left;spacingTop=6;spacingLeft=10;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="732" y="598" width="352" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="34" value="pixels-nosqldb&lt;br/&gt;&lt;span style='font-size:9px;'&gt;MongoDB 7 · :27017&lt;/span&gt;" style="whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="828.0" y="642" width="160" height="114" as="geometry" />
+        </mxCell>
+        <mxCell id="35" value="&lt;b&gt;Red: net-notif&lt;/b&gt; &lt;span style='font-size:9.5px;'&gt;(internal: true)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;dashed=1;verticalAlign=top;align=left;spacingTop=6;spacingLeft=10;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="1096" y="598" width="276" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="36" value="&lt;b&gt;notification-db&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;PostgreSQL 16&lt;br/&gt;:5432&lt;/span&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="650" width="150" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="37" value="&lt;b&gt;Red: net-mq&lt;/b&gt; &lt;span style='font-size:9.5px;'&gt;(internal: true — mensajería AMQP · message-worker aislado fuera de app)&lt;/span&gt;" style="rounded=1;arcSize=comp;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.1;dashed=1;verticalAlign=top;align=left;spacingTop=6;spacingLeft=10;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="732" y="800" width="640" height="162" as="geometry" />
+        </mxCell>
+        <mxCell id="38" value="&lt;b&gt;rabbitmq&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;RabbitMQ 3.13 · :5672&lt;br/&gt;Exchange + Quorum + DLQ&lt;/span&gt;" style="shape=process;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="770" y="846" width="210" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="39" value="&lt;b&gt;message-worker&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;.NET 8 Worker · &lt;b&gt;fuera de app&lt;/b&gt;&lt;br/&gt;Redes: solo net-mq + net-notif&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.4;dashed=1;fontSize=10.5;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="846" width="260" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="40" value="SQL :5432" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;fontSize=9;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="174.0" y="522" as="sourcePoint" />
+            <mxPoint x="156" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="41" value="SQL :5432" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;fontSize=9;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="391.0" y="522" as="sourcePoint" />
+            <mxPoint x="384" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="42" value="SQL :5432" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;fontSize=9;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="613.0" y="522" as="sourcePoint" />
+            <mxPoint x="612" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="43" value="Mongo (chat)" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;fontSize=9;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830.0" y="522" as="sourcePoint" />
+            <mxPoint x="860" y="642" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="44" value="Mongo (pixels)" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;fontSize=9;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1042.0" y="522" as="sourcePoint" />
+            <mxPoint x="960" y="642" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="45" value="SQL :5432" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;fontSize=9;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1254.0" y="522" as="sourcePoint" />
+            <mxPoint x="1235" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="46" value="AMQP pub :5672" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;fontSize=9;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1214.0" y="522" as="sourcePoint" />
+            <mxPoint x="875" y="846" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1214.0" y="576" />
+              <mxPoint x="1088" y="576" />
+              <mxPoint x="1088" y="786" />
+              <mxPoint x="875" y="786" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="47" value="AMQP consume" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.2;fontSize=9;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="980" y="888" as="sourcePoint" />
+            <mxPoint x="1070" y="888" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="48" value="SQL :5432" style="endArrow=classic;html=1;strokeColor=#000000;strokeWidth=1.1;fontSize=9;labelAlign=left;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1235" y="846" as="sourcePoint" />
+            <mxPoint x="1235" y="742" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="49" value="&lt;b&gt;Resumen de segmentación S3 (correciones-proxy-y-edge · 17 contenedores, 8 redes)&lt;/b&gt;&lt;br/&gt;&lt;span style='font-size:9.5px;'&gt;• &lt;b&gt;Única exposición pública:&lt;/b&gt; reverse-proxy en red &lt;b&gt;edge&lt;/b&gt; (puertos 8088→80 y 8443→443).&lt;br/&gt;• &lt;b&gt;16 contenedores internos sin salida a Internet&lt;/b&gt; (7 redes con &lt;code&gt;internal: true&lt;/code&gt;): gateway, web-ssr, pixels-ui, 6 APIs, message-worker, 4 PostgreSQL, MongoDB y RabbitMQ.&lt;br/&gt;• &lt;b&gt;Aislamiento de datos:&lt;/b&gt; cada API alcanza únicamente su propia red de datos; &lt;b&gt;message-worker&lt;/b&gt; queda fuera de &lt;b&gt;app&lt;/b&gt;.&lt;br/&gt;• &lt;b&gt;Tráfico interno:&lt;/b&gt; HTTP/WS dentro de redes aisladas; TLS 1.2/1.3 termina en reverse-proxy.&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.0;align=left;verticalAlign=top;spacingTop=10;spacingLeft=12;fontSize=10.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="48" y="800" width="656" height="162" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

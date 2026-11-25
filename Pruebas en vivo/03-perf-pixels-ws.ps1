@@ -1,4 +1,4 @@
-# Prueba en vivo 03 · Rendimiento WebSocket de pixels-api (k6 ws_fanout.js)
+# Prueba en vivo 03 - Rendimiento WebSocket de pixels-api (k6 ws_fanout.js)
 # Pide por consola la cantidad de VUs, modo (0 ms baseline vs 50 ms variante) y duracion.
 # Uso:
 #   powershell -ExecutionPolicy Bypass -File ".\Pruebas en vivo\03-perf-pixels-ws.ps1"
@@ -20,7 +20,7 @@ New-Item -ItemType Directory -Force -Path $CertsDir | Out-Null
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host " PRUEBA EN VIVO 03 · PIXELS-API WEBSOCKET FAN-OUT (k6)" -ForegroundColor Cyan
+Write-Host " PRUEBA EN VIVO 03 - PIXELS-API WEBSOCKET FAN-OUT (k6)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 if ($Vus -le 0) {
