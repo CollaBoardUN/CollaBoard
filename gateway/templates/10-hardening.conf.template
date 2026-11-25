@@ -32,7 +32,7 @@ map $http_x_forwarded_proto $gw_xfp {
 }
 map $rl_key $gw_xff {
   ""      $proxy_add_x_forwarded_for;
-  default $proxy_add_x_forwarded_for;
+  default $gw_client_ip;
 }
 map $rl_key $gw_real_ip {
   ""      $gw_client_ip;
