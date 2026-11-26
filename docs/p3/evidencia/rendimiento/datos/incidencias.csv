@@ -1,0 +1,4 @@
+run,kind,error
+E2-16-r2-d65fb054b727,invalid,cobertura_gateway|cobertura_collaboration-api|cobertura_board-db|cobertura_k6-boards
+E2-250-r1-ea211df4f024,incomplete,[Errno 2] No such file or directory: 'rendimiento\\boards\\resultados\\E2-250-r1-ea211df4f024\\k6.json'
+E2-32-r1-2cf131b126d5,invalid,cobertura_postgres|cobertura_gateway|cobertura_collaboration-api|cobertura_board-db|cobertura_k6-boards

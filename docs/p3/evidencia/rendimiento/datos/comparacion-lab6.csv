@@ -1,0 +1,7 @@
+study,point,vus,success_tpm,p95_ms,seconds,source
+Lab6 v2,maximo_puntual,1000,10360.2,4809.5,30,informe_lab6.pdf pp. 6-7
+Lab6 v2,operativo_historico,200,10037.4,445.1,30,informe_lab6.pdf pp. 6-7
+P3 original,maximo_puntual_exploratorio,2,7476,26,30,E2-2-r1-287c67522bb9/k6.json
+P3 original,limite_practico_observado_mediana,2,7090.0,26.0,90,546978f9f520
+P3 original,optimo_operativo,1,5972.0,14,90,546978f9f520
+P3 pool ajustado,maximo_nivel_exploratorio_validado,200,5389.5,2878,40,E2-200-r1-bbffbdfca6b6/k6.json

@@ -1,0 +1,46 @@
+# Merge with the root Compose and notifications-module/compose.gateway.yml.
+# run.ps1 removes host port mappings from the merged model before using it.
+services:
+  gateway:
+    cpu_period: 100000
+    cpu_quota: 100000
+    mem_limit: 512m
+    environment:
+      GATEWAY_TLS_PORT: "443"
+      TLS_EXTRA_SAN: DNS:gateway
+      RATE_LIMIT_API: "${BOARDS_API_RATE:-30r/s}"
+      RATE_LIMIT_API_BURST: "${BOARDS_API_BURST:-60}"
+      LIMIT_CONN_PER_IP: "${BOARDS_CONNECTIONS:-60}"
+    volumes:
+      - boards_tls:/etc/nginx/certs
+
+  collaboration-api:
+    cpu_period: 100000
+    cpu_quota: 100000
+    mem_limit: 512m
+
+  board-db:
+    cpu_period: 100000
+    cpu_quota: 100000
+    mem_limit: 1g
+
+  pixels-ui:
+    build:
+      args:
+        VITE_BACKEND_HTTP_URL: https://gateway
+        VITE_BACKEND_WS_URL: wss://gateway/ws/pixels
+
+  k6-boards:
+    image: grafana/k6:0.54.0
+    profiles: [boards-bench]
+    networks: [edge]
+    environment:
+      SSL_CERT_FILE: /perf-ca/ca.crt
+      K6_NO_USAGE_REPORT: "true"
+      BOARDS_PASSWORD: "${BOARDS_PASSWORD:?Use run.ps1}"
+    volumes:
+      - ./rendimiento/boards/k6:/bench:ro
+      - ./rendimiento/boards/.local/ca.crt:/perf-ca/ca.crt:ro
+
+volumes:
+  boards_tls:

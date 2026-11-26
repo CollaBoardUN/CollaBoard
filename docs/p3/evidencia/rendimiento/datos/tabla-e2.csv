@@ -1,0 +1,5 @@
+cohort,level,seconds,valid_runs,offered_tpm_median,offered_tpm_min,offered_tpm_max,success_tpm_median,success_tpm_min,success_tpm_max,success_mean_ms_median,success_p50_ms_median,success_p95_ms_median,success_p95_ms_min,success_p95_ms_max,success_p99_ms_median,gateway_cpu_pct_mean_median,collaboration-api_cpu_pct_mean_median,board-db_cpu_pct_mean_median,k6-boards_cpu_pct_peak_max,k6-boards_memory_mib_peak_max,pg_total_peak_max,pg_idle_in_transaction_peak_max,error_pct_median,all_valid_runs_meet_slo
+546978f9f520,1,90,3,5972.0,5856.0,6012.0,5972.0,5856.0,6012.0,9.574235320384014,8,14,14,15,52,8.749,76.527,21.581,21.66,16.54,5,1,0.0,True
+546978f9f520,2,90,3,7090.0,7088.667,7215.333,7090.0,7088.667,7215.333,16.448330982604606,14,26,26,28,70,9.915,100.004,25.468,24.06,17.7,5,2,0.0,True
+546978f9f520,3,90,3,6865.333,6488.667,6961.333,6865.333,6488.667,6961.333,25.759856282773352,22,46,46,59,81,8.715,100.974,23.301,21.91,19.49,5,3,0.0,True
+546978f9f520,4,90,3,6402.667,6357.333,6632.667,6402.667,6357.333,6632.667,37.02405247813411,33,78,78,80,95,7.954,97.415,23.555,20.36,20.48,6,4,0.0,True

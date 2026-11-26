@@ -1,0 +1,9 @@
+point,from_vus,to_vus,success_tpm,p95_ms,cohort
+optimo_operativo,1,1,5972.0,14,546978f9f520
+rodilla,2,3,,,546978f9f520
+limite_practico_observado,2,2,7090.0,26.0,546978f9f520
+optimo_operativo,1,1,5803.333,14,c9234f423867
+rodilla,2,3,,,c9234f423867
+limite_practico_observado,2,2,6472.0,32,c9234f423867
+frontera_slo_latencia,24,28,,,c9234f423867
+maximo_exploratorio_validado,200,200,5389.5,2878,b1e6ae484683
